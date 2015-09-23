@@ -1,2 +1,17 @@
 name: ${name}
 giturl: ${giturl}
+
+pipeline: 
+ materials: 
+  git: 
+    url: ${giturl}
+   _dest: ${directoryname}
+ stage: 
+  - 
+   jobs: 
+    job: 
+     tasks: 
+      exec: 
+       - python -c 'print "Hello World!"'
+
+ _isLocked: false
