@@ -1,2 +1,5 @@
 # runs the script with --help to check the helpful documentation is correct
 helptext
+
+# Create a pipeline that runs a python script then exits
+create_for_python_script_repo
