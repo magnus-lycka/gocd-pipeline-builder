@@ -1,0 +1,11 @@
+# Full path to the System Under Test (or Java Main Class name)
+executable:${TEXTTEST_CHECKOUT}/src/main/gocd_builder.py
+
+# Naming scheme to use for files for stdin,stdout and stderr
+filename_convention_scheme:standard
+
+# Expanded name to use for application
+full_name:Go CD Pipeline Builder
+
+default_checkout:gocd-pipeline-builder
+
