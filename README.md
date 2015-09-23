@@ -22,3 +22,10 @@ In your texttest personal config file (defaults to ~/.texttest/config, create it
 start texttest:
 
     texttest -a gocdpb
+
+
+## Plan for now...
+
+* Create test case to build rudimentary pipeline.
+* Use the Springer gomatic API.
+* Use YAML for template configuration.
