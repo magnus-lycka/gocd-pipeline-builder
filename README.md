@@ -7,7 +7,7 @@ The gocd-pipeline-builder makes a GoCD pipeline automagically when you push a ne
 How to run the self-tests
 -------------------------
 
-Install (texttest)[http://texttest.org]
+Install texttest: [http://texttest.org]
 
 In your $TEXTTEST_HOME folder create a softlink like this:
 
