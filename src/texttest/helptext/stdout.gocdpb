@@ -1,1 +1,13 @@
-Hello world!
+usage: gocd_builder.py [-h] [--template-file TEMPLATE_FILE]
+                       [--settings-file SETTINGS_FILE]
+
+turns a template file into a gocd pipeline
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --template-file TEMPLATE_FILE, -t TEMPLATE_FILE
+                        Use this template file as the basis for a new go cd
+                        pipeline
+  --settings-file SETTINGS_FILE, -s SETTINGS_FILE
+                        use this settings file to insert values into the
+                        template file given
