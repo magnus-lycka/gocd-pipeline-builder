@@ -3,7 +3,7 @@ pipeline:
  materials: 
   git: 
     url: ${giturl}
-   _dest: ${directoryname}
+    dest: ${directoryname}
  stage: 
   - 
    jobs: 

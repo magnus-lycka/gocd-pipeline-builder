@@ -12,3 +12,6 @@ default_checkout:gocd-pipeline-builder
 link_test_path:template.yaml
 link_test_path:settings.yaml
 
+[collate_file]
+config-after:config-after.xml
+config-before:config-before.xml
