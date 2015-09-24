@@ -11,7 +11,8 @@ Install texttest: [http://texttest.org]
 
 In your $TEXTTEST_HOME folder create a softlink like this:
 
-    ln -s /whereever/your/clones/live/gocd-pipeline-builder/src/texttest
+    cd $TEXTTEST_HOME
+    ln -s /whereever/your/clones/live/gocd-pipeline-builder/src/texttest gocdpb
 
 In your texttest personal config file (defaults to ~/.texttest/config, create it if it doesn't exist), add the following to your checkout locations:
 
