@@ -1,7 +1,5 @@
-name: ${name}
-giturl: ${giturl}
-
-pipeline: 
+pipeline:
+ name: ${name}
  materials: 
   git: 
     url: ${giturl}

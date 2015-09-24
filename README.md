@@ -24,8 +24,13 @@ start texttest:
     texttest -a gocdpb
 
 
-## Plan for now...
+Plan for now...
+---------------
 
 * Create test case to build rudimentary pipeline.
 * Use the Springer gomatic API.
 * Use YAML for template configuration.
+* Use jinja2 or Mako to fill template with values?
+* Use Emily's hooks code to talk to Git.
+
+

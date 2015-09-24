@@ -1,9 +1,30 @@
 #!/usr/bin/env python
 
 import argparse
+from gomatic import *  # TODO Usch!
+import os 
+
+GOSERVER = os.environ['GOSERVER']
+
 
 def main(template_file, settings_file):
-	print("Hello World!")
+    print("Hello World!")
+    update_pipeline()
+
+
+def update_pipeline():
+    configurator = GoCdConfigurator(HostRestClient(GOSERVER))
+    #configurator = GoCdConfigurator(FakeHostRestClient(empty_config_xml))
+
+    pipeline = configurator\
+        .ensure_pipeline_group("defaultGroup")\
+        .ensure_replacement_of_pipeline("test_pipeline")\
+        .set_git_url("http://git/git/pageroonline/services/factoring/factoring.git")
+    stage = pipeline.ensure_stage("defaultStage")
+    job = stage.ensure_job("defaultJob")
+
+    configurator.save_updated_config(save_config_locally=True, dry_run=True)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="turns a template file into a gocd pipeline")
