@@ -49,8 +49,7 @@ if __name__ == "__main__":
                         help="use this settings file to insert values into the template file given")
 
     parsed_args = parser.parse_args()
-    print repr(parsed_args)
     args_as_dict = vars(parsed_args)  # convert Namespace object to python dictionary
 
-    print "will create pipeline using template {template_file} and settings {settings_file}".format(**args_as_dict)
+    print "will create pipeline using template {template_file.name} and settings {settings_file.name}".format(**args_as_dict)
     main(**args_as_dict)

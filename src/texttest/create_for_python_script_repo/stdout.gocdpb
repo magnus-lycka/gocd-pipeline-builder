@@ -1,4 +1,4 @@
-will create pipeline using template <open file 'template.yaml', mode 'r' at 0x7ffb09d020c0> and settings <open file 'settings.yaml', mode 'r' at 0x7ffb09d02150>
+will create pipeline using template template.yaml and settings settings.yaml
 Hello World!
 {'pipeline': {'_isLocked': False,
               'materials': {'git': {'dest': 'my/awsome/dir/',
