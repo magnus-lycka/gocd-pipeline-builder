@@ -17,31 +17,33 @@ What works?
    - stages with name
    - jobs with name
    - exec tasks with command, workingdir and arg-list.
+   - Use go-templates
+   - environment and parameters
  * Producing XML with the new pipeline
 
 
 Obviously missing
 -----------------
  * Other material than git
- * Support for GoCD templates
- * Set environment and parameters
+ * filter/ignore in git material
  * Update existing pipeline
  * Git hooks
  * Fetchartifact tasks
  * Define artifacts
  * Add pipeline in environment
  * Request resource in job
- * Hook in pipeline in downstream pipeline?
+ * Hook in new pipeline in downstream pipeline?
+ * Replace existing pipeline?
 
 
 Plan for now...
 ---------------
  * Handle go-server authentication.
  * Upload configuration change to Go server
- * Use GoCD templates and define parameters
- * Define environment variables
  * Pipeline material.
  * Add pipeline in environment
+ * Filters in git material
+ * Hook in new pipeline in downstream pipeline?
 
 
 GoCD Pipeline Templates and parameters

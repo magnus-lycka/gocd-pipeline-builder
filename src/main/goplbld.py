@@ -98,11 +98,35 @@ class Pipeline(object):
     def append_self(self, parent):
         self.element = ElementTree.SubElement(parent, 'pipeline')
         self.set_name()
+        self.set_params()
+        self.set_environmentvariables()
         self.set_materials()
-        self.set_stages()
+        if 'template' in self.structure:
+            self.element.set('template', self.structure['template'])
+        else:
+            self.set_stages()
 
     def set_name(self):
         self.element.set('name', self.structure['name'])
+
+    def set_params(self):
+        if 'params' in self.structure:
+            params = ElementTree.SubElement(self.element, 'params')
+            for param in self.structure['params']:
+                for key, value in param.items():
+                    param_elm = ElementTree.SubElement(params, 'param')
+                    param_elm.set('name', key)
+                    param_elm.text = value
+
+    def set_environmentvariables(self):
+        if 'environmentvariables' in self.structure:
+            env_elm = ElementTree.SubElement(self.element, 'environmentvariables')
+            for env in self.structure['environmentvariables']:
+                for key, value in env.items():
+                    variable_elm = ElementTree.SubElement(env_elm, 'variable')
+                    variable_elm.set('name', key)
+                    value_elm = ElementTree.SubElement(variable_elm, 'value')
+                    value_elm.text = value
 
     def set_materials(self):
         assert self.structure['materials']
