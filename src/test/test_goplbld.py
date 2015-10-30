@@ -1,7 +1,7 @@
 import unittest
 from xml.etree import ElementTree
 
-from src.main.cruise_tree import CruiseTree
+from goplbld import CruiseTree
 
 
 class TestCruiseTree(unittest.TestCase):

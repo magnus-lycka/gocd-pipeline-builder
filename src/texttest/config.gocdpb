@@ -16,7 +16,7 @@ link_test_path:goplbld.yaml
 config-after:config-after.xml
 
 [run_dependent_text]
-config-after:hostname="[\d\w\-]+"{REPLACE hostname="<HOST>"}
-config-after:ipaddress="[\d\.]+"{REPLACE ipaddress="<N.N.N.N>"}
-config-after:serverId="[\d\w\-]+"{REPLACE serverId="<UUID>"}
-config-after:uuid="[\d\w\-]+"{REPLACE uuid="<UUID>"}
+config-after:hostname="[\d\w\-]+"{REPLACE hostname="HOST"}
+config-after:ipaddress="[\d\.]+"{REPLACE ipaddress="N.N.N.N"}
+config-after:serverId="[\d\w\-]+"{REPLACE serverId="UUID"}
+config-after:uuid="[\d\w\-]+"{REPLACE uuid="UUID"}

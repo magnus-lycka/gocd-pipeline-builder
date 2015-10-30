@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="75" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="<UUID>" />
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
   <pipelines group="defaultGroup">
     <pipeline name="build-go-pipeline-builder">
       <materials>
@@ -20,6 +20,6 @@
     </pipeline>
   </pipelines>
   <agents>
-    <agent hostname="<HOST>" ipaddress="<N.N.N.N>" uuid="<UUID>" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>

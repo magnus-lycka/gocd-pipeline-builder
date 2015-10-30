@@ -5,7 +5,6 @@ import sys
 import yaml
 import argparse
 import requests
-import cruise_tree
 from xml.etree import ElementTree
 
 
@@ -29,10 +28,20 @@ def indent(elem, level=0):
             elem.tail = i
 
 
+
+class CruiseTree(ElementTree.ElementTree):
+    @classmethod
+    def fromstring(cls, text):
+        return cls(ElementTree.fromstring(text))
+
+    def tostring(self):
+        return ElementTree.tostring(self.getroot())
+
+
 class GoProxy(object):
     def __init__(self, config):
         self._config = yaml.load(config)
-        self.tree = cruise_tree.CruiseTree.fromstring(self.xml_from_source())
+        self.tree = CruiseTree.fromstring(self.xml_from_source())
 
     @property
     def cruise_xml(self):
