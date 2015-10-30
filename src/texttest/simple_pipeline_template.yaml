@@ -1,0 +1,22 @@
+pipelines:
+  group: defaultGroup
+
+pipeline:
+  name: {{ name }}
+  materials:
+    - git:
+        url: {{ url }}
+        dest: {{ dest or name }}
+  stages:
+    - stage:
+        name: defaultStage
+        jobs:
+          - job:
+              name: defaultJob
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    workingdir: gocd
+                    arg:
+                      - -c
+                      - echo $SHELL $GO_PIPELINE_LABEL

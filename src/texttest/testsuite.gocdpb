@@ -12,3 +12,10 @@ dump_config
 
 # Add a simple pipeline without using builder template.
 add_simple_pipeline
+
+# Add a simple pipeline using builder template with implicit destination directory.
+add_simple_template_pipeline
+
+# Add a simple pipeline using builder template with explicit destination directory.
+add_simple_template_pipeline_dest
+

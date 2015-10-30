@@ -6,6 +6,7 @@ import yaml
 import argparse
 import requests
 from xml.etree import ElementTree
+from jinja2 import Template
 
 
 def indent(elem, level=0):
@@ -26,7 +27,6 @@ def indent(elem, level=0):
     else:
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
-
 
 
 class CruiseTree(ElementTree.ElementTree):
@@ -78,12 +78,22 @@ class GoProxy(object):
 
 class Pipeline(object):
     def __init__(self, settings_file):
-        structure = yaml.load(settings_file)
-        self.pipeline_group = structure['pipelines']['group']
-        self.structure = structure['pipeline']
+        self.pipeline_group = None
+        self.structure = None
         self.element = None
         self.materials = None
         self.stage = None
+        self.job = None
+        self.tasks = None
+        self.load_structure(settings_file)
+
+    def load_structure(self, settings_file):
+        structure = yaml.load(settings_file)
+        if 'template' in structure:
+            template = Template(open(structure['template']['path']).read())
+            structure = yaml.load(template.render(structure['template']['parameters']))
+        self.pipeline_group = structure['pipelines']['group']
+        self.structure = structure['pipeline']
 
     def append_self(self, parent):
         self.element = ElementTree.SubElement(parent, 'pipeline')

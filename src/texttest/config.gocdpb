@@ -12,11 +12,22 @@ default_checkout:gocd-pipeline-builder
 link_test_path:config-before.xml
 link_test_path:goplbld.yaml
 
+link_test_path:simple_pipeline.yaml
+link_test_path:simple_pipeline_template.yaml
+
+link_test_path:coveragerc
+
 [collate_file]
 config-after:config-after.xml
+[end]
 
 [run_dependent_text]
 config-after:hostname="[\d\w\-]+"{REPLACE hostname="HOST"}
 config-after:ipaddress="[\d\.]+"{REPLACE ipaddress="N.N.N.N"}
 config-after:serverId="[\d\w\-]+"{REPLACE serverId="UUID"}
 config-after:uuid="[\d\w\-]+"{REPLACE uuid="UUID"}
+[end]
+
+[test_data_environment]
+coveragerc:COVERAGE_PROCESS_START
+[end]

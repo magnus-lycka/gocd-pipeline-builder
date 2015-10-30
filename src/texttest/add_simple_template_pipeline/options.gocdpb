@@ -1,0 +1,1 @@
+-s simple_pipeline.yaml --dump config-after.xml --config goplbld.yaml
