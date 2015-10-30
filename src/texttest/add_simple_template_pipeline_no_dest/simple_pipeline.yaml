@@ -1,0 +1,6 @@
+template:
+  path: ./simple_pipeline_template.yaml
+  parameters:
+    name: gocd42
+    url: https://github.com/magnus-lycka/gocd.git
+    skip_dest: true

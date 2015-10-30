@@ -19,3 +19,7 @@ add_simple_template_pipeline
 # Add a simple pipeline using builder template with explicit destination directory.
 add_simple_template_pipeline_dest
 
+# Add a simple pipeline using builder template.
+# Don't create a destination directory.
+add_simple_template_pipeline_no_dest
+

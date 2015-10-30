@@ -6,7 +6,7 @@ pipeline:
   materials:
     - git:
         url: {{ url }}
-        dest: {{ dest or name }}
+        {% if not skip_dest %}dest: {{ dest or name }}{% endif %}
   stages:
     - stage:
         name: defaultStage
