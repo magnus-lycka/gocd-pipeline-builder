@@ -29,11 +29,16 @@ Plan for now...
 ---------------
 
 * Create test case to build rudimentary pipeline.
-* Use the Springer gomatic API.
+* Use the Springer gomatic API. (Really?)
 * Use YAML for template configuration.
 * Use jinja2 or Mako to fill template with values?
-  - Mako uses the familiar ${name} syntax!
+  - Mako uses the familiar ${name} syntax? (Risk for confusion?)
 * Use Emily's hooks code to talk to Git.
+
+* Map between GIT paths and GOCD pipeline groups
+* Make sure we don't add, drop or reorder criuse config content unintenionally.
+* Declare upsteam dependencies?
+* Declare downstream dependants?
 
 
 Observations on Gomatic
@@ -63,7 +68,7 @@ What we need to pass to the tool
 --------------------------------
 
  * Name of pipeline to add/update (probably derived from repo name).
- * Environment to place the pipeline in.
+ * Environment to place the pipeline in. [Template]
  * All materials for the pipeline:
    - The git repo which was the cause of all this.
    - Any other material the pipeline might depend on.
@@ -73,6 +78,7 @@ What we need to pass to the tool
  * Information which is needed for downstream pipelines which will use the output of this pipeline.
    - material, <pipeline name="my_downstream"> <materials> <pipeline pipelineName="xxx" stageName="yyy" />
    - fetch artifact, <pipeline name="my_downstream"> <stage name="x"> <jobs> <job name="x"> <tasks> <fetchartifact pipeline="xxx" stage="yyy" job="x" srcdir="d" dest="upstream_xxx"> <runif status="passed" />
+
 
 Wishlist
 --------

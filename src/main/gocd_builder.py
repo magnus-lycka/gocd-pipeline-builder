@@ -2,7 +2,7 @@
 
 import argparse
 from gomatic import GoCdConfigurator, HostRestClient
-import os 
+import os
 from mako.template import Template
 import yaml
 
@@ -27,13 +27,14 @@ def read_some_config(template_file, settings_file):
     template = Template(template_file.read())
     pprint.pprint(yaml.load(template.render(**settings)))
 
+
 def update_pipeline():
     configurator = GoCdConfigurator(HostRestClient(GOSERVER))
-    #configurator = GoCdConfigurator(FakeHostRestClient(empty_config_xml))
+    # configurator = GoCdConfigurator(FakeHostRestClient(empty_config_xml))
 
-    pipeline = configurator\
-        .ensure_pipeline_group("defaultGroup")\
-        .ensure_replacement_of_pipeline("test_pipeline")\
+    pipeline = configurator \
+        .ensure_pipeline_group("defaultGroup") \
+        .ensure_replacement_of_pipeline("test_pipeline") \
         .set_git_url("http://git/git/pageroonline/services/factoring/factoring.git")
     stage = pipeline.ensure_stage("defaultStage")
     job = stage.ensure_job("defaultJob")
@@ -51,5 +52,6 @@ if __name__ == "__main__":
     parsed_args = parser.parse_args()
     args_as_dict = vars(parsed_args)  # convert Namespace object to python dictionary
 
-    print "will create pipeline using template {template_file.name} and settings {settings_file.name}".format(**args_as_dict)
+    print "will create pipeline using template {template_file.name} and settings {settings_file.name}".format(
+        **args_as_dict)
     main(**args_as_dict)

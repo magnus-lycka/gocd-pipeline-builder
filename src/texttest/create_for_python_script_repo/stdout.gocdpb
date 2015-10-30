@@ -1,7 +1,0 @@
-will create pipeline using template template.yaml and settings settings.yaml
-Hello World!
-{'pipeline': {'_isLocked': False,
-              'materials': {'git': {'dest': 'my/awsome/dir/',
-                                    'url': 'https://github.com/emilybache/gocd-pipeline-builder'}},
-              'name': 'My Python Script',
-              'stage': [{'jobs': {'job': {'tasks': {'exec': ['python -c \'print "Hello World!"\'']}}}}]}}

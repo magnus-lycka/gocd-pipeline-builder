@@ -1,5 +1,5 @@
 # Full path to the System Under Test (or Java Main Class name)
-executable:${TEXTTEST_CHECKOUT}/src/main/gocd_builder.py
+executable:${TEXTTEST_CHECKOUT}/src/main/goplbld.py
 
 # Naming scheme to use for files for stdin,stdout and stderr
 filename_convention_scheme:standard
@@ -9,9 +9,14 @@ full_name:Go CD Pipeline Builder
 
 default_checkout:gocd-pipeline-builder
 
-link_test_path:template.yaml
-link_test_path:settings.yaml
+link_test_path:config-before.xml
+link_test_path:goplbld.yaml
 
 [collate_file]
 config-after:config-after.xml
-config-before:config-before.xml
+
+[run_dependent_text]
+config-after:hostname="[\d\w\-]+"{REPLACE hostname="<HOST>"}
+config-after:ipaddress="[\d\.]+"{REPLACE ipaddress="<N.N.N.N>"}
+config-after:serverId="[\d\w\-]+"{REPLACE serverId="<UUID>"}
+config-after:uuid="[\d\w\-]+"{REPLACE uuid="<UUID>"}

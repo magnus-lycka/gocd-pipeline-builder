@@ -1,13 +1,11 @@
-usage: gocd_builder.py [-h] [--template-file TEMPLATE_FILE]
-                       [--settings-file SETTINGS_FILE]
+usage: goplbld.py [-h] [-s SETTINGS] [-c CONFIG] [-d DUMP]
 
-turns a template file into a gocd pipeline
+Add pipeline to Go CD server.
 
 optional arguments:
   -h, --help            show this help message and exit
-  --template-file TEMPLATE_FILE, -t TEMPLATE_FILE
-                        Use this template file as the basis for a new go cd
-                        pipeline
-  --settings-file SETTINGS_FILE, -s SETTINGS_FILE
-                        use this settings file to insert values into the
-                        template file given
+  -s SETTINGS, --settings SETTINGS
+                        Yaml file with settings for GoCD pipeline.
+  -c CONFIG, --config CONFIG
+                        Yaml file with configuration.
+  -d DUMP, --dump DUMP  Copy of new GoCD configuration XML file.
