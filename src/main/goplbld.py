@@ -3,6 +3,7 @@
 
 import sys
 import yaml
+import json
 import argparse
 import requests
 from xml.etree import ElementTree
@@ -44,6 +45,9 @@ class GoProxy(object):
         self._config = yaml.load(config)
         self.dry_run = dry_run
         self._cruise_config_md5 = None
+        self.init()
+
+    def init(self):
         self.tree = CruiseTree.fromstring(self.xml_from_source())
         self._initial_xml = self.cruise_xml
 
@@ -89,9 +93,14 @@ class GoProxy(object):
             data = {'xmlFile': self.cruise_xml, 'md5': self._cruise_config_md5}
             response = requests.post(url, data)
             if response.status_code != 200:
-                print response.status_code
-                print response.text
-                sys.exit(1)
+                sys.stderr.write("status-code: %s\n" % response.status_code)
+                # GoCD produces broken JSON???, see
+                # https://github.com/gocd/gocd/issues/1472
+                # (Or is something strange going on with requests?)
+                json_data = json.loads(response.text.replace("\\'", "'"))
+                sys.stderr.write("result: %s\n" % json_data["result"])
+                sys.stderr.write("originalContent:\n%s\n" % json_data["originalContent"])
+                return 1
 
 
 class Pipeline(object):
@@ -195,6 +204,7 @@ class Pipeline(object):
 
 
 def main(args=sys.argv):
+    fail = 0
     argparser = argparse.ArgumentParser(
         description="Add pipeline to Go CD server.")
     argparser.add_argument(
@@ -224,11 +234,17 @@ def main(args=sys.argv):
 
     if pargs.settings is not None:
         go.add_pipeline(Pipeline(pargs.settings))
-        go.upload_config()
+        fail = go.upload_config()
+
+    if fail:
+        # Reload config
+        go.init()
 
     if pargs.dump is not None:
         envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'
         pargs.dump.write(envelope % go.cruise_xml)
+
+    sys.exit(fail)
 
 
 if __name__ == '__main__':

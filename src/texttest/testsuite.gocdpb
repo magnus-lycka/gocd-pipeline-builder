@@ -13,6 +13,9 @@ dump_config
 # Add a simple pipeline without using builder template.
 add_simple_pipeline
 
+# Add a duplicate pipeline to trigger error handling
+add_duplicate_pipeline
+
 # Add a pipeline for Go template without using builder pattern.
 add_go_template_pipeline
 
@@ -25,4 +28,3 @@ add_simple_template_pipeline_with_pattern_dest
 # Add a simple pipeline using builder pattern.
 # Don't create a destination directory.
 add_simple_template_pipeline_with_pattern_no_dest
-

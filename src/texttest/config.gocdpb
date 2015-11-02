@@ -28,6 +28,10 @@ config-after:hostname="[\d\w\-]+"{REPLACE hostname="HOST"}
 config-after:ipaddress="[\d\.]+"{REPLACE ipaddress="N.N.N.N"}
 config-after:serverId="[\d\w\-]+"{REPLACE serverId="UUID"}
 config-after:uuid="[\d\w\-]+"{REPLACE uuid="UUID"}
+stderr:hostname="[\d\w\-]+"{REPLACE hostname="HOST"}
+stderr:ipaddress="[\d\.]+"{REPLACE ipaddress="N.N.N.N"}
+stderr:serverId="[\d\w\-]+"{REPLACE serverId="UUID"}
+stderr:uuid="[\d\w\-]+"{REPLACE uuid="UUID"}
 [end]
 
 [test_data_environment]
