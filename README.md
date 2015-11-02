@@ -91,7 +91,7 @@ GoCD Pipeline Builder Patterns
 ------------------------------
 
 The pipeline builder has a concept called `patterns`.
-We could have called it `templates`, but GoCD since has
+We could have called it `templates`, but since GoCD has
 something else which is called `pipeline templates`,
 we call these things `patterns`.
 
@@ -118,7 +118,7 @@ look like this:
       name: {{ name }}
       materials:
         - git:
-            url: {{ https://github.com/magnus-lycka/gocd.git }}
+            url: {{ url }}
             dest: {{ name }}
       template: my_template
       params:
@@ -128,6 +128,9 @@ look like this:
 
     environment: windows
 
+If you want, the patterns can be a lot more complex, with
+loops and conditionals etc, as described in the jinja2
+docs at http://jinja.pocoo.org/
 
 How to run the self-tests
 -------------------------
