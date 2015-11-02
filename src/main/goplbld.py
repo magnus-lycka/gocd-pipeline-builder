@@ -9,43 +9,46 @@ from xml.etree import ElementTree
 from jinja2 import Template
 
 
-def indent(elem, level=0):
-    """
-    Fredrik Lundh's standard recipe.
-    (Why isn't this in xml.etree???)
-    """
-    i = "\n" + level*"  "
-    if len(elem):
-        if not elem.text or not elem.text.strip():
-            elem.text = i + "  "
-        if not elem.tail or not elem.tail.strip():
-            elem.tail = i
-        for elem in elem:
-            indent(elem, level+1)
-        if not elem.tail or not elem.tail.strip():
-            elem.tail = i
-    else:
-        if level and (not elem.tail or not elem.tail.strip()):
-            elem.tail = i
-
-
 class CruiseTree(ElementTree.ElementTree):
     @classmethod
     def fromstring(cls, text):
         return cls(ElementTree.fromstring(text))
 
     def tostring(self):
+        self.indent(self.getroot())
         return ElementTree.tostring(self.getroot())
+
+    @classmethod
+    def indent(cls, elem, level=0):
+        """
+        Fredrik Lundh's standard recipe.
+        (Why isn't this in xml.etree???)
+        """
+        i = "\n" + level*"  "
+        if len(elem):
+            if not elem.text or not elem.text.strip():
+                elem.text = i + "  "
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+            for elem in elem:
+                cls.indent(elem, level+1)
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+        else:
+            if level and (not elem.tail or not elem.tail.strip()):
+                elem.tail = i
 
 
 class GoProxy(object):
-    def __init__(self, config):
+    def __init__(self, config, dry_run):
         self._config = yaml.load(config)
+        self.dry_run = dry_run
+        self._cruise_config_md5 = None
         self.tree = CruiseTree.fromstring(self.xml_from_source())
+        self._initial_xml = self.cruise_xml
 
     @property
     def cruise_xml(self):
-        indent(self.tree.getroot())
         return self.tree.tostring()
 
     def xml_from_source(self):
@@ -61,19 +64,34 @@ class GoProxy(object):
     def xml_from_url(self):
         url = self._config['url'] + "/go/admin/restful/configuration/file/GET/xml"
         response = requests.get(url)
+        self._cruise_config_md5 = response.headers['x-cruise-config-md5']
         return response.text
 
     def add_pipeline(self, pipeline):
-        found_groups = []
-        for pipelines in self.tree.findall('pipelines'):
-            group_name = pipelines.get('group')
-            found_groups.append(group_name)
-            if group_name == pipeline.pipeline_group:
-                pipeline.append_self(pipelines)
-                break
+        group_name = pipeline.pipeline_group
+        pipeline_groups = {pipelines.get('group'): pipelines
+                           for pipelines in self.tree.findall('pipelines')}
+        try:
+            pipeline.append_self(pipeline_groups[group_name])
+        except KeyError:
+            raise KeyError('Pipeline group %s not found among %s'
+                           % (group_name, pipeline_groups))
+
+    def upload_config(self):
+        if self.dry_run:
+            print "Dry run. Not uploading config."
+        elif self.cruise_xml == self._initial_xml:
+            print "No changes done. Not uploading config."
+        elif 'url' not in self._config:
+            print "No Go server configured. Not uploading config."
         else:
-            raise ValueError('Pipeline group %s not found among %s' %
-                             (pipeline.pipeline_group, ", ".join(found_groups)))
+            url = self._config['url'] + '/go/admin/restful/configuration/file/POST/xml'
+            data = {'xmlFile': self.cruise_xml, 'md5': self._cruise_config_md5}
+            response = requests.post(url, data)
+            if response.status_code != 200:
+                print response.status_code
+                print response.text
+                sys.exit(1)
 
 
 class Pipeline(object):
@@ -89,9 +107,9 @@ class Pipeline(object):
 
     def load_structure(self, settings_file):
         structure = yaml.load(settings_file)
-        if 'template' in structure:
-            template = Template(open(structure['template']['path']).read())
-            structure = yaml.load(template.render(structure['template']['parameters']))
+        if 'pattern' in structure:
+            template = Template(open(structure['pattern']['path']).read())
+            structure = yaml.load(template.render(structure['pattern']['parameters']))
         self.pipeline_group = structure['pipelines']['group']
         self.structure = structure['pipeline']
 
@@ -194,12 +212,19 @@ def main(args=sys.argv):
         type=argparse.FileType('w'),
         help="Copy of new GoCD configuration XML file."
     )
+    argparser.add_argument(
+        "-n", "--dry-run",
+        type=bool,
+        help="Don't actually update the Go server."
+    )
+
     pargs = argparser.parse_args(args[1:])
 
-    go = GoProxy(pargs.config)
+    go = GoProxy(pargs.config, pargs.dry_run)
 
     if pargs.settings is not None:
         go.add_pipeline(Pipeline(pargs.settings))
+        go.upload_config()
 
     if pargs.dump is not None:
         envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'

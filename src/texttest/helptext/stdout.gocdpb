@@ -1,4 +1,4 @@
-usage: goplbld.py [-h] [-s SETTINGS] [-c CONFIG] [-d DUMP]
+usage: goplbld.py [-h] [-s SETTINGS] [-c CONFIG] [-d DUMP] [-n DRY_RUN]
 
 Add pipeline to Go CD server.
 
@@ -9,3 +9,5 @@ optional arguments:
   -c CONFIG, --config CONFIG
                         Yaml file with configuration.
   -d DUMP, --dump DUMP  Copy of new GoCD configuration XML file.
+  -n DRY_RUN, --dry-run DRY_RUN
+                        Don't actually update the Go server.

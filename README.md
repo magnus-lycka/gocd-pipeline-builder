@@ -17,9 +17,10 @@ What works?
    - stages with name
    - jobs with name
    - exec tasks with command, workingdir and arg-list.
-   - Use go-templates
+   - use go-templates
    - environment and parameters
  * Producing XML with the new pipeline
+ * Upload configuration change to Go server
 
 
 Obviously missing
@@ -38,11 +39,10 @@ Obviously missing
 
 Plan for now...
 ---------------
- * Handle go-server authentication.
- * Upload configuration change to Go server
- * Pipeline material.
  * Add pipeline in environment
  * Filters in git material
+ * Pipeline material.
+ * Handle go-server authentication.
  * Hook in new pipeline in downstream pipeline?
 
 
@@ -70,9 +70,9 @@ In your $TEXTTEST_HOME folder create a softlink like this:
 In your texttest personal config file (defaults to ~/.texttest/config, create
 it if it doesn't exist), add the following to your checkout locations:
 
-	[checkout_location]
-	gocd-pipeline-builder:/whereever/your/clones/live/gocd-pipeline-builder
-	[end]
+    [checkout_location]
+    gocd-pipeline-builder:/whereever/your/clones/live/gocd-pipeline-builder
+    [end]
 
 start texttest:
 

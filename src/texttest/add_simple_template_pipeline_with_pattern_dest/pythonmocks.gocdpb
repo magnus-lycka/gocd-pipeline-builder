@@ -1,0 +1,81 @@
+<-PYT:import requests
+<-PYT:requests.get('http://localhost:8153/go/admin/restful/configuration/file/GET/xml')
+->RET:Instance('Response(object)', 'response1')
+<-PYT:response1.headers
+->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
+<-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
+->RET:'270394208de500d5faee3c7a3e464569'
+<-PYT:response1.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="75">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
+  <pipelines group="defaultGroup">
+    <pipeline name="build-go-pipeline-builder">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>test.sh</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+
+'''
+<-PYT:requests.post('http://localhost:8153/go/admin/restful/configuration/file/POST/xml', {'md5': '270394208de500d5faee3c7a3e464569',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="75" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
+  <pipelines group="defaultGroup">
+    <pipeline name="build-go-pipeline-builder">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>test.sh</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="gocd2">
+      <materials>
+        <git dest="gottis" url="https://github.com/magnus-lycka/gocd.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash" workingdir="gocd">
+                <arg>-c</arg>
+                <arg>echo $SHELL $GO_PIPELINE_LABEL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+'''})
+->RET:Instance('Response', 'response2')
+<-PYT:response2.status_code
+->RET:200

@@ -13,16 +13,16 @@ dump_config
 # Add a simple pipeline without using builder template.
 add_simple_pipeline
 
-# Add a pipeline for Go template without using builder template.
+# Add a pipeline for Go template without using builder pattern.
 add_go_template_pipeline
 
-# Add a simple pipeline using builder template with implicit destination directory.
-add_simple_template_pipeline
+# Add a simple pipeline using builder pattern with implicit destination directory.
+add_simple_pipeline_with_pattern
 
-# Add a simple pipeline using builder template with explicit destination directory.
-add_simple_template_pipeline_dest
+# Add a simple pipeline using builder pattern with explicit destination directory.
+add_simple_template_pipeline_with_pattern_dest
 
-# Add a simple pipeline using builder template.
+# Add a simple pipeline using builder pattern.
 # Don't create a destination directory.
-add_simple_template_pipeline_no_dest
+add_simple_template_pipeline_with_pattern_no_dest
 
