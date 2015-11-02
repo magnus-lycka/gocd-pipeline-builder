@@ -56,6 +56,78 @@ GoCD has the concepts of pipeline templates and parameters.
 If we use this, there is not so much that we need to define
 outside the normal GoCD configuration.
 
+GoCD Pipeline Builder Setting Files
+-----------------------------------
+
+To create a GoCD pipeline with the pipeline builder,
+you use a YAML file which closely resembles the XML
+format you see in the GoCD XML config. Besides the
+`pipeline` section, you also need to supply some other
+information, such as which pipeline group and which
+environment to place the pipeline in.
+
+Example below:
+
+    pipelines:
+      group: defaultGroup
+
+    pipeline:
+      name: gocd
+      materials:
+        - git:
+            url: https://github.com/magnus-lycka/gocd.git
+            dest: gocd
+      template: my_template
+      params:
+        - PARAM_NAME: 17
+      environmentvariables:
+        - ENV_NAME: 42
+
+    environment: windows
+
+Use `goplbld -s` to pass the settings file to the builder.
+
+GoCD Pipeline Builder Patterns
+------------------------------
+
+The pipeline builder has a concept called `patterns`.
+We could have called it `templates`, but GoCD since has
+something else which is called `pipeline templates`,
+we call these things `patterns`.
+
+A `pattern` is a Jinja2 template, see http://jinja.pocoo.org/
+
+With a pipeline builder `pattern`, we can avoid a lot
+of repetition. For instance, if we have several pipelines
+like the one above, that only differ on name, we can have
+settings file like this:
+
+    pattern:
+      path: ./simple_pipeline_pattern.yaml
+      parameters:
+        name: gocd
+        url: https://github.com/magnus-lycka/gocd.git
+
+The pattern file `./simple_pipeline_pattern.yaml` can
+look like this:
+
+    pipelines:
+      group: defaultGroup
+
+    pipeline:
+      name: {{ name }}
+      materials:
+        - git:
+            url: {{ https://github.com/magnus-lycka/gocd.git }}
+            dest: {{ name }}
+      template: my_template
+      params:
+        - PARAM_NAME: 17
+      environmentvariables:
+        - ENV_NAME: 42
+
+    environment: windows
+
 
 How to run the self-tests
 -------------------------
