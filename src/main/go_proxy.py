@@ -39,11 +39,13 @@ class GoProxy(object):
         group_name = pipeline.pipeline_group
         pipeline_groups = {pipelines.get('group'): pipelines
                            for pipelines in self.tree.findall('pipelines')}
-        try:
-            pipeline.append_self(pipeline_groups[group_name])
-        except KeyError:
+
+        if not pipeline_groups.has_key(group_name):
             raise KeyError('Pipeline group %s not found among %s'
-                           % (group_name, pipeline_groups))
+                       % (group_name, pipeline_groups))
+        else:
+            pipeline.append_self(pipeline_groups[group_name])
+
 
     def upload_config(self):
         if self.dry_run:
