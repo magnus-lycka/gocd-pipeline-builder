@@ -3,9 +3,9 @@
 
 import sys
 import argparse
-
 from go_proxy import GoProxy
 from model import Pipeline
+
 
 def main(args=sys.argv):
     fail = 0

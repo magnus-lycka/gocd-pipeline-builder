@@ -1,7 +1,7 @@
 import unittest
 from xml.etree import ElementTree
 
-from goplbld import CruiseTree
+from go_proxy import CruiseTree
 
 
 class TestCruiseTree(unittest.TestCase):
@@ -14,18 +14,20 @@ class TestCruiseTree(unittest.TestCase):
     def test_tree_to_xml(self):
         text = ('<?xml version="1.0"?>\n'
                 '<cruise>\n'
-                '    <pipelines group="x" />\n'
+                '  <pipelines group="x" />\n'
                 '</cruise>')
         tree = CruiseTree.fromstring(text)
         pipeline_group = tree.find('pipelines')
         pipeline = ElementTree.SubElement(pipeline_group, 'pipeline')
         pipeline.set('name', 'y')
         expected = ('<cruise>\n'
-                    '    <pipelines group="x"><pipeline name="y" /></pipelines>\n'
-                    '</cruise>')
+                    '  <pipelines group="x">\n'
+                    '    <pipeline name="y" />\n'
+                    '  </pipelines>\n'
+                    '</cruise>\n')
         actual = tree.tostring()
 
-        self.assertEqual(actual, expected)
+        self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@ from xml.etree import ElementTree
 import yaml
 from jinja2 import Template
 
+
 class Pipeline(object):
     def __init__(self, settings_file):
         self.pipeline_group = None
@@ -17,7 +18,8 @@ class Pipeline(object):
         structure = yaml.load(settings_file)
         if 'pattern' in structure:
             template = Template(open(structure['pattern']['path']).read())
-            structure = yaml.load(template.render(structure['pattern']['parameters']))
+            structure = yaml.load(
+                template.render(structure['pattern']['parameters']))
         self.pipeline_group = structure['pipelines']['group']
         self.structure = structure['pipeline']
 
@@ -46,7 +48,8 @@ class Pipeline(object):
 
     def set_environmentvariables(self):
         if 'environmentvariables' in self.structure:
-            env_elm = ElementTree.SubElement(self.element, 'environmentvariables')
+            env_elm = ElementTree.SubElement(self.element,
+                                             'environmentvariables')
             for env in self.structure['environmentvariables']:
                 for key, value in env.items():
                     variable_elm = ElementTree.SubElement(env_elm, 'variable')
