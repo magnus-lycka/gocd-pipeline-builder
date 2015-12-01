@@ -21,25 +21,25 @@ What works?
    - environment and parameters
  * Producing XML with the new pipeline
  * Upload configuration change to Go server
+ * Add pipeline in environment
 
 
 Obviously missing
 -----------------
  * Other material than git
+ * Define git branch
  * filter/ignore in git material
  * Update existing pipeline
  * Git hooks
  * Fetchartifact tasks
  * Define artifacts
- * Add pipeline in environment
  * Request resource in job
  * Hook in new pipeline in downstream pipeline?
- * Replace existing pipeline?
 
 
 Plan for now...
 ---------------
- * Add pipeline in environment
+ * Git branch
  * Filters in git material
  * Pipeline material.
  * Handle go-server authentication.

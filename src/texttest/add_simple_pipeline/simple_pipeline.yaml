@@ -20,3 +20,5 @@ pipeline:
                     arg:
                       - -c
                       - echo $SHELL $GO_PIPELINE_LABEL
+
+environment: blue_environment

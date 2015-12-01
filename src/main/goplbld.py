@@ -75,8 +75,10 @@ class GoProxy(object):
         group_name = pipeline.pipeline_group
         pipeline_groups = {pipelines.get('group'): pipelines
                            for pipelines in self.tree.findall('pipelines')}
+        pipeline_group = pipeline_groups[group_name]
+        environment_list = self.tree.findall('environments/environment')
         try:
-            pipeline.append_self(pipeline_groups[group_name])
+            pipeline.append_self(pipeline_group, environment_list)
         except KeyError:
             raise KeyError('Pipeline group %s not found among %s'
                            % (group_name, pipeline_groups))
@@ -112,6 +114,7 @@ class Pipeline(object):
         self.stage = None
         self.job = None
         self.tasks = None
+        self.environment = None
         self.load_structure(settings_file)
 
     def load_structure(self, settings_file):
@@ -121,8 +124,9 @@ class Pipeline(object):
             structure = yaml.load(template.render(structure['pattern']['parameters']))
         self.pipeline_group = structure['pipelines']['group']
         self.structure = structure['pipeline']
+        self.environment = structure.get('environment')
 
-    def append_self(self, parent):
+    def append_self(self, parent, environment_list):
         self.element = ElementTree.SubElement(parent, 'pipeline')
         self.set_name()
         self.set_params()
@@ -132,6 +136,7 @@ class Pipeline(object):
             self.element.set('template', self.structure['template'])
         else:
             self.set_stages()
+        self.place_in_environment(environment_list)
 
     def set_name(self):
         self.element.set('name', self.structure['name'])
@@ -201,6 +206,19 @@ class Pipeline(object):
                     arg.text = argument
             else:
                 task_elm.set(key, value)
+
+    def place_in_environment(self, environment_list):
+        if self.environment:
+            for environment in environment_list:
+                if environment.get('name') == self.environment:
+                    pipelines = environment.find('pipelines')
+                    if pipelines is None:
+                        pipelines = ElementTree.SubElement(environment, 'pipelines')
+                    pipeline = ElementTree.SubElement(pipelines, 'pipeline')
+                    pipeline.set('name', self.structure['name'])
+                    break
+            else:  # No break
+                print "Environment %s not found in config" % self.environment
 
 
 def main(args=sys.argv):

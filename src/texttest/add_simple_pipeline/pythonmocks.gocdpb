@@ -4,7 +4,7 @@
 <-PYT:response1.headers
 ->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
 <-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
-->RET:'270394208de500d5faee3c7a3e464569'
+->RET:'7f770005183292a1f2f011c0e834cf41'
 <-PYT:response1.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="75">
@@ -27,13 +27,20 @@
       </stage>
     </pipeline>
   </pipelines>
+  <environments>
+    <environment name="blue_environment">
+      <pipelines>
+        <pipeline name="build-go-pipeline-builder" />
+      </pipelines>
+    </environment>
+  </environments>
   <agents>
     <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 
 '''
-<-PYT:requests.post('http://localhost:8153/go/admin/restful/configuration/file/POST/xml', {'md5': '270394208de500d5faee3c7a3e464569',
+<-PYT:requests.post('http://localhost:8153/go/admin/restful/configuration/file/POST/xml', {'md5': '7f770005183292a1f2f011c0e834cf41',
  'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="75" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
   <pipelines group="defaultGroup">
@@ -71,6 +78,14 @@
       </stage>
     </pipeline>
   </pipelines>
+  <environments>
+    <environment name="blue_environment">
+      <pipelines>
+        <pipeline name="build-go-pipeline-builder" />
+        <pipeline name="gocd" />
+      </pipelines>
+    </environment>
+  </environments>
   <agents>
     <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>

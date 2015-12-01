@@ -14,3 +14,5 @@ pipeline:
   environmentvariables:
     - ENV_NAME1: env value 1
     - ENV_NAME2: env value 2
+
+environment: blue_environment

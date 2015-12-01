@@ -4,7 +4,7 @@
 <-PYT:response1.headers
 ->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
 <-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
-->RET:'270394208de500d5faee3c7a3e464569'
+->RET:'7f770005183292a1f2f011c0e834cf41'
 <-PYT:response1.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="75">
@@ -27,6 +27,9 @@
       </stage>
     </pipeline>
   </pipelines>
+  <environments>
+    <environment name="blue_environment" />
+  </environments>
   <agents>
     <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>

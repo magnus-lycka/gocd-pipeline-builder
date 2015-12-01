@@ -36,6 +36,13 @@
       </stage>
     </pipeline>
   </templates>
+  <environments>
+    <environment name="blue_environment">
+      <pipelines>
+        <pipeline name="gocd" />
+      </pipelines>
+    </environment>
+  </environments>
   <agents>
     <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>

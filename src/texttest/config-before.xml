@@ -19,6 +19,9 @@
       </stage>
     </pipeline>
   </pipelines>
+  <environments>
+    <environment name="blue_environment" />
+  </environments>
   <agents>
     <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
