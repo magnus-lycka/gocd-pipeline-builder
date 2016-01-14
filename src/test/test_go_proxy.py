@@ -1,7 +1,7 @@
 import unittest
 from xml.etree import ElementTree
 
-from go_proxy import CruiseTree
+from model import CruiseTree
 
 
 class TestCruiseTree(unittest.TestCase):

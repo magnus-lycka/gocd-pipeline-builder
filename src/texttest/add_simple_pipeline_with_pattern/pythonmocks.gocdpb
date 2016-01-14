@@ -4,22 +4,38 @@
 <-PYT:response1.headers
 ->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
 <-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
-->RET:'270394208de500d5faee3c7a3e464569'
+->RET:'e1a7b3b73976d93c44cc9fe22255c460'
 <-PYT:response1.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="75">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
-  <pipelines group="defaultGroup">
-    <pipeline name="build-go-pipeline-builder">
+  <pipelines group="first">
+    <pipeline name="new_pipeline" isLocked="true">
       <materials>
-        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <git url="git@github.com:sample_repo/example.git" dest="dest" />
       </materials>
       <stage name="defaultStage">
         <jobs>
-          <job name="defaultJob">
+          <job name="defaultJob" timeout="0">
             <tasks>
-              <exec command="/bin/bash">
-                <arg>test.sh</arg>
+              <exec command="ls">
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="gocd2" isLocked="true">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd.git" dest="gocd2" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob" timeout="0">
+            <tasks>
+              <exec command="ls">
+                <runif status="passed" />
               </exec>
             </tasks>
           </job>
@@ -27,50 +43,28 @@
       </stage>
     </pipeline>
   </pipelines>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="gocd2" />
+      </pipelines>
+    </environment>
+  </environments>
   <agents>
     <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 
 '''
-<-PYT:requests.post('http://localhost:8153/go/admin/restful/configuration/file/POST/xml', {'md5': '270394208de500d5faee3c7a3e464569',
- 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="75" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+<-PYT:requests.post('http://localhost:8153/go/admin/restful/configuration/file/POST/xml', data={'md5': 'e1a7b3b73976d93c44cc9fe22255c460',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="76" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
-  <pipelines group="defaultGroup">
-    <pipeline name="build-go-pipeline-builder">
-      <materials>
-        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
-      </materials>
-      <stage name="defaultStage">
-        <jobs>
-          <job name="defaultJob">
-            <tasks>
-              <exec command="/bin/bash">
-                <arg>test.sh</arg>
-              </exec>
-            </tasks>
-          </job>
-        </jobs>
-      </stage>
-    </pipeline>
-    <pipeline name="gocd2">
-      <materials>
-        <git dest="gocd2" url="https://github.com/magnus-lycka/gocd.git" />
-      </materials>
-      <stage name="defaultStage">
-        <jobs>
-          <job name="defaultJob">
-            <tasks>
-              <exec command="/bin/bash" workingdir="gocd">
-                <arg>-c</arg>
-                <arg>echo $SHELL $GO_PIPELINE_LABEL</arg>
-              </exec>
-            </tasks>
-          </job>
-        </jobs>
-      </stage>
-    </pipeline>
+  <pipelines group="first">
   </pipelines>
+  <environments>
+    <environment name="green">
+    </environment>
+  </environments>
   <agents>
     <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
@@ -79,3 +73,121 @@
 ->RET:Instance('Response', 'response2')
 <-PYT:response2.status_code
 ->RET:200
+<-PYT:requests.post('http://localhost:8153/go/api/admin/pipelines', data='{"pipeline": {"enable_pipeline_locking": true, "label_template": "${COUNT}", "materials": [{"attributes": {"name": null, "url": "https://github.com/magnus-lycka/gocd.git", "destination": "gocd2", "submodule_folder": null, "filter": null, "auto_update": true, "branch": "master"}, "type": "git"}], "template": null, "stages": [{"clean_working_directory": false, "name": "defaultStage", "never_cleanup_artifacts": false, "fetch_materials": true, "environment_variables": [], "approval": {"type": "success", "authorization": {"users": [], "roles": []}}, "jobs": [{"run_instance_count": null, "tasks": [{"attributes": {"working_directory": null, "command": "ls", "run_if": ["passed"]}, "type": "exec"}], "name": "defaultJob", "timeout": 0, "environment_variables": [], "resources": []}]}], "name": "gocd2"}, "group": "first"}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
+->RET:Instance('Response', 'response3')
+<-PYT:response3.status_code
+->RET:200
+<-PYT:requests.get('http://localhost:8153/go/admin/restful/configuration/file/GET/xml')
+->RET:Instance('Response', 'response4')
+<-PYT:response4.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict2')
+<-PYT:caseinsensitivedict2.__getitem__('x-cruise-config-md5')
+->RET:'fd9a6c73103880fcae9916d5fa4f82d9'
+<-PYT:response4.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
+  <pipelines group="first">
+    <pipeline name="gocd2" isLocked="true">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd.git" dest="gocd2" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob" timeout="0">
+            <tasks>
+              <exec command="ls">
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <environments>
+    <environment name="green" />
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+
+'''
+<-PYT:requests.post('http://localhost:8153/go/admin/restful/configuration/file/POST/xml', data={'md5': 'fd9a6c73103880fcae9916d5fa4f82d9',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="76" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
+  <pipelines group="first">
+    <pipeline isLocked="true" name="gocd2">
+      <materials>
+        <git dest="gocd2" url="https://github.com/magnus-lycka/gocd.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob" timeout="0">
+            <tasks>
+              <exec command="ls">
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="gocd2" />
+      </pipelines>
+    </environment>
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+'''})
+->RET:Instance('Response', 'response5')
+<-PYT:response5.status_code
+->RET:200
+<-PYT:requests.get('http://localhost:8153/go/admin/restful/configuration/file/GET/xml')
+->RET:Instance('Response', 'response6')
+<-PYT:response6.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict3')
+<-PYT:caseinsensitivedict3.__getitem__('x-cruise-config-md5')
+->RET:'ea0fe7d2e936d8a8545bca39e823addc'
+<-PYT:response6.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
+  <pipelines group="first">
+    <pipeline name="gocd2" isLocked="true">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd.git" dest="gocd2" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob" timeout="0">
+            <tasks>
+              <exec command="ls">
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="gocd2" />
+      </pipelines>
+    </environment>
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+
+'''

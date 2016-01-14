@@ -4,22 +4,22 @@
 <-PYT:response1.headers
 ->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
 <-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
-->RET:'270394208de500d5faee3c7a3e464569'
+->RET:'fd9a6c73103880fcae9916d5fa4f82d9'
 <-PYT:response1.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="75">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
-  <pipelines group="defaultGroup">
-    <pipeline name="build-go-pipeline-builder">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="92beffdd-587a-443e-9309-783d29b65eb0" />
+  <pipelines group="first">
+    <pipeline name="new_pipeline" isLocked="true">
       <materials>
-        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <git url="git@github.com:sample_repo/example.git" dest="dest" />
       </materials>
       <stage name="defaultStage">
         <jobs>
-          <job name="defaultJob">
+          <job name="defaultJob" timeout="0">
             <tasks>
-              <exec command="/bin/bash">
-                <arg>test.sh</arg>
+              <exec command="ls">
+                <runif status="passed" />
               </exec>
             </tasks>
           </job>
@@ -27,43 +27,29 @@
       </stage>
     </pipeline>
   </pipelines>
+  <environments>
+    <environment name="green" />
+  </environments>
   <agents>
-    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.178" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
   </agents>
 </cruise>
 
 '''
-<-PYT:requests.post('http://localhost:8153/go/admin/restful/configuration/file/POST/xml', {'md5': '270394208de500d5faee3c7a3e464569',
- 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="75" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
-  <pipelines group="defaultGroup">
-    <pipeline name="build-go-pipeline-builder">
+<-PYT:requests.post('http://localhost:8153/go/admin/restful/configuration/file/POST/xml', data={'md5': 'fd9a6c73103880fcae9916d5fa4f82d9',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="76" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="92beffdd-587a-443e-9309-783d29b65eb0" />
+  <pipelines group="first">
+    <pipeline isLocked="true" name="new_pipeline">
       <materials>
-        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <git dest="dest" url="git@github.com:sample_repo/example.git" />
       </materials>
       <stage name="defaultStage">
         <jobs>
-          <job name="defaultJob">
+          <job name="defaultJob" timeout="0">
             <tasks>
-              <exec command="/bin/bash">
-                <arg>test.sh</arg>
-              </exec>
-            </tasks>
-          </job>
-        </jobs>
-      </stage>
-    </pipeline>
-    <pipeline name="build-go-pipeline-builder">
-      <materials>
-        <git dest="gocd" url="https://github.com/magnus-lycka/gocd.git" />
-      </materials>
-      <stage name="defaultStage">
-        <jobs>
-          <job name="defaultJob">
-            <tasks>
-              <exec command="/bin/bash" workingdir="gocd">
-                <arg>-c</arg>
-                <arg>echo $SHELL $GO_PIPELINE_LABEL</arg>
+              <exec command="ls">
+                <runif status="passed" />
               </exec>
             </tasks>
           </job>
@@ -71,47 +57,124 @@
       </stage>
     </pipeline>
   </pipelines>
+  <environments>
+    <environment name="green">
+
+    </environment>
+  </environments>
   <agents>
-    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.178" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
   </agents>
 </cruise>
 '''})
 ->RET:Instance('Response', 'response2')
 <-PYT:response2.status_code
-->RET:409
-<-PYT:response2.text
-->RET:u'{ "result": "You have defined multiple pipelines called \\\'build-go-pipeline-builder\\\'. Pipeline names must be unique.","originalContent": "<cruise xmlns:xsi=\\"http:\\/\\/www.w3.org\\/2001\\/XMLSchema-instance\\" schemaVersion=\\"75\\" xsi:noNamespaceSchemaLocation=\\"cruise-config.xsd\\">\\n  <server artifactsdir=\\"artifacts\\" commandRepositoryLocation=\\"default\\" serverId=\\"UUID\\" \\/>\\n  <pipelines group=\\"defaultGroup\\">\\n    <pipeline name=\\"build-go-pipeline-builder\\">\\n      <materials>\\n        <git url=\\"https:\\/\\/github.com\\/magnus-lycka\\/gocd-pipeline-builder.git\\" \\/>\\n      <\\/materials>\\n      <stage name=\\"defaultStage\\">\\n        <jobs>\\n          <job name=\\"defaultJob\\">\\n            <tasks>\\n              <exec command=\\"\\/bin\\/bash\\">\\n                <arg>test.sh<\\/arg>\\n              <\\/exec>\\n            <\\/tasks>\\n          <\\/job>\\n        <\\/jobs>\\n      <\\/stage>\\n    <\\/pipeline>\\n    <pipeline name=\\"build-go-pipeline-builder\\">\\n      <materials>\\n        <git dest=\\"gocd\\" url=\\"https:\\/\\/github.com\\/magnus-lycka\\/gocd.git\\" \\/>\\n      <\\/materials>\\n      <stage name=\\"defaultStage\\">\\n        <jobs>\\n          <job name=\\"defaultJob\\">\\n            <tasks>\\n              <exec command=\\"\\/bin\\/bash\\" workingdir=\\"gocd\\">\\n                <arg>-c<\\/arg>\\n                <arg>echo $SHELL $GO_PIPELINE_LABEL<\\/arg>\\n              <\\/exec>\\n            <\\/tasks>\\n          <\\/job>\\n        <\\/jobs>\\n      <\\/stage>\\n    <\\/pipeline>\\n  <\\/pipelines>\\n  <agents>\\n    <agent hostname=\\"HOST\\" ipaddress=\\"N.N.N.N\\" uuid=\\"UUID\\" \\/>\\n  <\\/agents>\\n<\\/cruise>\\n" }'
-<-PYT:requests.get('http://localhost:8153/go/admin/restful/configuration/file/GET/xml')
+->RET:200
+<-PYT:requests.post('http://localhost:8153/go/api/admin/pipelines', data='{"pipeline": {"enable_pipeline_locking": true, "label_template": "${COUNT}", "materials": [{"attributes": {"name": null, "url": "git@github.com:sample_repo/example.git", "destination": "dest", "submodule_folder": null, "filter": null, "auto_update": true, "branch": "master"}, "type": "git"}], "template": null, "stages": [{"clean_working_directory": false, "name": "defaultStage", "never_cleanup_artifacts": false, "fetch_materials": true, "environment_variables": [], "approval": {"type": "success", "authorization": {"users": [], "roles": []}}, "jobs": [{"run_instance_count": null, "tasks": [{"attributes": {"working_directory": null, "command": "ls", "run_if": ["passed"]}, "type": "exec"}], "name": "defaultJob", "timeout": 0, "environment_variables": [], "resources": []}]}], "name": "new_pipeline"}, "group": "first"}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
 ->RET:Instance('Response', 'response3')
-<-PYT:response3.headers
-->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict2')
-<-PYT:caseinsensitivedict2.__getitem__('x-cruise-config-md5')
-->RET:'270394208de500d5faee3c7a3e464569'
+<-PYT:response3.status_code
+->RET:422
 <-PYT:response3.text
-->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="75">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
-  <pipelines group="defaultGroup">
-    <pipeline name="build-go-pipeline-builder">
-      <materials>
-        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
-      </materials>
-      <stage name="defaultStage">
-        <jobs>
-          <job name="defaultJob">
-            <tasks>
-              <exec command="/bin/bash">
-                <arg>test.sh</arg>
-              </exec>
-            </tasks>
-          </job>
-        </jobs>
-      </stage>
-    </pipeline>
-  </pipelines>
-  <agents>
-    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
-  </agents>
-</cruise>
+->RET:u'''{
+  "message": "Validations failed for pipeline \'new_pipeline\'. Please correct and resubmit.",
+  "data": {
+    "errors": {
+      "name": [
+        "You have defined multiple pipelines named \'new_pipeline\'. Pipeline names must be unique."
+      ]
+    },
+    "_links": {
+      "self": {
+        "href": "http://localhost:8153/go/api/admin/pipelines/new_pipeline"
+      },
+      "doc": {
+        "href": "http://api.go.cd/#pipeline_config"
+      },
+      "find": {
+        "href": "http://localhost:8153/go/api/admin/pipelines/:name"
+      }
+    },
+    "label_template": "${COUNT}",
+    "enable_pipeline_locking": true,
+    "name": "new_pipeline",
+    "template": null,
+    "parameters": [
 
+    ],
+    "environment_variables": [
+
+    ],
+    "materials": [
+      {
+        "type": "git",
+        "attributes": {
+          "url": "git@github.com:sample_repo/example.git",
+          "destination": "dest",
+          "filter": null,
+          "name": null,
+          "auto_update": true,
+          "branch": "master",
+          "submodule_folder": null
+        }
+      }
+    ],
+    "stages": [
+      {
+        "name": "defaultStage",
+        "fetch_materials": true,
+        "clean_working_directory": false,
+        "never_cleanup_artifacts": false,
+        "approval": {
+          "type": "success",
+          "authorization": {
+            "roles": [
+
+            ],
+            "users": [
+
+            ]
+          }
+        },
+        "environment_variables": [
+
+        ],
+        "jobs": [
+          {
+            "name": "defaultJob",
+            "run_instance_count": null,
+            "timeout": "never",
+            "environment_variables": [
+
+            ],
+            "resources": [
+
+            ],
+            "tasks": [
+              {
+                "type": "exec",
+                "attributes": {
+                  "run_if": [
+                    "passed"
+                  ],
+                  "on_cancel": null,
+                  "command": "ls",
+                  "working_directory": null
+                }
+              }
+            ],
+            "tabs": [
+
+            ],
+            "artifacts": [
+
+            ],
+            "properties": null
+          }
+        ]
+      }
+    ],
+    "tracking_tool": null,
+    "timer": null
+  }
+}
 '''

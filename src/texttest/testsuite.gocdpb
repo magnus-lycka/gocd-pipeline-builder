@@ -1,14 +1,9 @@
 # Dump go-server config XML from a local server.
 # (Run --dump without changing anything first.)
-# dump_config_local_server (automatically commented due to no test directory being found)
 dump_config_local_server
 
 # runs the script with --help to check the helpful documentation is correct
 helptext
-
-# Dump go-server config XML.
-# (Run --dump without changing anything first.)
-dump_config
 
 # Add a simple pipeline without using builder template.
 add_simple_pipeline

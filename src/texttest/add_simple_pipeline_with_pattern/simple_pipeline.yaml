@@ -1,5 +1,4 @@
-pattern:
-  path: ./simple_pipeline_pattern.yaml
-  parameters:
-    name: gocd2
-    url: https://github.com/magnus-lycka/gocd.git
+path: ./simple_pipeline_pattern.json
+parameters:
+  name: gocd2
+  url: https://github.com/magnus-lycka/gocd.git

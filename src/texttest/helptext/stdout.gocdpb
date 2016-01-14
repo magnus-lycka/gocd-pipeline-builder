@@ -1,13 +1,18 @@
-usage: goplbld.py [-h] [-s SETTINGS] [-c CONFIG] [-d DUMP] [-n DRY_RUN]
+usage: goplbld.py [-h] [-s SETTINGS] [-c CONFIG]
+                  [--set-test-config SET_TEST_CONFIG]
+                  [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP]
 
 Add pipeline to Go CD server.
 
 optional arguments:
   -h, --help            show this help message and exit
   -s SETTINGS, --settings SETTINGS
-                        Yaml file with settings for GoCD pipeline.
+                        Yaml or Json file with settings for GoCD pipeline.
   -c CONFIG, --config CONFIG
                         Yaml file with configuration.
+  --set-test-config SET_TEST_CONFIG
+                        Set some sections in config first. (For test setup.)
+  --dump-test-config DUMP_TEST_CONFIG
+                        Copy of some sections of new GoCD configuration XML
+                        file.
   -d DUMP, --dump DUMP  Copy of new GoCD configuration XML file.
-  -n DRY_RUN, --dry-run DRY_RUN
-                        Don't actually update the Go server.

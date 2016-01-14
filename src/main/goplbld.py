@@ -1,20 +1,19 @@
 #!/usr/bin/python -tt
 # coding:utf-8
-
 import sys
 import argparse
 from go_proxy import GoProxy
-from model import Pipeline
+from model import get_settings
 
 
 def main(args=sys.argv):
-    fail = 0
     argparser = argparse.ArgumentParser(
-        description="Add pipeline to Go CD server.")
+        description="Add pipeline to Go CD server."
+    )
     argparser.add_argument(
         "-s", "--settings",
         type=argparse.FileType('r'),
-        help="Yaml file with settings for GoCD pipeline."
+        help="Yaml or Json file with settings for GoCD pipeline."
     )
     argparser.add_argument(
         "-c", "--config",
@@ -22,33 +21,41 @@ def main(args=sys.argv):
         help="Yaml file with configuration."
     )
     argparser.add_argument(
+        "--set-test-config",
+        type=argparse.FileType('r'),
+        help="Set some sections in config first. (For test setup.)"
+    )
+    argparser.add_argument(
+        "--dump-test-config",
+        type=argparse.FileType('w'),
+        help="Copy of some sections of new GoCD configuration XML file."
+    )
+    argparser.add_argument(
         "-d", "--dump",
         type=argparse.FileType('w'),
         help="Copy of new GoCD configuration XML file."
     )
-    argparser.add_argument(
-        "-n", "--dry-run",
-        type=bool,
-        help="Don't actually update the Go server."
-    )
 
     pargs = argparser.parse_args(args[1:])
 
-    go = GoProxy(pargs.config, pargs.dry_run)
+    go = GoProxy(pargs.config)
+
+    if pargs.set_test_config is not None:
+        go.set_test_settings_xml(pargs.set_test_config)
+        go.upload_config()
 
     if pargs.settings is not None:
-        go.add_pipeline(Pipeline(pargs.settings))
-        fail = go.upload_config()
+        go.add_settings(get_settings(pargs.settings))
 
-    if fail:
-        # Reload config
-        go.init()
+    go.init()
 
     if pargs.dump is not None:
         envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'
         pargs.dump.write(envelope % go.cruise_xml)
 
-    sys.exit(fail)
+    if pargs.dump_test_config is not None:
+        envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'
+        pargs.dump_test_config.write(envelope % go.cruise_xml_subset)
 
 
 if __name__ == '__main__':

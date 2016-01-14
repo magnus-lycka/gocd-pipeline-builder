@@ -1,0 +1,28 @@
+{
+  "environment": "green",
+  "pipelines": [
+    {
+      "group": "first",
+      "pipeline": {
+        "label_template": "${COUNT}",
+        "enable_pipeline_locking": true,
+        "name": "new_pipeline",
+        "template": "my_template",
+        "materials": [
+          {
+            "type": "git",
+            "attributes": {
+              "url": "git@github.com:sample_repo/example.git",
+              "destination": "dest",
+              "filter": null,
+              "name": null,
+              "auto_update": true,
+              "branch": "master",
+              "submodule_folder": null
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

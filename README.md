@@ -1,49 +1,62 @@
 GO CD Pipeline Builder
 =====================
 
-The gocd-pipeline-builder builds a GoCD pipeline automagically when you push
-a new git repository to your git server.
+The gocd-pipeline-builder builds a GoCD pipeline automagically
+when you push a new git repository to your git server.
 
 This is still in alpha state. Don't expect it to be useful.
 Don't let it near your production Go-server if you try it out!
+
+Plans for Go 15.3
+-----------------
+
+From Go version 15.3, there is a REST API for pipeline config,
+see https://api.go.cd/current/#pipeline-config
+
+This means that we can remove a lot of current functionality
+from the pipeline-builder, and avoid adding a lot of planned
+features. We simply use the json format stated in the REST API
+and push interpretation and error handling to the Go server.
+
+The new approach is to use this API and not support older versions of Go.
+
+The pipeline-builder will mainly consist of the following parts:
+- Wrapping the REST calls and interpretation of results.
+- Integrating this with git hooks.
+- Provide a templating mechanism (pattern files) using jinja2,
+  so that we can avoid duplicating common behaviour in the pipelines.
+- Manage dependencies, e.g. state downstream pipelines that
+  should add an upstream pipeline as a dependency.
+
+The pattern file should then be a json file of the format described
+in https://api.go.cd/current/#create-a-pipeline
+
+When the program is run, we should first get the pipeline groups,
+see https://api.go.cd/current/#pipeline-groups
+and see if a pipeline with the same name exists.
+If the pipeline name is not in the configuration, we should
+create a new pipeline, see https://api.go.cd/current/#create-a-pipeline
+If the pipeline name is in the configuration, and it's in the
+pipeline group stated in the given input, we should edit the
+pipeline config, see https://api.go.cd/current/#edit-pipeline-config
+If the pipeline exists in a different pipeline group, we should exit
+with an error message.
 
 
 What works?
 -----------
  * Fetch XML config from go-server.
- * Updating XML config with a simple pipeline with just one git repo
- * Creating a new pipeline in an existing pipeline group, limited to
-   - git material (url & destination directory)
-   - stages with name
-   - jobs with name
-   - exec tasks with command, workingdir and arg-list.
-   - use go-templates
-   - environment and parameters
- * Producing XML with the new pipeline
- * Upload configuration change to Go server
+ * Updating XML config with a pipeline using the Go Server 15.3 REST API.
+ * Creating a new pipeline in an existing pipeline group.
  * Add pipeline in environment
 
 
 Obviously missing
 -----------------
- * Other material than git
- * Define git branch
- * filter/ignore in git material
  * Update existing pipeline
  * Git hooks
- * Fetchartifact tasks
- * Define artifacts
- * Request resource in job
- * Hook in new pipeline in downstream pipeline?
-
-
-Plan for now...
----------------
- * Git branch
- * Filters in git material
- * Pipeline material.
- * Handle go-server authentication.
- * Hook in new pipeline in downstream pipeline?
+ * Add new pipeline as material and fetch artifact in downstream pipeline
+ * go-server authentication.
 
 
 GoCD Pipeline Templates and parameters
@@ -56,36 +69,23 @@ GoCD has the concepts of pipeline templates and parameters.
 If we use this, there is not so much that we need to define
 outside the normal GoCD configuration.
 
+
 GoCD Pipeline Builder Setting Files
 -----------------------------------
 
 To create a GoCD pipeline with the pipeline builder,
-you use a YAML file which closely resembles the XML
-format you see in the GoCD XML config. Besides the
-`pipeline` section, you also need to supply some other
-information, such as which pipeline group and which
-environment to place the pipeline in.
+you use a json file which follows this pattern:
 
-Example below:
+    {
+        "environment": "build",
+        "pipelines": [ <pipeline> ... ]
+    }
 
-    pipelines:
-      group: defaultGroup
-
-    pipeline:
-      name: gocd
-      materials:
-        - git:
-            url: https://github.com/magnus-lycka/gocd.git
-            dest: gocd
-      template: my_template
-      params:
-        - PARAM_NAME: 17
-      environmentvariables:
-        - ENV_NAME: 42
-
-    environment: windows
+Each <pipeline> should conform to the spec here:
+https://api.go.cd/current/#create-a-pipeline
 
 Use `goplbld -s` to pass the settings file to the builder.
+
 
 GoCD Pipeline Builder Patterns
 ------------------------------
@@ -102,35 +102,17 @@ of repetition. For instance, if we have several pipelines
 like the one above, that only differ on name, we can have
 settings file like this:
 
-    pattern:
-      path: ./simple_pipeline_pattern.yaml
-      parameters:
+    path: ./simple_pipeline_pattern.json
+    parameters:
         name: gocd
         url: https://github.com/magnus-lycka/gocd.git
 
-The pattern file `./simple_pipeline_pattern.yaml` can
-look like this:
+The pattern file `./simple_pipeline_pattern.json` is a
+json file as described in the previous section, with
+jinja2 templating. See the test suite for examples.
 
-    pipelines:
-      group: defaultGroup
+See also jinja2 docs at http://jinja.pocoo.org/
 
-    pipeline:
-      name: {{ name }}
-      materials:
-        - git:
-            url: {{ url }}
-            dest: {{ name }}
-      template: my_template
-      params:
-        - PARAM_NAME: 17
-      environmentvariables:
-        - ENV_NAME: 42
-
-    environment: windows
-
-If you want, the patterns can be a lot more complex, with
-loops and conditionals etc, as described in the jinja2
-docs at http://jinja.pocoo.org/
 
 How to run the self-tests
 -------------------------

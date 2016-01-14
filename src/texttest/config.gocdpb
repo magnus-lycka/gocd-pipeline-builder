@@ -12,15 +12,18 @@ full_name:Go CD Pipeline Builder
 default_checkout:gocd-pipeline-builder
 
 link_test_path:config-before.xml
+link_test_path:pipelines_before.xml
 link_test_path:goplbld.yaml
 
+link_test_path:simple_pipeline.json
 link_test_path:simple_pipeline.yaml
-link_test_path:simple_pipeline_pattern.yaml
+link_test_path:simple_pipeline_pattern.json
 
 link_test_path:coveragerc
 
 [collate_file]
 config-after:config-after.xml
+pipelines-after:pipelines_after.xml
 [end]
 
 [run_dependent_text]
