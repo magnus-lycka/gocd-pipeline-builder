@@ -76,6 +76,7 @@ class JsonSettings(object):
         if conf_pipelines is None:
             conf_pipelines = ElementTree.SubElement(
                 conf_environment, 'pipelines')
+        # TODO: Check if already there?
         conf_pipeline = ElementTree.SubElement(conf_pipelines, 'pipeline')
         conf_pipeline.set('name', name)
 

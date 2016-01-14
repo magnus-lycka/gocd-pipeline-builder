@@ -47,13 +47,13 @@ def main(args=sys.argv):
     if pargs.settings is not None:
         go.add_settings(get_settings(pargs.settings))
 
-    go.init()
-
     if pargs.dump is not None:
+        go.init()
         envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'
         pargs.dump.write(envelope % go.cruise_xml)
 
     if pargs.dump_test_config is not None:
+        go.init()
         envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'
         pargs.dump_test_config.write(envelope % go.cruise_xml_subset)
 

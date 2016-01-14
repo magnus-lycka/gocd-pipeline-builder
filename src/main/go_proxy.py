@@ -23,8 +23,9 @@ class GoProxy(object):
         """
         Fetch configuration from Go server
         """
-        self.tree = CruiseTree.fromstring(self.xml_from_url())
-        self._initial_xml = self.cruise_xml
+        if self._initial_xml is None or self.changed():
+            self.tree = CruiseTree.fromstring(self.xml_from_url())
+            self._initial_xml = self.cruise_xml
 
     def changed(self):
         return self.cruise_xml != self._initial_xml
@@ -87,20 +88,28 @@ class GoProxy(object):
         """
         root = self.tree.getroot()
 
-        for tag in ('pipelines', 'templates', 'environments'):
-            for element_to_drop in self.tree.findall(tag):
-                root.remove(element_to_drop)
+        self.drop_sections_to_be_replaced(root)
 
         test_settings = CruiseTree().parse(test_settings_xml)
 
-        ix = 0  # Silence lint about using ix after the loop. root != []
-        for ix, element in enumerate(list(root)):
-            if element.tag == 'agents':
-                break
+        ix = self.place_for_test_settings(root)
 
         for element_type in ('environments', 'templates', 'pipelines'):
             for elem in reversed(test_settings.findall(element_type)):
                 root.insert(ix, elem)
+
+    def drop_sections_to_be_replaced(self, root):
+        for tag in ('pipelines', 'templates', 'environments'):
+            for element_to_drop in self.tree.findall(tag):
+                root.remove(element_to_drop)
+
+    @staticmethod
+    def place_for_test_settings(root):
+        ix = 0  # Silence lint about using ix after the loop. root != []
+        for ix, element in enumerate(list(root)):
+            if element.tag == 'agents':
+                break
+        return ix
 
     def upload_config(self):
         """
