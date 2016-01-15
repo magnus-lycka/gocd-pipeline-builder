@@ -2,6 +2,7 @@ import sys
 import json
 import yaml
 import requests
+from collections import OrderedDict
 
 from model import CruiseTree
 
@@ -13,22 +14,29 @@ class GoProxy(object):
     config_xml_rest_path = "/go/admin/restful/configuration/file/{}/xml"
 
     def __init__(self, config):
-        self._config = yaml.load(config)
+        self.__config = yaml.load(config)
         self._cruise_config_md5 = None
         self.tree = None
         self._initial_xml = None
+        self.need_to_download_config = True
         self.init()
 
     def init(self):
         """
         Fetch configuration from Go server
         """
-        if self._initial_xml is None or self.changed():
+        if self.need_to_download_config:
             self.tree = CruiseTree.fromstring(self.xml_from_url())
             self._initial_xml = self.cruise_xml
+            self.need_to_download_config = False
 
-    def changed(self):
+    @property
+    def need_to_upload_config(self):
         return self.cruise_xml != self._initial_xml
+
+    @property
+    def __auth(self):
+        return self.__config['username'], self.__config['password']
 
     @property
     def cruise_xml(self):
@@ -38,9 +46,33 @@ class GoProxy(object):
     def cruise_xml_subset(self):
         return self.tree.config_subset_tostring()
 
+    def request(self, action, path, **kwargs):
+        action = action.upper()
+        if self._changing_call(action):
+            # If we change via REST API, we need to fetch the config
+            # again if we need to understand the state.
+            # If we uploaded the config XML, we need to fetch it
+            # again to get a new md5 checksum in case we want to
+            # change some more...
+            self.need_to_download_config = True
+        url = self.__config['url'] + path
+        response = requests.request(action, url, auth=self.__auth, **kwargs)
+        if response.status_code != 200:
+            sys.stderr.write("Failed to {} {}\n".format(action, path))
+            sys.stderr.write("status-code: {}\n".format(response.status_code))
+            sys.stderr.write("text: {}\n".format(response.text))
+        return response
+
+    @staticmethod
+    def _changing_call(action):
+        return action not in ('HEAD', 'GET')
+
     def xml_from_url(self):
-        url = self._config['url'] + self.config_xml_rest_path.format('GET')
-        response = requests.get(url)
+        action = 'GET'
+        path = self.config_xml_rest_path.format(action)
+        response = self.request(action, path)
+        if response.status_code != 200:
+            raise RuntimeError(str(response.status_code))
         self._cruise_config_md5 = response.headers['x-cruise-config-md5']
         return response.text
 
@@ -49,7 +81,7 @@ class GoProxy(object):
             self.add_pipeline(pipeline)
         self.init()  # Update config with new changes
         json_settings.update_environment(self.tree)
-        if self.changed():
+        if self.need_to_upload_config:
             self.upload_config()
 
     def add_pipeline(self, pipeline):
@@ -59,16 +91,14 @@ class GoProxy(object):
 
         :param pipeline: Json object as describe in API above.
         """
-        url = self._config['url'] + "/go/api/admin/pipelines"
+        path = "/go/api/admin/pipelines"
         data = json.dumps(pipeline)
         headers = {
             'Accept': 'application/vnd.go.cd.v1+json',
             'Content-Type': 'application/json'
         }
-        response = requests.post(url, data=data, headers=headers)
+        response = self.request('post', path, data=data, headers=headers)
         if response.status_code != 200:
-            sys.stderr.write("status-code: %s\n" % response.status_code)
-            sys.stderr.write("text: %s\n" % response.text)
             raise RuntimeError(str(response.status_code))
 
     def set_test_settings_xml(self, test_settings_xml):
@@ -122,14 +152,17 @@ class GoProxy(object):
         if self.cruise_xml == self._initial_xml:
             print "No changes done. Not uploading config."
         else:
-            url = self._config['url'] + self.config_xml_rest_path.format('POST')
             data = {'xmlFile': self.cruise_xml, 'md5': self._cruise_config_md5}
-            response = requests.post(url, data=data)
+            action = 'POST'
+            response = self.request(action,
+                                    self.config_xml_rest_path.format(action),
+                                    data=data)
             if response.status_code != 200:
                 sys.stderr.write("status-code: %s\n" % response.status_code)
                 # GoCD produces broken JSON???, see
                 # https://github.com/gocd/gocd/issues/1472
-                json_data = json.loads(response.text.replace("\\'", "'"))
+                json_data = json.loads(response.text.replace("\\'", "'"),
+                                       object_pairs_hook=OrderedDict)
                 sys.stderr.write("result: %s\n" % json_data["result"])
                 sys.stderr.write(
                     "originalContent:\n%s\n" % json_data["originalContent"])

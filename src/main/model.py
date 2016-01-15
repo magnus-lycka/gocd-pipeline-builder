@@ -1,5 +1,6 @@
 import copy
 import json
+from collections import OrderedDict
 import yaml
 from jinja2 import Template
 from xml.etree import ElementTree
@@ -44,7 +45,7 @@ class JsonSettings(object):
         if settings_file:
             settings_string = settings_file.read()
         try:
-            structure = json.loads(settings_string)
+            structure = json.loads(settings_string, object_pairs_hook=OrderedDict)
         except ValueError:
             print settings_string
             raise

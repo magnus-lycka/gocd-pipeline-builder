@@ -1,14 +1,23 @@
 <-PYT:import requests
-<-PYT:requests.get('http://localhost:8153/go/admin/restful/configuration/file/GET/xml')
-->RET:Instance('Response(object)', 'response1')
-<-PYT:response1.headers
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response(object)', 'response_get')
+<-PYT:response_get.status_code
+->RET:200
+<-PYT:response_get.headers
 ->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
 <-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
-->RET:'fd9a6c73103880fcae9916d5fa4f82d9'
-<-PYT:response1.text
+->RET:'38dfbff2a2626d7894592f1fc7f216e7'
+<-PYT:response_get.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="92beffdd-587a-443e-9309-783d29b65eb0" />
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
   <pipelines group="first">
     <pipeline name="new_pipeline" isLocked="true">
       <materials>
@@ -31,14 +40,21 @@
     <environment name="green" />
   </environments>
   <agents>
-    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.178" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 
 '''
-<-PYT:requests.post('http://localhost:8153/go/admin/restful/configuration/file/POST/xml', data={'md5': 'fd9a6c73103880fcae9916d5fa4f82d9',
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '38dfbff2a2626d7894592f1fc7f216e7',
  'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="76" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="92beffdd-587a-443e-9309-783d29b65eb0" />
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
   <pipelines group="first">
     <pipeline isLocked="true" name="new_pipeline">
       <materials>
@@ -63,18 +79,18 @@
     </environment>
   </environments>
   <agents>
-    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.178" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 '''})
-->RET:Instance('Response', 'response2')
-<-PYT:response2.status_code
+->RET:Instance('Response', 'response_post')
+<-PYT:response_post.status_code
 ->RET:200
-<-PYT:requests.post('http://localhost:8153/go/api/admin/pipelines', data='{"pipeline": {"enable_pipeline_locking": true, "label_template": "${COUNT}", "materials": [{"attributes": {"name": null, "url": "git@github.com:sample_repo/example.git", "destination": "dest", "submodule_folder": null, "filter": null, "auto_update": true, "branch": "master"}, "type": "git"}], "template": null, "stages": [{"clean_working_directory": false, "name": "defaultStage", "never_cleanup_artifacts": false, "fetch_materials": true, "environment_variables": [], "approval": {"type": "success", "authorization": {"users": [], "roles": []}}, "jobs": [{"run_instance_count": null, "tasks": [{"attributes": {"working_directory": null, "command": "ls", "run_if": ["passed"]}, "type": "exec"}], "name": "defaultJob", "timeout": 0, "environment_variables": [], "resources": []}]}], "name": "new_pipeline"}, "group": "first"}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
-->RET:Instance('Response', 'response3')
-<-PYT:response3.status_code
+<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "first", "pipeline": {"label_template": "${COUNT}", "enable_pipeline_locking": true, "name": "new_pipeline", "template": null, "materials": [{"type": "git", "attributes": {"url": "git@github.com:sample_repo/example.git", "destination": "dest", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}], "stages": [{"name": "defaultStage", "fetch_materials": true, "clean_working_directory": false, "never_cleanup_artifacts": false, "approval": {"type": "success", "authorization": {"roles": [], "users": []}}, "environment_variables": [], "jobs": [{"name": "defaultJob", "run_instance_count": null, "timeout": 0, "environment_variables": [], "resources": [], "tasks": [{"type": "exec", "attributes": {"run_if": ["passed"], "command": "ls", "working_directory": null}}]}]}]}}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
+->RET:Instance('Response', 'response_post1')
+<-PYT:response_post1.status_code
 ->RET:422
-<-PYT:response3.text
+<-PYT:response_post1.text
 ->RET:u'''{
   "message": "Validations failed for pipeline \'new_pipeline\'. Please correct and resubmit.",
   "data": {

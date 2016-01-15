@@ -1,0 +1,9 @@
+# Add a simple pipeline using builder pattern with implicit destination directory.
+add_simple_pipeline_with_pattern
+
+# Add a simple pipeline using builder pattern with explicit destination directory.
+add_simple_template_pipeline_with_pattern_dest
+
+# Add a simple pipeline using builder pattern.
+# Don't create a destination directory.
+add_simple_template_pipeline_with_pattern_no_dest

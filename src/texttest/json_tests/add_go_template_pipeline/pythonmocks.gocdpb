@@ -1,53 +1,60 @@
 <-PYT:import requests
-<-PYT:requests.get('http://localhost:8153/go/admin/restful/configuration/file/GET/xml')
-->RET:Instance('Response(object)', 'response1')
-<-PYT:response1.headers
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response(object)', 'response_get')
+<-PYT:response_get.status_code
+->RET:200
+<-PYT:response_get.headers
 ->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
 <-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
-->RET:'38d3fe841429a11a5aa6c0e3d1ef1fba'
-<-PYT:response1.text
+->RET:'38dfbff2a2626d7894592f1fc7f216e7'
+<-PYT:response_get.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="92beffdd-587a-443e-9309-783d29b65eb0" />
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
   <pipelines group="first">
-    <pipeline name="new_pipeline" isLocked="true" template="my_template">
+    <pipeline name="new_pipeline" isLocked="true">
       <materials>
         <git url="git@github.com:sample_repo/example.git" dest="dest" />
       </materials>
-    </pipeline>
-  </pipelines>
-  <templates>
-    <pipeline name="my_template">
       <stage name="defaultStage">
         <jobs>
-          <job name="defaultJob">
+          <job name="defaultJob" timeout="0">
             <tasks>
-              <exec command="/bin/bash" workingdir="gocd">
-                <arg>-c</arg>
-                <arg>echo $SHELL $GO_PIPELINE_LABEL</arg>
+              <exec command="ls">
+                <runif status="passed" />
               </exec>
             </tasks>
           </job>
         </jobs>
       </stage>
     </pipeline>
-  </templates>
+  </pipelines>
   <environments>
-    <environment name="green">
-      <pipelines>
-        <pipeline name="new_pipeline" />
-      </pipelines>
-    </environment>
+    <environment name="green" />
   </environments>
   <agents>
-    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.178" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 
 '''
-<-PYT:requests.post('http://localhost:8153/go/admin/restful/configuration/file/POST/xml', data={'md5': '38d3fe841429a11a5aa6c0e3d1ef1fba',
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '38dfbff2a2626d7894592f1fc7f216e7',
  'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="76" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="92beffdd-587a-443e-9309-783d29b65eb0" />
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
   <pipelines group="first">
   </pipelines>
   <templates>
@@ -71,27 +78,36 @@
     </environment>
   </environments>
   <agents>
-    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.178" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 '''})
-->RET:Instance('Response', 'response2')
-<-PYT:response2.status_code
+->RET:Instance('Response', 'response_post')
+<-PYT:response_post.status_code
 ->RET:200
-<-PYT:requests.post('http://localhost:8153/go/api/admin/pipelines', data='{"pipeline": {"materials": [{"attributes": {"name": null, "url": "git@github.com:sample_repo/example.git", "destination": "dest", "submodule_folder": null, "filter": null, "auto_update": true, "branch": "master"}, "type": "git"}], "enable_pipeline_locking": true, "label_template": "${COUNT}", "template": "my_template", "name": "new_pipeline"}, "group": "first"}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
-->RET:Instance('Response', 'response3')
-<-PYT:response3.status_code
+<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "first", "pipeline": {"label_template": "${COUNT}", "enable_pipeline_locking": true, "name": "new_pipeline", "template": "my_template", "materials": [{"type": "git", "attributes": {"url": "git@github.com:sample_repo/example.git", "destination": "dest", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}]}}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
+->RET:Instance('Response', 'response_post1')
+<-PYT:response_post1.status_code
 ->RET:200
-<-PYT:requests.get('http://localhost:8153/go/admin/restful/configuration/file/GET/xml')
-->RET:Instance('Response', 'response4')
-<-PYT:response4.headers
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response', 'response_get1')
+<-PYT:response_get1.status_code
+->RET:200
+<-PYT:response_get1.headers
 ->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict2')
 <-PYT:caseinsensitivedict2.__getitem__('x-cruise-config-md5')
-->RET:'7cdda308de975f2cb1981a412c3de7c2'
-<-PYT:response4.text
+->RET:'b545075c2a39b8e6cde8d5bb8dd9332f'
+<-PYT:response_get1.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="92beffdd-587a-443e-9309-783d29b65eb0" />
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
   <pipelines group="first">
     <pipeline name="new_pipeline" isLocked="true" template="my_template">
       <materials>
@@ -119,14 +135,21 @@
     <environment name="green" />
   </environments>
   <agents>
-    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.178" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 
 '''
-<-PYT:requests.post('http://localhost:8153/go/admin/restful/configuration/file/POST/xml', data={'md5': '7cdda308de975f2cb1981a412c3de7c2',
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'b545075c2a39b8e6cde8d5bb8dd9332f',
  'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="76" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="92beffdd-587a-443e-9309-783d29b65eb0" />
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
   <pipelines group="first">
     <pipeline isLocked="true" name="new_pipeline" template="my_template">
       <materials>
@@ -158,23 +181,32 @@
     </environment>
   </environments>
   <agents>
-    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.178" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 '''})
-->RET:Instance('Response', 'response5')
-<-PYT:response5.status_code
+->RET:Instance('Response', 'response_post2')
+<-PYT:response_post2.status_code
 ->RET:200
-<-PYT:requests.get('http://localhost:8153/go/admin/restful/configuration/file/GET/xml')
-->RET:Instance('Response', 'response6')
-<-PYT:response6.headers
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response', 'response_get2')
+<-PYT:response_get2.status_code
+->RET:200
+<-PYT:response_get2.headers
 ->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict3')
 <-PYT:caseinsensitivedict3.__getitem__('x-cruise-config-md5')
-->RET:'38d3fe841429a11a5aa6c0e3d1ef1fba'
-<-PYT:response6.text
+->RET:'7d5137ce544c739c3ef2f3aa726111f7'
+<-PYT:response_get2.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="92beffdd-587a-443e-9309-783d29b65eb0" />
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
   <pipelines group="first">
     <pipeline name="new_pipeline" isLocked="true" template="my_template">
       <materials>
@@ -206,7 +238,7 @@
     </environment>
   </environments>
   <agents>
-    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.178" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 

@@ -1,1 +1,0 @@
--s simple_pipeline.json --set-test-config pipelines_before.xml --dump-test-config pipelines_after.xml --config goplbld.yaml

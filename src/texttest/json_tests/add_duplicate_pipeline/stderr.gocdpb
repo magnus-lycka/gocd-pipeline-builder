@@ -1,3 +1,4 @@
+Failed to POST /go/api/admin/pipelines
 status-code: 422
 text: {
   "message": "Validations failed for pipeline 'new_pipeline'. Please correct and resubmit.",
@@ -107,8 +108,8 @@ Traceback (most recent call last):
     main()
   File "/home/magnusl/work/gocd-pipeline-builder/src/main/goplbld.py", line 48, in main
     go.add_settings(get_settings(pargs.settings))
-  File "/home/magnusl/work/gocd-pipeline-builder/src/main/go_proxy.py", line 49, in add_settings
+  File "/home/magnusl/work/gocd-pipeline-builder/src/main/go_proxy.py", line 81, in add_settings
     self.add_pipeline(pipeline)
-  File "/home/magnusl/work/gocd-pipeline-builder/src/main/go_proxy.py", line 72, in add_pipeline
+  File "/home/magnusl/work/gocd-pipeline-builder/src/main/go_proxy.py", line 102, in add_pipeline
     raise RuntimeError(str(response.status_code))
 RuntimeError: 422
