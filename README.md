@@ -76,10 +76,12 @@ GoCD Pipeline Builder Setting Files
 To create a GoCD pipeline with the pipeline builder,
 you use a json file which follows this pattern:
 
-    {
-        "environment": "build",
-        "pipelines": [ <pipeline> ... ]
-    }
+    [
+        {
+            "environment": "build",
+            "create-a-pipeline": [ <pipeline> ... ]
+        }
+    ]
 
 Each <pipeline> should conform to the spec here:
 https://api.go.cd/current/#create-a-pipeline
