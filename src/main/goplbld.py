@@ -41,11 +41,11 @@ def main(args=sys.argv):
     go = GoProxy(pargs.config)
 
     if pargs.set_test_config is not None:
-        go.set_test_settings_xml(pargs.set_test_config)
+        go.tree.set_test_settings_xml(pargs.set_test_config)
         go.upload_config()
 
     if pargs.settings is not None:
-        go.add_settings(get_settings(pargs.settings))
+        get_settings(pargs.settings).server_operations(go)
 
     if pargs.dump is not None:
         go.init()

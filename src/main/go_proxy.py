@@ -76,15 +76,7 @@ class GoProxy(object):
         self._cruise_config_md5 = response.headers['x-cruise-config-md5']
         return response.text
 
-    def add_settings(self, json_settings):
-        for pipeline in json_settings.pipelines:
-            self.add_pipeline(pipeline)
-        self.init()  # Update config with new changes
-        json_settings.update_environment(self.tree)
-        if self.need_to_upload_config:
-            self.upload_config()
-
-    def add_pipeline(self, pipeline):
+    def create_a_pipeline(self, pipeline):
         """
         Add a pipeline to the Go server configuration using the REST API:
         https://api.go.cd/current/#create-a-pipeline
@@ -101,45 +93,26 @@ class GoProxy(object):
         if response.status_code != 200:
             raise RuntimeError(str(response.status_code))
 
-    def set_test_settings_xml(self, test_settings_xml):
-        """
-        Replace parts of the Go server config for test purposes
+    def get_pipeline_config(self, pipeline_name):
+        path = "/go/api/admin/pipelines/" + pipeline_name
+        headers = {
+            'Accept': 'application/vnd.go.cd.v1+json'
+        }
+        response = self.request('get', path, headers=headers)
+        if response.status_code != 200:
+            raise RuntimeError(str(response.status_code))
 
-        The main sections in the config are:
-        - server
-        - repositories
-        - pipelines * N
-        - templates
-        - environments
-        - agents
-        We want to replace the sections pipelines*, templates and environments.
-        Let server and agents stay as usual.
-        We've never used repositories so far.
-        """
-        root = self.tree.getroot()
+    def edit_pipeline_config(self, pipeline_name, pipeline):
+        path = "/go/api/admin/pipelines/" + pipeline_name
+        headers = {
+            'Accept': 'application/vnd.go.cd.v1+json',
+            'Content-Type': 'application/json'
+        }
+        # Kolla hur vi gor med requests for att hitta motsvarighet till If-Match i curl
+        response = self.request('put', path, data=data, headers=headers)
+        if response.status_code != 200:
+            raise RuntimeError(str(response.status_code))
 
-        self.drop_sections_to_be_replaced(root)
-
-        test_settings = CruiseTree().parse(test_settings_xml)
-
-        ix = self.place_for_test_settings(root)
-
-        for element_type in ('environments', 'templates', 'pipelines'):
-            for elem in reversed(test_settings.findall(element_type)):
-                root.insert(ix, elem)
-
-    def drop_sections_to_be_replaced(self, root):
-        for tag in ('pipelines', 'templates', 'environments'):
-            for element_to_drop in self.tree.findall(tag):
-                root.remove(element_to_drop)
-
-    @staticmethod
-    def place_for_test_settings(root):
-        ix = 0  # Silence lint about using ix after the loop. root != []
-        for ix, element in enumerate(list(root)):
-            if element.tag == 'agents':
-                break
-        return ix
 
     def upload_config(self):
         """

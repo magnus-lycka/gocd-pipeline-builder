@@ -7,3 +7,6 @@ add_duplicate_pipeline
 # Add a pipeline for Go template without using builder pattern.
 add_go_template_pipeline
 
+# Add pipeline material and fetchartifact to downstream pipeline as we create upstream pipeline
+add_downstream_dependency
+

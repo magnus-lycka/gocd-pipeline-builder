@@ -1,9 +1,9 @@
 #!/usr/bin/python
 import os
 import re
-import sys
 import shutil
 from difflib import context_diff
+
 
 replacements = [
     (r'="\d+\.\d+\.\d+\.\d+"', '="N.N.N.N"'),

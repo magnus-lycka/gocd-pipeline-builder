@@ -37,9 +37,20 @@ class JsonSettings(object):
     See get_settings() factory function.
     """
     def __init__(self, settings_file):
-        self.pipelines = None
-        self.environment = None
+        self.list = None
         self.load_structure(settings_file)
+
+    def server_operations(self, go):
+        for operation in self.list:
+            name = None
+            if "create-a-pipeline" in operation:
+                go.create_a_pipeline(operation["create-a-pipeline"])
+                name = operation["create-a-pipeline"]["pipeline"]["name"]
+            if name and "environment" in operation:
+                go.init()
+                self.update_environment(go.tree)
+                if go.need_to_upload_config:
+                    go.upload_config()
 
     def load_structure(self, settings_file=None, settings_string=None):
         if settings_file:
@@ -49,8 +60,7 @@ class JsonSettings(object):
         except ValueError:
             print settings_string
             raise
-        self.pipelines = structure.get('pipelines')
-        self.environment = structure.get('environment')
+        self.list = structure
 
     def update_environment(self, configuration):
         """
@@ -61,15 +71,18 @@ class JsonSettings(object):
         if conf_environments is None:
             print "No environments section in configuration."
             return
-        for conf_environment in conf_environments.findall('environment'):
-            if conf_environment.get('name') == self.environment:
-                for pipeline_dict in self.pipelines:
-                    pipeline = pipeline_dict.get('pipeline')
-                    name = pipeline.get('name')
-                    self._set_pipeline_in_environment(name, conf_environment)
-                break
-        else:  # No break
-            print "Environment %s not found in config" % self.environment
+        for operation in self.list:
+            op_env_name = operation.get('environment')
+            if not op_env_name:
+                continue
+            for conf_environment in conf_environments.findall('environment'):
+                if conf_environment.get('name') == op_env_name:
+                    data = operation.get('create-a-pipeline')
+                    if data:
+                        pipeline = data.get('pipeline')
+                        name = pipeline.get('name')
+                        self._set_pipeline_in_environment(name, conf_environment)
+                    break
 
     @staticmethod
     def _set_pipeline_in_environment(name, conf_environment):
@@ -139,3 +152,43 @@ class CruiseTree(ElementTree.ElementTree):
         else:
             if level and (not elem.tail or not elem.tail.strip()):
                 elem.tail = i
+
+    def set_test_settings_xml(self, test_settings_xml):
+        """
+        Replace parts of the Go server config for test purposes
+
+        The main sections in the config are:
+        - server
+        - repositories
+        - pipelines * N
+        - templates
+        - environments
+        - agents
+        We want to replace the sections pipelines*, templates and environments.
+        Let server and agents stay as usual.
+        We've never used repositories so far.
+        """
+        root = self.getroot()
+
+        self.drop_sections_to_be_replaced(root)
+
+        test_settings = CruiseTree().parse(test_settings_xml)
+
+        ix = self.place_for_test_settings(root)
+
+        for element_type in ('environments', 'templates', 'pipelines'):
+            for elem in reversed(test_settings.findall(element_type)):
+                root.insert(ix, elem)
+
+    def drop_sections_to_be_replaced(self, root):
+        for tag in ('pipelines', 'templates', 'environments'):
+            for element_to_drop in self.findall(tag):
+                root.remove(element_to_drop)
+
+    @staticmethod
+    def place_for_test_settings(root):
+        ix = 0  # Silence lint about using ix after the loop. root != []
+        for ix, element in enumerate(list(root)):
+            if element.tag == 'agents':
+                break
+        return ix

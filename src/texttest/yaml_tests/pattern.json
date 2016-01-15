@@ -1,7 +1,7 @@
-{
-  "environment": "green",
-  "pipelines": [
-    {
+[
+  {
+    "environment": "green",
+    "create-a-pipeline": {
       "group": "first",
       "pipeline": {
         "label_template": "${COUNT}",
@@ -61,5 +61,5 @@
         ]
       }
     }
-  ]
-}
+  }
+]

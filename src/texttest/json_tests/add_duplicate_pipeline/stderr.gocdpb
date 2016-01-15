@@ -107,9 +107,9 @@ Traceback (most recent call last):
   File "/home/magnusl/work/gocd-pipeline-builder/src/main/goplbld.py", line 62, in <module>
     main()
   File "/home/magnusl/work/gocd-pipeline-builder/src/main/goplbld.py", line 48, in main
-    go.add_settings(get_settings(pargs.settings))
-  File "/home/magnusl/work/gocd-pipeline-builder/src/main/go_proxy.py", line 81, in add_settings
-    self.add_pipeline(pipeline)
-  File "/home/magnusl/work/gocd-pipeline-builder/src/main/go_proxy.py", line 102, in add_pipeline
+    get_settings(pargs.settings).server_operations(go)
+  File "/home/magnusl/work/gocd-pipeline-builder/src/main/model.py", line 47, in server_operations
+    go.create_a_pipeline(operation["create-a-pipeline"])
+  File "/home/magnusl/work/gocd-pipeline-builder/src/main/go_proxy.py", line 94, in create_a_pipeline
     raise RuntimeError(str(response.status_code))
 RuntimeError: 422
