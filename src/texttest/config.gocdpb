@@ -34,6 +34,7 @@ stderr:ipaddress="[\d\.]+"{REPLACE ipaddress="N.N.N.N"}
 stderr:serverId="[\d\w\-]+"{REPLACE serverId="UUID"}
 stderr:uuid="[\d\w\-]+"{REPLACE uuid="UUID"}
 stderr:line \d+,{REPLACE line XX,}
+stderr:Traceback (most recent call last):{->}RuntimeError:
 [end]
 
 [test_data_environment]
