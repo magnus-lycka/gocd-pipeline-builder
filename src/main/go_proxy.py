@@ -101,18 +101,25 @@ class GoProxy(object):
         response = self.request('get', path, headers=headers)
         if response.status_code != 200:
             raise RuntimeError(str(response.status_code))
+        json_data = json.loads(response.text.replace("\\'", "'"),
+                               object_pairs_hook=OrderedDict)
+        etag = response.headers['etag']
+        return etag, json_data
 
-    def edit_pipeline_config(self, pipeline_name, pipeline):
+    def edit_pipeline_config(self, pipeline_name, etag, pipeline):
         path = "/go/api/admin/pipelines/" + pipeline_name
+        data = json.dumps(pipeline)
         headers = {
             'Accept': 'application/vnd.go.cd.v1+json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'If-Match': etag
         }
-        # Kolla hur vi gor med requests for att hitta motsvarighet till If-Match i curl
         response = self.request('put', path, data=data, headers=headers)
         if response.status_code != 200:
+            print response.text
             raise RuntimeError(str(response.status_code))
 
+    # TODO POST /go/api/pipelines/:pipeline_name/unpause
 
     def upload_config(self):
         """

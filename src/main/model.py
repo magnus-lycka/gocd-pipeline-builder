@@ -1,4 +1,5 @@
 import copy
+import sys
 import json
 from collections import OrderedDict
 import yaml
@@ -51,6 +52,42 @@ class JsonSettings(object):
                 self.update_environment(go.tree)
                 if go.need_to_upload_config:
                     go.upload_config()
+            if "add-downstream-dependencies" in operation:
+                dependency_updates = operation["add-downstream-dependencies"]
+                for dependency_update in dependency_updates:
+                    name = dependency_update["name"]
+                    etag, pipeline = go.get_pipeline_config(name)
+                    # If this pipeline uses a template, we need to use that!!!
+                    self.add_downstream_dependencies(pipeline, dependency_update)
+                    go.edit_pipeline_config(name, etag, pipeline)
+            # TODO POST /go/api/pipelines/:pipeline_name/unpause
+
+    @classmethod
+    def add_downstream_dependencies(cls, pipeline, update):
+        if "material" in update:
+            pipeline["materials"].append(update["material"])
+        if "task" in update:
+            if "stages" in pipeline:
+                job = cls.get_job(pipeline, update)
+                job["tasks"].insert(0, update["task"])
+            else:
+                sys.stderr.write("Adding tasks to template not supported!\n")
+
+    @staticmethod
+    def get_job(pipeline, update):
+        if "stage" in update:
+            for stage in pipeline["stages"]:
+                if stage["name"] == update["stage"]:
+                    break
+        else:
+            stage = pipeline["stages"][0]
+        if "job" in update:
+            for job in stage["jobs"]:
+                if job["name"] == update["job"]:
+                    break
+        else:
+            job = stage["jobs"][0]
+        return job
 
     def load_structure(self, settings_file=None, settings_string=None):
         if settings_file:
