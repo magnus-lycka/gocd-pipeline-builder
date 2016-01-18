@@ -119,21 +119,25 @@ See also jinja2 docs at http://jinja.pocoo.org/
 How to run the self-tests
 -------------------------
 
-Install texttest: [http://texttest.org]
+Install texttest: [http://texttest.org]. Also install all the python libraries listed in 'requirements.txt'.
 
-In your $TEXTTEST_HOME folder create a softlink like this:
+In your $TEXTTEST_HOME folder create a softlink pointing out where the test code is.
+Given an environment variable $CLONE_LOCATION which points to the directory where you have cloned this repo:
 
     cd $TEXTTEST_HOME
-    ln -s /whereever/your/clones/live/gocd-pipeline-builder/src/texttest gocdpb
+    ln -s $CLONE_LOCATION/gocd-pipeline-builder/src/texttest gocdpb
 
 In your texttest personal config file (defaults to ~/.texttest/config, create
 it if it doesn't exist), add the following to your checkout locations:
 
+(You should replace $CLONE_LOCATION with an actual path or environment variable that is set in all shells)
+
     [checkout_location]
-    gocd-pipeline-builder:/whereever/your/clones/live/gocd-pipeline-builder
+    gocd-pipeline-builder:$CLONE_LOCATION/gocd-pipeline-builder
     [end]
 
 start texttest:
 
     texttest -a gocdpb
+
 
