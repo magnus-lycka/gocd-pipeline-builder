@@ -25,6 +25,26 @@ class JsonSettings(object):
         self.pipeline_name = None
         self.pipeline_stage_names = []
 
+    def load_file(self, settings_file, extra_settings):
+        self.load_template(settings_file, extra_settings)
+
+    def load_template(self, template_data, parameters):
+        template = Template(template_data)
+        data = self.get_default_parameters()
+        data.update(parameters)
+        self.list = json.loads(template.render(data),
+                               object_pairs_hook=OrderedDict)
+
+    @staticmethod
+    def get_default_parameters(git_config_path='.git/config'):
+        data = {}
+        if os.path.exists(git_config_path):
+            for row in open(git_config_path):
+                if row.strip().startswith('url = '):
+                    data['repo_url'] = row.split('=')[1].strip()
+        data['repo_name'] = os.path.basename(os.getcwd())
+        return data
+
     def server_operations(self, go):
         for operation in self.list:
             if "create-a-pipeline" in operation:
@@ -100,26 +120,6 @@ class JsonSettings(object):
             job = stage["jobs"][0]
         return job
 
-    def load_file(self, settings_file, extra_settings):
-        self.load_template(settings_file, extra_settings)
-
-    def load_template(self, template, parameters):
-        template = Template(template.read())
-        data = self.get_default_parameters()
-        data.update(parameters)
-        self.list = json.loads(template.render(data),
-                               object_pairs_hook=OrderedDict)
-
-    @staticmethod
-    def get_default_parameters(git_config_path='.git/config'):
-        data = {}
-        if os.path.exists(git_config_path):
-            for row in open(git_config_path):
-                if row.strip().startswith('url = '):
-                    data['repo_url'] = row.split('=')[1].strip()
-        data['repo_name'] = os.path.basename(os.getcwd())
-        return data
-
     def update_environment(self, configuration):
         """
         If the setting names an environment, the pipelines in the
@@ -171,7 +171,7 @@ class YamlSettings(JsonSettings):
         template_path = settings['path']
         parameters = settings['parameters']
         parameters.update(extra_settings)
-        self.load_template(open(template_path), parameters)
+        self.load_template(open(template_path).read(), parameters)
 
 
 class CruiseTree(ElementTree.ElementTree):

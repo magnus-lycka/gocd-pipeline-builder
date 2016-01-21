@@ -71,7 +71,7 @@ goplbld Command Line Interface
     optional arguments:
       -h, --help            show this help message and exit
       -j JSON_SETTINGS, --json-settings JSON_SETTINGS
-                            Read json file with settings for GoCD pipeline.
+                            Read json file / url with settings for GoCD pipeline.
       -y YAML_SETTINGS, --yaml-settings YAML_SETTINGS
                             Read yaml files with parameters for GoCD pipeline.
       -D DEFINE, --define DEFINE

@@ -3,6 +3,7 @@
 import sys
 import getpass
 import argparse
+import requests
 from go_proxy import GoProxy
 from model import JsonSettings, YamlSettings
 
@@ -16,6 +17,14 @@ def add_secrets_to_config(config, password_parameters):
         config[password_parameter] = getpass.getpass(password_parameter + ': ')
 
 
+def get_json_settings(path):
+    if path.startswith('http'):
+        response = requests.get(path)
+        assert response.status_code == 200
+        return response.text
+    else:
+        return open(path).read()
+
 def main(args=sys.argv):
     argparser = argparse.ArgumentParser(
         description="Add pipeline to Go CD server."
@@ -23,8 +32,7 @@ def main(args=sys.argv):
     main_action_group = argparser.add_mutually_exclusive_group()
     main_action_group.add_argument(
         "-j", "--json-settings",
-        type=argparse.FileType('r'),
-        help="Read json file with settings for GoCD pipeline."
+        help="Read json file / url with settings for GoCD pipeline."
     )
     main_action_group.add_argument(
         "-y", "--yaml-settings",
@@ -82,8 +90,9 @@ def main(args=sys.argv):
         go.tree.set_test_settings_xml(pargs.set_test_config)
         go.upload_config()
 
-    if pargs.json_settings is not None:
-        JsonSettings(pargs.json_settings, list2dict(pargs.define)
+    if pargs.json_settings:
+        json_settings = get_json_settings(pargs.json_settings)
+        JsonSettings(json_settings, list2dict(pargs.define)
                      ).server_operations(go)
 
     if pargs.yaml_settings is not None:
