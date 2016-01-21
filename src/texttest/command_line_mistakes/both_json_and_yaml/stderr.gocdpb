@@ -1,0 +1,4 @@
+usage: goplbld.py [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-c CONFIG]
+                  [--set-test-config SET_TEST_CONFIG]
+                  [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v]
+goplbld.py: error: argument -j/--json-settings: not allowed with argument -y/--yaml-settings

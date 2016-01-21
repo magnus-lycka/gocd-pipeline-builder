@@ -1,20 +1,19 @@
 [
   {
     "environment": "green",
-    "unpause": {{ "true" if unpause else "false" }},
     "create-a-pipeline": {
       "group": "first",
       "pipeline": {
         "label_template": "${COUNT}",
         "enable_pipeline_locking": true,
-        "name": "{{ name }}",
+        "name": "upstream",
         "template": null,
         "materials": [
           {
             "type": "git",
             "attributes": {
-              "url": "{{ url }}",
-              {% if not skip_dest %}"destination": "{{ dest or name }}",{% endif %}
+              "url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git",
+              "destination": "dest",
               "filter": null,
               "name": null,
               "auto_update": true,
@@ -48,12 +47,20 @@
                   {
                     "type": "exec",
                     "attributes": {
-                      "run_if": [
-                        "passed"
+                      "run_if": [ "passed" ],
+                      "command": "/bin/bash",
+                      "arguments": [
+                        "-c",
+                        "echo 'Hello from upstream' > message.txt"
                       ],
-                      "command": "ls",
                       "working_directory": null
                     }
+                  }
+                ],
+                "artifacts": [
+                  {
+                    "source": "message.txt",
+                    "type": "build"
                   }
                 ]
               }
@@ -62,5 +69,25 @@
         ]
       }
     }
+  },
+  {
+    "add-downstream-dependencies": [
+      {
+        "name": "downstream",
+        "task": {
+          "type": "fetch",
+          "attributes": {
+            "run_if": [
+              "passed"
+            ],
+            "pipeline": "upstream",
+            "stage": "defaultStage",
+            "job": "defaultJob",
+            "is_source_a_file": true,
+            "source": "message.txt"
+          }
+        }
+      }
+    ]
   }
 ]

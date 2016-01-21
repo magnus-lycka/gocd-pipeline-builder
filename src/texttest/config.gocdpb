@@ -13,10 +13,10 @@ default_checkout:gocd-pipeline-builder
 
 link_test_path:config-before.xml
 link_test_path:goplbld.yaml
-
 link_test_path:pipeline.json
 link_test_path:pipeline.yaml
 link_test_path:pattern.json
+link_test_path:.git
 
 link_test_path:coveragerc
 

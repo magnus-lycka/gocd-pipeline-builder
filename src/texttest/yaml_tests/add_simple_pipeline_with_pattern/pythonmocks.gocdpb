@@ -6,10 +6,10 @@
 <-PYT:response_get.headers
 ->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
 <-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
-->RET:'7d5137ce544c739c3ef2f3aa726111f7'
+->RET:'1a820ca66c4c0c5686c3cf63d1f5686d'
 <-PYT:response_get.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="77">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
@@ -19,32 +19,27 @@
     </security>
   </server>
   <pipelines group="first">
-    <pipeline name="new_pipeline" isLocked="true" template="my_template">
+    <pipeline name="gocd42" isLocked="true">
       <materials>
-        <git url="git@github.com:sample_repo/example.git" dest="dest" />
+        <git url="https://github.com/magnus-lycka/gocd.git" />
       </materials>
-    </pipeline>
-  </pipelines>
-  <templates>
-    <pipeline name="my_template">
       <stage name="defaultStage">
         <jobs>
-          <job name="defaultJob">
+          <job name="defaultJob" timeout="0">
             <tasks>
-              <exec command="/bin/bash" workingdir="gocd">
-                <arg>-c</arg>
-                <arg>echo $SHELL $GO_PIPELINE_LABEL</arg>
+              <exec command="ls">
+                <runif status="passed" />
               </exec>
             </tasks>
           </job>
         </jobs>
       </stage>
     </pipeline>
-  </templates>
+  </pipelines>
   <environments>
     <environment name="green">
       <pipelines>
-        <pipeline name="new_pipeline" />
+        <pipeline name="gocd42" />
       </pipelines>
     </environment>
   </environments>
@@ -54,8 +49,8 @@
 </cruise>
 
 '''
-<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '7d5137ce544c739c3ef2f3aa726111f7',
- 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="76" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '1a820ca66c4c0c5686c3cf63d1f5686d',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="77" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
@@ -89,10 +84,10 @@
 <-PYT:response_get1.headers
 ->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict2')
 <-PYT:caseinsensitivedict2.__getitem__('x-cruise-config-md5')
-->RET:'792a0f640f2cfb2fad859c78a689c354'
+->RET:'f0c95c9f961de74afc61d948a833633f'
 <-PYT:response_get1.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="77">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
@@ -128,8 +123,8 @@
 </cruise>
 
 '''
-<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '792a0f640f2cfb2fad859c78a689c354',
- 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="76" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'f0c95c9f961de74afc61d948a833633f',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="77" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
@@ -171,17 +166,23 @@
 ->RET:Instance('Response', 'response_post2')
 <-PYT:response_post2.status_code
 ->RET:200
-<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+<-PYT:requests.request('GET', u'http://localhost:8153/go/api/pipelines/gocd2/status', auth=('gouser', 'verysecret'), headers={'Accept': 'application/json'})
 ->RET:Instance('Response', 'response_get2')
 <-PYT:response_get2.status_code
 ->RET:200
-<-PYT:response_get2.headers
+<-PYT:response_get2.text
+->RET:u'{"pausedCause":"Under construction","pausedBy":"gouser","paused":true,"schedulable":false,"locked":false}'
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response', 'response_get3')
+<-PYT:response_get3.status_code
+->RET:200
+<-PYT:response_get3.headers
 ->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict3')
 <-PYT:caseinsensitivedict3.__getitem__('x-cruise-config-md5')
-->RET:'b16f6823e6e8deef182a5c0ecdd29a42'
-<-PYT:response_get2.text
+->RET:'617c73aa2f2f024ee835bfb44f96eeee'
+<-PYT:response_get3.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="77">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />

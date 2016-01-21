@@ -1,0 +1,1 @@
+-v -j pattern.json --set-test-config config-before.xml --dump-test-config config-after.xml --config goplbld.yaml

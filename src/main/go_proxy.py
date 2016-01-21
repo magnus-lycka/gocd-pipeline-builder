@@ -13,8 +13,9 @@ class GoProxy(object):
     """
     config_xml_rest_path = "/go/admin/restful/configuration/file/{}/xml"
 
-    def __init__(self, config):
+    def __init__(self, config, verbose=False):
         self.__config = yaml.load(config)
+        self.verbose = verbose
         self._cruise_config_md5 = None
         self.tree = None
         self._initial_xml = None
@@ -119,7 +120,21 @@ class GoProxy(object):
             print response.text
             raise RuntimeError(str(response.status_code))
 
-    # TODO POST /go/api/pipelines/:pipeline_name/unpause
+    def unpause(self, pipeline_name):
+        path = "/go/api/pipelines/" + pipeline_name + "/unpause"
+        self.request('post', path)
+
+    def get_pipeline_status(self, pipeline_name):
+        path = "/go/api/pipelines/" + pipeline_name + "/status"
+        headers = {
+            'Accept': 'application/json'
+        }
+        response = self.request('get', path, headers=headers)
+        if response.status_code != 200:
+            raise RuntimeError(str(response.status_code))
+        json_data = json.loads(response.text.replace("\\'", "'"),
+                               object_pairs_hook=OrderedDict)
+        return json_data
 
     def upload_config(self):
         """

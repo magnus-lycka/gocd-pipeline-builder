@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="76" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <pipelines group="first">
+    <pipeline isLocked="false" name="downstream">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="upstream" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <fetchartifact job="defaultJob" pipeline="upstream" srcfile="message.txt" stage="defaultStage">
+                <runif status="passed" />
+              </fetchartifact>
+              <exec command="/bin/cat">
+                <arg>message.txt</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline isLocked="true" name="upstream">
+      <materials>
+        <git dest="dest" url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob" timeout="0">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo 'Hello from upstream' &gt; message.txt</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="message.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="downstream" />
+        <pipeline name="upstream" />
+      </pipelines>
+    </environment>
+  </environments>
+</cruise>

@@ -1,0 +1,2 @@
+# Extract git url and pipeline name from git config and name of current directory
+add_pipeline_with_defaults

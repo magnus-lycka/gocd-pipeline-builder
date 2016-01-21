@@ -1,0 +1,43 @@
+[
+  {
+    "environment": "green",
+    "create-a-pipeline": {
+      "group": "first",
+      "pipeline": {
+        "name": "{{ repo_name }}",
+        "materials": [
+          {
+            "type": "git",
+            "attributes": {
+              "url": "{{ repo_url }}",
+              {% if not skip_dest %}"destination": "{{ dest or repo_name }}",{% endif %}
+              "filter": null,
+              "name": null,
+              "auto_update": true,
+              "branch": "master",
+              "submodule_folder": null
+            }
+          }
+        ],
+        "stages": [
+          {
+            "name": "defaultStage",
+            "jobs": [
+              {
+                "name": "defaultJob",
+                "tasks": [
+                  {
+                    "type": "exec",
+                    "attributes": {
+                      "command": "ls"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

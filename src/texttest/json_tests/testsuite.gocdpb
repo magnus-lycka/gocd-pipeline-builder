@@ -8,5 +8,10 @@ add_duplicate_pipeline
 add_go_template_pipeline
 
 # Add pipeline material and fetchartifact to downstream pipeline as we create upstream pipeline
+# State everything explicitly
 add_downstream_dependency
+
+# Add pipeline material and fetchartifact to downstream pipeline as we create upstream pipeline
+# Imply what's not stated
+add_downstream_dependency_implicit
 

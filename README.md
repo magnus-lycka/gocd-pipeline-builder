@@ -49,15 +49,13 @@ What works?
  * Updating XML config with a pipeline using the Go Server 15.3 REST API.
  * Creating a new pipeline in an existing pipeline group.
  * Add pipeline in environment
+ * Include new pipeline as dependency material in downstream pipeline, and fetch artifact.
 
 
 Obviously missing
 -----------------
  * Update existing pipeline
  * Git hooks
- * Add new pipeline as material and fetch artifact in downstream pipeline
- * go-server authentication.
-
 
 GoCD Pipeline Templates and parameters
 --------------------------------------
@@ -78,15 +76,48 @@ you use a json file which follows this pattern:
 
     [
         {
-            "environment": "build",
-            "create-a-pipeline": [ <pipeline> ... ]
+            "environment": "name of environment",
+            "unpause": "true or false"
+            "<action>": <data>
         }
     ]
 
-Each <pipeline> should conform to the spec here:
-https://api.go.cd/current/#create-a-pipeline
+`<action>` can be one of:
 
-Use `goplbld -s` to pass the settings file to the builder.
+  - "create-a-pipeline": This means that we plan
+    to call the REST API for creation of a new pipeline.
+    See https://api.go.cd/current/#create-a-pipeline .
+    `<data>` should be a json pipeline configuration as
+    described by this API.
+    For this action, the "environment" field will
+    indicate that the new pipeline should belong
+    to a Go server environment with the given name.
+    Newly created pipelines are typically paused, but
+    setting "unpause" to "true" will make it an
+    immediate candidate for getting built.
+  - "add-downstream-dependencies": This action is
+    used to add the newly created pipeline as a
+    dependency to a downstream pipeline.
+    `<data>` is an object with the following members:
+    - "name" of the downstream pipeline.
+    - "material" (optional) specifies the dependency
+      material, so that defaults can be overridden.
+      This object should follow the structure of
+      dependency material in the REST API.
+      If missing, a dependency material object with
+      the name of the newly created pipeline with
+      default values will be used.
+    - "stage" is used for fetchartifact tasks to
+      tell where to add it. If missing, the first stage
+      will be used.
+    - "job" is used for fetchartifact tasks to
+      tell where to add it. If missing, the first job
+      will be used.
+    - "task" should be a fetch task as described in the
+      REST API which fetches some build artifact from
+      the newly created pipeline.
+
+Use `goplbld -j` to pass the json settings file to the builder.
 
 
 GoCD Pipeline Builder Patterns
@@ -102,18 +133,33 @@ A `pattern` is a Jinja2 template, see http://jinja.pocoo.org/
 With a pipeline builder `pattern`, we can avoid a lot
 of repetition. For instance, if we have several pipelines
 like the one above, that only differ on name, we can have
-settings file like this:
+yaml parameter file like this:
 
     path: ./simple_pipeline_pattern.json
     parameters:
         name: gocd
         url: https://github.com/magnus-lycka/gocd.git
 
+Use `goplbld -y` to pass the yaml parameter file to the builder.
+
 The pattern file `./simple_pipeline_pattern.json` is a
 json file as described in the previous section, with
 jinja2 templating. See the test suite for examples.
 
-See also jinja2 docs at http://jinja.pocoo.org/
+See also Jinja2 docs at http://jinja.pocoo.org/
+
+
+Builtin parameters
+------------------
+
+Whether you run  `goplbld -y` or  `goplbld -j`, you can
+use builtin parameters to substitute values via the Jinja2
+template mechanism. The following builtin parameters exist:
+
+| Parameter | Default value                       |
+|-----------|-------------------------------------|
+| repo_url  | URL for git repo from ./.git/config |
+| repo_name | Name of current working directory   |
 
 
 How to run the self-tests

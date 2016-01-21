@@ -1,1 +1,1 @@
--s pipeline.yaml --set-test-config config-before.xml --dump-test-config config-after.xml --config goplbld.yaml
+-v -y pipeline.yaml --set-test-config config-before.xml --dump-test-config config-after.xml --config goplbld.yaml

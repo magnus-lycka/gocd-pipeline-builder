@@ -3,17 +3,23 @@
 import sys
 import argparse
 from go_proxy import GoProxy
-from model import get_settings
+from model import JsonSettings, YamlSettings
 
 
 def main(args=sys.argv):
     argparser = argparse.ArgumentParser(
         description="Add pipeline to Go CD server."
     )
-    argparser.add_argument(
-        "-s", "--settings",
+    main_action_group = argparser.add_mutually_exclusive_group()
+    main_action_group.add_argument(
+        "-j", "--json-settings",
         type=argparse.FileType('r'),
-        help="Yaml or Json file with settings for GoCD pipeline."
+        help="Read raw json file with settings for GoCD pipeline."
+    )
+    main_action_group.add_argument(
+        "-y", "--yaml-settings",
+        type=argparse.FileType('r'),
+        help="Read yaml files with parameters for GoCD pipeline."
     )
     argparser.add_argument(
         "-c", "--config",
@@ -35,17 +41,25 @@ def main(args=sys.argv):
         type=argparse.FileType('w'),
         help="Copy of new GoCD configuration XML file."
     )
+    argparser.add_argument(
+        "-v", "--verbose",
+        action="store_true",
+        help="Write status of created pipeline."
+    )
 
     pargs = argparser.parse_args(args[1:])
 
-    go = GoProxy(pargs.config)
+    go = GoProxy(pargs.config, pargs.verbose)
 
     if pargs.set_test_config is not None:
         go.tree.set_test_settings_xml(pargs.set_test_config)
         go.upload_config()
 
-    if pargs.settings is not None:
-        get_settings(pargs.settings).server_operations(go)
+    if pargs.json_settings is not None:
+        JsonSettings(pargs.json_settings).server_operations(go)
+
+    if pargs.yaml_settings is not None:
+        YamlSettings(pargs.yaml_settings).server_operations(go)
 
     if pargs.dump is not None:
         go.init()

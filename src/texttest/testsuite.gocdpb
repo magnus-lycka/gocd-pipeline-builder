@@ -5,9 +5,14 @@ dump_config_local_server
 # runs the script with --help to check the helpful documentation is correct
 helptext
 
-# Tests using json setting files directly
+# Tests using json setting files without substitutions
 json_tests
+
+# Tests using json setting files with substitutions, but without yaml files
+json_pattern_tests
 
 # Tests using yaml settings, i.e. pattern file
 yaml_tests
 
+# Check CLI for faulty use
+command_line_mistakes

@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="77" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
   <pipelines group="first">
-    <pipeline isLocked="true" name="gocd2">
+    <pipeline name="add_pipeline_with_defaults">
       <materials>
-        <git dest="gocd2" url="https://github.com/magnus-lycka/gocd.git" />
+        <git dest="add_pipeline_with_defaults" url="git@github.com:magnus-lycka/gocd-pipeline-builder.git" />
       </materials>
       <stage name="defaultStage">
         <jobs>
-          <job name="defaultJob" timeout="0">
+          <job name="defaultJob">
             <tasks>
-              <exec command="ls">
-                <runif status="passed" />
-              </exec>
+              <exec command="ls" />
             </tasks>
           </job>
         </jobs>
@@ -21,7 +19,7 @@
   <environments>
     <environment name="green">
       <pipelines>
-        <pipeline name="gocd2" />
+        <pipeline name="add_pipeline_with_defaults" />
       </pipelines>
     </environment>
   </environments>

@@ -1,13 +1,15 @@
-usage: goplbld.py [-h] [-s SETTINGS] [-c CONFIG]
+usage: goplbld.py [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-c CONFIG]
                   [--set-test-config SET_TEST_CONFIG]
-                  [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP]
+                  [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v]
 
 Add pipeline to Go CD server.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -s SETTINGS, --settings SETTINGS
-                        Yaml or Json file with settings for GoCD pipeline.
+  -j JSON_SETTINGS, --json-settings JSON_SETTINGS
+                        Read raw json file with settings for GoCD pipeline.
+  -y YAML_SETTINGS, --yaml-settings YAML_SETTINGS
+                        Read yaml files with parameters for GoCD pipeline.
   -c CONFIG, --config CONFIG
                         Yaml file with configuration.
   --set-test-config SET_TEST_CONFIG
@@ -16,3 +18,4 @@ optional arguments:
                         Copy of some sections of new GoCD configuration XML
                         file.
   -d DUMP, --dump DUMP  Copy of new GoCD configuration XML file.
+  -v, --verbose         Write status of created pipeline.

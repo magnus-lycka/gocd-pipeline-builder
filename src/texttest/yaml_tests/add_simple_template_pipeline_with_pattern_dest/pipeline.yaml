@@ -3,3 +3,4 @@ parameters:
   name: gocd2
   url: https://github.com/magnus-lycka/gocd.git
   dest: gottis
+  unpause: false
