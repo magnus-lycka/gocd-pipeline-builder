@@ -96,6 +96,19 @@ From file or on command line. -P allows us to secretly provide passwords.
 -j together with -D can provide the same information on the commandline as
 -y would provide in a file. See below.
 
+Assuming that you have an appropriate settings file available at http:/server/settings.json
+with pattern parameters `{{ repo_url }}`, `{{ group }}` and `{{ repo_name }}`, and you
+stand in a git checkout and want a new pipeline named as the checkout directory, in
+pipeline group `X` at `http://mygoserver:8153`, where you log in as `charlie`, you
+can type this:
+
+    goplbld -C url=http://mygoserver:8153 -C username=charlie -P password -D group=X -j http:/server/settings.json
+
+You will be prompted for password.
+
+If you want the pipeline to be called `Y` instead of the directory name,
+simply add `-D repo_name=Y` to the command line.
+
 
 GoCD Pipeline Templates and parameters
 --------------------------------------
@@ -204,6 +217,15 @@ template mechanism. The following builtin parameters exist:
 
 How to run the self-tests
 -------------------------
+
+Install a go-server for testing.
+See https://www.go.cd/documentation/user/current/installation/installing_go_server.html
+
+The test will wipe most of the configuration before each test, so don't use a go-server
+that's used for anything else for these tests.
+
+Create a user in the go-server with credentials corresponding to `src/texttest/goplbld.yaml`.
+See https://www.go.cd/documentation/user/current/configuration/dev_authentication.html
 
 Install texttest: [http://texttest.org]. Also install all the python libraries listed in 'requirements.txt'.
 
