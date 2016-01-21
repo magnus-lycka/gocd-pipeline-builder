@@ -1,2 +1,5 @@
 # Extract git url and pipeline name from git config and name of current directory
 add_pipeline_with_defaults
+
+# Get config and settings from command line instead of files.
+add_pipeline_with_commandline_overrides

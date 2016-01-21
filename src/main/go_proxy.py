@@ -13,8 +13,11 @@ class GoProxy(object):
     """
     config_xml_rest_path = "/go/admin/restful/configuration/file/{}/xml"
 
-    def __init__(self, config, verbose=False):
-        self.__config = yaml.load(config)
+    def __init__(self, config, verbose, config_overrides):
+        self.__config = {}
+        if config is not None:
+            self.__config.update(yaml.load(config))
+        self.__config.update(config_overrides)
         self.verbose = verbose
         self._cruise_config_md5 = None
         self.tree = None

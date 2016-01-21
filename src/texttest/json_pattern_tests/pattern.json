@@ -2,7 +2,7 @@
   {
     "environment": "green",
     "create-a-pipeline": {
-      "group": "first",
+      "group": "{{ group or "first" }}",
       "pipeline": {
         "name": "{{ repo_name }}",
         "materials": [

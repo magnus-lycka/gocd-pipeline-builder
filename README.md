@@ -57,6 +57,46 @@ Obviously missing
  * Update existing pipeline
  * Git hooks
 
+
+goplbld Command Line Interface
+------------------------------
+
+    usage: goplbld.py [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-D DEFINE]
+                      [-c CONFIG] [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
+                      [--set-test-config SET_TEST_CONFIG]
+                      [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v]
+
+    Add pipeline to Go CD server.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -j JSON_SETTINGS, --json-settings JSON_SETTINGS
+                            Read json file with settings for GoCD pipeline.
+      -y YAML_SETTINGS, --yaml-settings YAML_SETTINGS
+                            Read yaml files with parameters for GoCD pipeline.
+      -D DEFINE, --define DEFINE
+                            Define setting parameter on command line.
+      -c CONFIG, --config CONFIG
+                            Yaml file with configuration.
+      -C CONFIG_PARAM, --config-param CONFIG_PARAM
+                            Define config parameter on command line.
+      -P PASSWORD_PROMPT, --password-prompt PASSWORD_PROMPT
+                            Prompt for config parameter without echo.
+      --set-test-config SET_TEST_CONFIG
+                            Set some sections in config first. (For test setup.)
+      --dump-test-config DUMP_TEST_CONFIG
+                            Copy of some sections of new GoCD configuration XML
+                            file.
+      -d DUMP, --dump DUMP  Copy of new GoCD configuration XML file.
+      -v, --verbose         Write status of created pipeline.
+
+-c and -C/-P are two ways of providing the same information:
+From file or on command line. -P allows us to secretly provide passwords.
+
+-j together with -D can provide the same information on the commandline as
+-y would provide in a file. See below.
+
+
 GoCD Pipeline Templates and parameters
 --------------------------------------
 
@@ -185,5 +225,8 @@ it if it doesn't exist), add the following to your checkout locations:
 start texttest:
 
     texttest -a gocdpb
+
+Since the tests change the state of the Go server, it's important to run them
+sequentially unless capturemock is in replay mode.
 
 

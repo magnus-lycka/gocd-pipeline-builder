@@ -6,7 +6,7 @@
 <-PYT:response_get.headers
 ->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
 <-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
-->RET:'c35fb89765a7d6f80980043c03aa8b90'
+->RET:'9b247fe15a3b0f53caf565174bdebcb2'
 <-PYT:response_get.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="77">
@@ -19,6 +19,7 @@
     </security>
   </server>
   <pipelines group="first" />
+  <pipelines group="Tjong" />
   <environments>
     <environment name="green" />
   </environments>
@@ -28,7 +29,7 @@
 </cruise>
 
 '''
-<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'c35fb89765a7d6f80980043c03aa8b90',
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '9b247fe15a3b0f53caf565174bdebcb2',
  'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="77" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
@@ -54,7 +55,7 @@
 ->RET:Instance('Response', 'response_post')
 <-PYT:response_post.status_code
 ->RET:200
-<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "first", "pipeline": {"name": "add_pipeline_with_defaults", "materials": [{"type": "git", "attributes": {"url": "git@github.com:magnus-lycka/gocd-pipeline-builder.git", "destination": "add_pipeline_with_defaults", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}], "stages": [{"name": "defaultStage", "jobs": [{"name": "defaultJob", "tasks": [{"type": "exec", "attributes": {"command": "ls"}}]}]}]}}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
+<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "Tjong", "pipeline": {"name": "pajplajn", "materials": [{"type": "git", "attributes": {"url": "git@github.com:magnus-lycka/gocd-pipeline-builder.git", "destination": "pajplajn", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}], "stages": [{"name": "defaultStage", "jobs": [{"name": "defaultJob", "tasks": [{"type": "exec", "attributes": {"command": "ls"}}]}]}]}}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
 ->RET:Instance('Response', 'response_post1')
 <-PYT:response_post1.status_code
 ->RET:200
@@ -65,7 +66,7 @@
 <-PYT:response_get1.headers
 ->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict2')
 <-PYT:caseinsensitivedict2.__getitem__('x-cruise-config-md5')
-->RET:'c3a61230dc71479b8d7f64b621b58705'
+->RET:'782036a70e160f38b2dd258180c5be78'
 <-PYT:response_get1.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="77">
@@ -77,10 +78,11 @@
       </admins>
     </security>
   </server>
-  <pipelines group="first">
-    <pipeline name="add_pipeline_with_defaults">
+  <pipelines group="first" />
+  <pipelines group="Tjong">
+    <pipeline name="pajplajn">
       <materials>
-        <git url="git@github.com:magnus-lycka/gocd-pipeline-builder.git" dest="add_pipeline_with_defaults" />
+        <git url="git@github.com:magnus-lycka/gocd-pipeline-builder.git" dest="pajplajn" />
       </materials>
       <stage name="defaultStage">
         <jobs>
@@ -102,7 +104,7 @@
 </cruise>
 
 '''
-<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'c3a61230dc71479b8d7f64b621b58705',
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '782036a70e160f38b2dd258180c5be78',
  'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="77" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
@@ -112,10 +114,11 @@
       </admins>
     </security>
   </server>
-  <pipelines group="first">
-    <pipeline name="add_pipeline_with_defaults">
+  <pipelines group="first" />
+  <pipelines group="Tjong">
+    <pipeline name="pajplajn">
       <materials>
-        <git dest="add_pipeline_with_defaults" url="git@github.com:magnus-lycka/gocd-pipeline-builder.git" />
+        <git dest="pajplajn" url="git@github.com:magnus-lycka/gocd-pipeline-builder.git" />
       </materials>
       <stage name="defaultStage">
         <jobs>
@@ -131,7 +134,7 @@
   <environments>
     <environment name="green">
       <pipelines>
-        <pipeline name="add_pipeline_with_defaults" />
+        <pipeline name="pajplajn" />
       </pipelines>
     </environment>
   </environments>
@@ -143,7 +146,7 @@
 ->RET:Instance('Response', 'response_post2')
 <-PYT:response_post2.status_code
 ->RET:200
-<-PYT:requests.request('GET', u'http://localhost:8153/go/api/pipelines/add_pipeline_with_defaults/status', auth=('gouser', 'verysecret'), headers={'Accept': 'application/json'})
+<-PYT:requests.request('GET', u'http://localhost:8153/go/api/pipelines/pajplajn/status', auth=('gouser', 'verysecret'), headers={'Accept': 'application/json'})
 ->RET:Instance('Response', 'response_get2')
 <-PYT:response_get2.status_code
 ->RET:200
@@ -156,7 +159,7 @@
 <-PYT:response_get3.headers
 ->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict3')
 <-PYT:caseinsensitivedict3.__getitem__('x-cruise-config-md5')
-->RET:'10722d421271793d573e5f097468a9a9'
+->RET:'fc4bccd503c2a22e0fe9e09962d8d588'
 <-PYT:response_get3.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="77">
@@ -168,10 +171,11 @@
       </admins>
     </security>
   </server>
-  <pipelines group="first">
-    <pipeline name="add_pipeline_with_defaults">
+  <pipelines group="first" />
+  <pipelines group="Tjong">
+    <pipeline name="pajplajn">
       <materials>
-        <git url="git@github.com:magnus-lycka/gocd-pipeline-builder.git" dest="add_pipeline_with_defaults" />
+        <git url="git@github.com:magnus-lycka/gocd-pipeline-builder.git" dest="pajplajn" />
       </materials>
       <stage name="defaultStage">
         <jobs>
@@ -187,7 +191,7 @@
   <environments>
     <environment name="green">
       <pipelines>
-        <pipeline name="add_pipeline_with_defaults" />
+        <pipeline name="pajplajn" />
       </pipelines>
     </environment>
   </environments>

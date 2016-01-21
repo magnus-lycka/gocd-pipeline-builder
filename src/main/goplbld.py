@@ -1,9 +1,19 @@
 #!/usr/bin/python -tt
 # coding:utf-8
 import sys
+import getpass
 import argparse
 from go_proxy import GoProxy
 from model import JsonSettings, YamlSettings
+
+
+def list2dict(list_of_pairs):
+    return dict(tuple(pair.split('=', 1) for pair in list_of_pairs or []))
+
+
+def add_secrets_to_config(config, password_parameters):
+    for password_parameter in password_parameters or []:
+        config[password_parameter] = getpass.getpass(password_parameter + ': ')
 
 
 def main(args=sys.argv):
@@ -14,7 +24,7 @@ def main(args=sys.argv):
     main_action_group.add_argument(
         "-j", "--json-settings",
         type=argparse.FileType('r'),
-        help="Read raw json file with settings for GoCD pipeline."
+        help="Read json file with settings for GoCD pipeline."
     )
     main_action_group.add_argument(
         "-y", "--yaml-settings",
@@ -22,9 +32,24 @@ def main(args=sys.argv):
         help="Read yaml files with parameters for GoCD pipeline."
     )
     argparser.add_argument(
+        "-D", "--define",
+        action="append",
+        help="Define setting parameter on command line."
+    )
+    argparser.add_argument(
         "-c", "--config",
         type=argparse.FileType('r'),
         help="Yaml file with configuration."
+    )
+    argparser.add_argument(
+        "-C", "--config-param",
+        action="append",
+        help="Define config parameter on command line."
+    )
+    argparser.add_argument(
+        "-P", "--password-prompt",
+        action="append",
+        help="Prompt for config parameter without echo."
     )
     argparser.add_argument(
         "--set-test-config",
@@ -49,17 +74,21 @@ def main(args=sys.argv):
 
     pargs = argparser.parse_args(args[1:])
 
-    go = GoProxy(pargs.config, pargs.verbose)
+    extra_config = list2dict(pargs.config_param)
+    add_secrets_to_config(extra_config, pargs.password_prompt)
+    go = GoProxy(pargs.config, pargs.verbose, extra_config)
 
     if pargs.set_test_config is not None:
         go.tree.set_test_settings_xml(pargs.set_test_config)
         go.upload_config()
 
     if pargs.json_settings is not None:
-        JsonSettings(pargs.json_settings).server_operations(go)
+        JsonSettings(pargs.json_settings, list2dict(pargs.define)
+                     ).server_operations(go)
 
     if pargs.yaml_settings is not None:
-        YamlSettings(pargs.yaml_settings).server_operations(go)
+        YamlSettings(pargs.yaml_settings, list2dict(pargs.define)
+                     ).server_operations(go)
 
     if pargs.dump is not None:
         go.init()

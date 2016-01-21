@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="77" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <pipelines group="first" />
+  <pipelines group="Tjong">
+    <pipeline name="pajplajn">
+      <materials>
+        <git dest="pajplajn" url="git@github.com:magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="ls" />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="pajplajn" />
+      </pipelines>
+    </environment>
+  </environments>
+</cruise>

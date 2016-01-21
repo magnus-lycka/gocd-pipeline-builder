@@ -19,9 +19,9 @@ class JsonSettings(object):
 
     See README.md for details.
     """
-    def __init__(self, settings_file):
+    def __init__(self, settings_file, extra_settings):
         self.list = None
-        self.load_file(settings_file)
+        self.load_file(settings_file, extra_settings)
         self.pipeline_name = None
         self.pipeline_stage_names = []
 
@@ -100,8 +100,8 @@ class JsonSettings(object):
             job = stage["jobs"][0]
         return job
 
-    def load_file(self, settings_file):
-        self.load_template(settings_file, {})
+    def load_file(self, settings_file, extra_settings):
+        self.load_template(settings_file, extra_settings)
 
     def load_template(self, template, parameters):
         template = Template(template.read())
@@ -162,7 +162,7 @@ class YamlSettings(JsonSettings):
     might contains parameters that override default
     parameters in the base class.
     """
-    def load_file(self, settings_file):
+    def load_file(self, settings_file, extra_settings):
         """
         Find the json template and parameter in the yaml file,
         render the template, and pass it to the super class.
@@ -170,6 +170,7 @@ class YamlSettings(JsonSettings):
         settings = yaml.load(settings_file)
         template_path = settings['path']
         parameters = settings['parameters']
+        parameters.update(extra_settings)
         self.load_template(open(template_path), parameters)
 
 
