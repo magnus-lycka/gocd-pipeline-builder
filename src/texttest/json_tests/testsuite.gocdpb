@@ -15,3 +15,5 @@ add_downstream_dependency
 # Imply what's not stated
 add_downstream_dependency_implicit
 
+# Add pipeline with upstream parameter in template
+add_pipeline_with_upstream_parameter_in_template

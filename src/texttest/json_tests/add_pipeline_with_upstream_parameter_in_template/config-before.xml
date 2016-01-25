@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="1">
+  <pipelines group="first">
+    <pipeline name="p1" template="T1">
+      <params>
+        <param name="UPSTREAM_PIPELINE">p2</param>
+      </params>
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="#{UPSTREAM_PIPELINE}" stageName="defaultStage" />
+      </materials>
+    </pipeline>
+    <pipeline name="p2" isLocked="false">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>touch x.txt</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="x.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="T1">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <fetchartifact pipeline="#{UPSTREAM_PIPELINE}" stage="defaultStage" job="defaultJob" srcfile="x.txt">
+                <runif status="passed" />
+              </fetchartifact>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="p1" />
+        <pipeline name="p2" />
+      </pipelines>
+    </environment>
+  </environments>
+</cruise>

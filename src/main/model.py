@@ -52,7 +52,7 @@ class JsonSettings(object):
                 self.pipeline_name = operation["create-a-pipeline"]["pipeline"]["name"]
                 self.pipeline_stage_names = [
                     stage["name"] for stage
-                    in operation["create-a-pipeline"]["pipeline"].get("stages", [])
+                    in operation["create-a-pipeline"]["pipeline"].get("stages") or []
                 ]
             if self.pipeline_name and "environment" in operation:
                 go.init()

@@ -1,3 +1,6 @@
+# Put pipeline with template in upstream pipeline
+put_pipeline_with_template_in_upstream_pipeline
+
 # Extract git url and pipeline name from git config and name of current directory
 add_pipeline_with_defaults
 

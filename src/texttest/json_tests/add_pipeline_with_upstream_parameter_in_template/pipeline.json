@@ -1,0 +1,42 @@
+[
+  {
+    "environment": "green",
+    "create-a-pipeline": {
+      "group": "first",
+      "pipeline": {
+        "label_template": "${COUNT}",
+        "enable_pipeline_locking": true,
+        "name": "p3",
+        "template": "t1",
+        "parameters": [
+          {
+            "name": "UPSTREAM_PIPELINE",
+            "value": "p2"
+          }
+        ],
+        "materials": [
+          {
+            "type": "git",
+            "attributes": {
+              "url": "git@github.com:sample_repo/example.git",
+              "destination": "dest",
+              "filter": null,
+              "name": null,
+              "auto_update": true,
+              "branch": "master",
+              "submodule_folder": null
+            }
+          },
+          {
+            "type": "dependency",
+            "attributes": {
+              "pipeline": "#{UPSTREAM_PIPELINE}",
+              "stage": "defaultStage",
+              "auto_update": true
+            }
+          }
+        ]
+      }
+    }
+  }
+]

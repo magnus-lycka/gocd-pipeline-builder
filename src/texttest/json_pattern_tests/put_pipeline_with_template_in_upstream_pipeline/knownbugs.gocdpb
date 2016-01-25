@@ -1,0 +1,7 @@
+
+[Reported by magnusl at 25jan15:19:48]
+search_string:tries to fetch artifact from stage
+search_file:stderr
+ignore_other_errors:1
+full_description:https://github.com/gocd/gocd/issues/1799
+brief_description:pipeline config API: cannot create pipeline with dependency on an upstream with a template #1799
