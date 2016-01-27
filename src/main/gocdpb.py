@@ -4,8 +4,8 @@ import sys
 import getpass
 import argparse
 import requests
-from go_proxy import GoProxy
-from model import JsonSettings, YamlSettings
+from goserver_adapter import Goserver
+from gocd_restapi import JsonSettings, YamlSettings
 
 
 def list2dict(list_of_pairs):
@@ -24,6 +24,7 @@ def get_json_settings(path):
         return response.text
     else:
         return open(path).read()
+
 
 def main(args=sys.argv):
     argparser = argparse.ArgumentParser(
@@ -84,7 +85,7 @@ def main(args=sys.argv):
 
     extra_config = list2dict(pargs.config_param)
     add_secrets_to_config(extra_config, pargs.password_prompt)
-    go = GoProxy(pargs.config, pargs.verbose, extra_config)
+    go = Goserver(pargs.config, pargs.verbose, extra_config)
 
     if pargs.set_test_config is not None:
         go.tree.set_test_settings_xml(pargs.set_test_config)

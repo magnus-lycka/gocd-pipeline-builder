@@ -1,5 +1,5 @@
 # Full path to the System Under Test (or Java Main Class name)
-executable:${TEXTTEST_CHECKOUT}/src/main/goplbld.py
+executable:${TEXTTEST_CHECKOUT}/src/main/gocdpb.py
 
 import_config_file:capturemock_config
 

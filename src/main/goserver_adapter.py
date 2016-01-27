@@ -4,10 +4,10 @@ import yaml
 import requests
 from collections import OrderedDict
 
-from model import CruiseTree
+from goserver_config import CruiseTree
 
 
-class GoProxy(object):
+class Goserver(object):
     """
     Manages HTTP communication with the Go server.
     """

@@ -1,7 +1,7 @@
-usage: goplbld.py [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-D DEFINE]
-                  [-c CONFIG] [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
-                  [--set-test-config SET_TEST_CONFIG]
-                  [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v]
+usage: gocdpb.py [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-D DEFINE]
+                 [-c CONFIG] [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
+                 [--set-test-config SET_TEST_CONFIG]
+                 [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v]
 
 Add pipeline to Go CD server.
 
