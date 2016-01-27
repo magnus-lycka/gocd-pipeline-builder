@@ -1,14 +1,15 @@
 GO CD Pipeline Builder
 =====================
 
-The gocd-pipeline-builder builds a GoCD pipeline automagically
-when you push a new git repository to your git server.
+The gocd-pipeline-builder should be able to build a GoCD
+pipeline automagically when you push a new git repository
+to your git server.
 
-This is still in alpha state. Don't expect it to be useful.
+This is still in beta state. Don't expect it to be useful.
 Don't let it near your production Go-server if you try it out!
 
-Plans for Go 15.3
------------------
+Plans for Go 15.3 and beyond
+----------------------------
 
 From Go version 15.3, there is a REST API for pipeline config,
 see https://api.go.cd/current/#pipeline-config
@@ -46,6 +47,7 @@ with an error message.
 What works?
 -----------
  * Fetch XML config from go-server.
+ * The templating mechanism.
  * Updating XML config with a pipeline using the Go Server 15.3 REST API.
  * Creating a new pipeline in an existing pipeline group.
  * Add pipeline in environment
@@ -58,13 +60,24 @@ Obviously missing
  * Git hooks
 
 
-goplbld Command Line Interface
+Known Issues
+------------
+
+ * Can't add dependency to pipeline with dependencies on templated pipelines
+   due to GoCD bug #1799. (Validation for POST/PUT pipeline config in GoCD
+   REST API doesn't look in template when it checks whether a fetchartifact
+   is correct.)
+ * Adding pipeline to environment is done by updating the XML config, since
+   there is not REST API for this yet.
+
+
+gocdpb Command Line Interface
 ------------------------------
 
-    usage: goplbld.py [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-D DEFINE]
-                      [-c CONFIG] [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
-                      [--set-test-config SET_TEST_CONFIG]
-                      [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v]
+    usage: gocdpb.py [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-D DEFINE]
+                     [-c CONFIG] [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
+                     [--set-test-config SET_TEST_CONFIG]
+                     [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v]
 
     Add pipeline to Go CD server.
 
@@ -90,6 +103,7 @@ goplbld Command Line Interface
       -d DUMP, --dump DUMP  Copy of new GoCD configuration XML file.
       -v, --verbose         Write status of created pipeline.
 
+
 -c and -C/-P are two ways of providing the same information:
 From file or on command line. -P allows us to secretly provide passwords.
 
@@ -102,7 +116,7 @@ stand in a git checkout and want a new pipeline named as the checkout directory,
 pipeline group `X` at `http://mygoserver:8153`, where you log in as `charlie`, you
 can type this:
 
-    goplbld -C url=http://mygoserver:8153 -C username=charlie -P password -D group=X -j http:/server/settings.json
+    gocdpb -C url=http://mygoserver:8153 -C username=charlie -P password -D group=X -j http:/server/settings.json
 
 You will be prompted for password.
 
@@ -170,7 +184,10 @@ you use a json file which follows this pattern:
       REST API which fetches some build artifact from
       the newly created pipeline.
 
-Use `goplbld -j` to pass the json settings file to the builder.
+Use `gocdpb -j` to pass the json settings file to the builder.
+
+See *.json files under src/texttest for more examples of
+intended usage.
 
 
 GoCD Pipeline Builder Patterns
@@ -193,13 +210,16 @@ yaml parameter file like this:
         name: gocd
         url: https://github.com/magnus-lycka/gocd.git
 
-Use `goplbld -y` to pass the yaml parameter file to the builder.
+Use `gocdpb -y` to pass the yaml parameter file to the builder.
 
 The pattern file `./simple_pipeline_pattern.json` is a
 json file as described in the previous section, with
 jinja2 templating. See the test suite for examples.
 
 See also Jinja2 docs at http://jinja.pocoo.org/
+
+See *.yaml files under src/texttest for more examples of
+intended usage.
 
 
 Builtin parameters
@@ -227,7 +247,22 @@ that's used for anything else for these tests.
 Create a user in the go-server with credentials corresponding to `src/texttest/goplbld.yaml`.
 See https://www.go.cd/documentation/user/current/configuration/dev_authentication.html
 
-Install texttest: [http://texttest.org]. Also install all the python libraries listed in 'requirements.txt'.
+hint:
+
+    sudo htpasswd -bcs /etc/go/htpasswd gouser verysecret
+
+If you manage to lock yourself out of the go-server when you do this, you can fix the
+/etc/go/cruise-config.xml in an editor and restart the service. It might be good to save
+a backup of cruise-config.xml before you start changing stuff.
+
+Install TextTest and CaptureMock: [http://texttest.org].
+Also install all the python libraries listed in 'requirements.txt'.
+
+hint:
+
+    sudo pip install TextTest
+    sudo pip install CaptureMock
+    sudo pip install -r requirements.txt
 
 In your $TEXTTEST_HOME folder create a softlink pointing out where the test code is.
 Given an environment variable $CLONE_LOCATION which points to the directory where you have cloned this repo:
