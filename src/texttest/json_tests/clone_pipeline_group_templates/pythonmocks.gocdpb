@@ -1,0 +1,697 @@
+<-PYT:import requests
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response(object)', 'response_get')
+<-PYT:response_get.status_code
+->RET:200
+<-PYT:response_get.headers
+->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
+<-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
+->RET:'b2d0e63e2d15f2f70f2ff35c05d4b0b0'
+<-PYT:response_get.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="RELEASE-2016-02-09">
+    <pipeline name="copy-this-too-RELEASE-2016-02-09" isLocked="false">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" branch="RELEASE-2016-02-09" />
+        <pipeline pipelineName="copy-this-RELEASE-2016-02-09" stageName="defaultStage" materialName="copy-this" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="copy-this-RELEASE-2016-02-09" isLocked="false">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" branch="RELEASE-2016-02-09" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <pipelines group="never-mind">
+    <pipeline name="do-not-copy">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <pipelines group="release-template">
+    <pipeline name="copy-this">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="copy-this-too">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="copy-this" stageName="defaultStage" />
+        <pipeline pipelineName="do-not-copy" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="do-not-copy" />
+        <pipeline name="copy-this" />
+        <pipeline name="copy-this-too" />
+        <pipeline name="copy-this-too-RELEASE-2016-02-09" />
+        <pipeline name="copy-this-RELEASE-2016-02-09" />
+      </pipelines>
+    </environment>
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+
+'''
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'b2d0e63e2d15f2f70f2ff35c05d4b0b0',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="never-mind">
+    <pipeline name="do-not-copy" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="release-template">
+    <pipeline name="copy-this" template="T1">
+      <materials>
+        <git branch="master" url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline name="copy-this-too" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="copy-this" stageName="defaultStage" />
+        <pipeline pipelineName="do-not-copy" stageName="defaultStage" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="T1">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="do-not-copy" />
+        <pipeline name="copy-this" />
+        <pipeline name="copy-this-too" />
+      </pipelines>
+    </environment>
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+'''})
+->RET:Instance('Response', 'response_post')
+<-PYT:response_post.status_code
+->RET:200
+<-PYT:requests.request('GET', 'http://localhost:8153/go/api/config/pipeline_groups', auth=('gouser', 'verysecret'), headers={'Accept': 'application/json'})
+->RET:Instance('Response', 'response_get1')
+<-PYT:response_get1.status_code
+->RET:200
+<-PYT:response_get1.text
+->RET:u'[{"name":"never-mind","pipelines":[{"label":"${COUNT}","materials":[{"fingerprint":"586f9445d5a9882b57178b0bbff645a7ff4251e5df5e8b8805a6d03479069b0b","type":"Git","description":"URL: https://github.com/magnus-lycka/gocd-pipeline-builder.git, Branch: master"}],"stages":[{"name":"defaultStage"}],"name":"do-not-copy"}]},{"name":"release-template","pipelines":[{"label":"${COUNT}","materials":[{"fingerprint":"586f9445d5a9882b57178b0bbff645a7ff4251e5df5e8b8805a6d03479069b0b","type":"Git","description":"URL: https://github.com/magnus-lycka/gocd-pipeline-builder.git, Branch: master"}],"stages":[{"name":"defaultStage"}],"name":"copy-this"},{"label":"${COUNT}","materials":[{"fingerprint":"586f9445d5a9882b57178b0bbff645a7ff4251e5df5e8b8805a6d03479069b0b","type":"Git","description":"URL: https://github.com/magnus-lycka/gocd-pipeline-builder.git, Branch: master"},{"fingerprint":"dee24a7af5acdd7cfde30d5acbd51a575090e1409f7a1ac99d7a4fecff8d2139","type":"Pipeline","description":"copy-this"},{"fingerprint":"dbac44d281253feb0cd016340b343ab0c3ea19d66befbc482e8c488c2bdf8a62","type":"Pipeline","description":"do-not-copy"}],"stages":[{"name":"defaultStage"}],"name":"copy-this-too"}]}]'
+<-PYT:requests.request('GET', u'http://localhost:8153/go/api/admin/pipelines/copy-this-too', auth=('gouser', 'verysecret'), headers={'Accept': 'application/vnd.go.cd.v1+json'})
+->RET:Instance('Response', 'response_get2')
+<-PYT:response_get2.status_code
+->RET:200
+<-PYT:response_get2.text
+->RET:u'''{
+  "_links": {
+    "self": {
+      "href": "http://localhost:8153/go/api/admin/pipelines/copy-this-too"
+    },
+    "doc": {
+      "href": "http://api.go.cd/#pipeline_config"
+    },
+    "find": {
+      "href": "http://localhost:8153/go/api/admin/pipelines/:name"
+    }
+  },
+  "label_template": "${COUNT}",
+  "enable_pipeline_locking": false,
+  "name": "copy-this-too",
+  "template": "T1",
+  "parameters": [
+
+  ],
+  "environment_variables": [
+
+  ],
+  "materials": [
+    {
+      "type": "git",
+      "attributes": {
+        "url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git",
+        "destination": null,
+        "filter": null,
+        "name": null,
+        "auto_update": true,
+        "branch": "master",
+        "submodule_folder": null
+      }
+    },
+    {
+      "type": "dependency",
+      "attributes": {
+        "pipeline": "copy-this",
+        "stage": "defaultStage",
+        "name": "copy-this",
+        "auto_update": true
+      }
+    },
+    {
+      "type": "dependency",
+      "attributes": {
+        "pipeline": "do-not-copy",
+        "stage": "defaultStage",
+        "name": "do-not-copy",
+        "auto_update": true
+      }
+    }
+  ],
+  "stages": null,
+  "tracking_tool": null,
+  "timer": null
+}
+'''
+<-PYT:response_get2.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict2')
+<-PYT:caseinsensitivedict2.__getitem__('etag')
+->RET:'"add55b915812c0292781194348880fda--gzip"'
+<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"pipeline": {"_links": {"self": {"href": "http://localhost:8153/go/api/admin/pipelines/copy-this-too"}, "doc": {"href": "http://api.go.cd/#pipeline_config"}, "find": {"href": "http://localhost:8153/go/api/admin/pipelines/:name"}}, "label_template": "${COUNT}", "enable_pipeline_locking": false, "name": "copy-this-too-RELEASE-2016-02-09", "template": "T1", "parameters": [], "environment_variables": [], "materials": [{"type": "git", "attributes": {"url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git", "destination": null, "filter": null, "name": null, "auto_update": true, "branch": "RELEASE-2016-02-09", "submodule_folder": null}}, {"type": "dependency", "attributes": {"pipeline": "copy-this", "stage": "defaultStage", "name": "copy-this", "auto_update": true}}], "stages": null, "tracking_tool": null, "timer": null}, "group": "RELEASE-2016-02-09"}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
+->RET:Instance('Response', 'response_post1')
+<-PYT:response_post1.status_code
+->RET:200
+<-PYT:requests.request('GET', u'http://localhost:8153/go/api/admin/pipelines/copy-this', auth=('gouser', 'verysecret'), headers={'Accept': 'application/vnd.go.cd.v1+json'})
+->RET:Instance('Response', 'response_get3')
+<-PYT:response_get3.status_code
+->RET:200
+<-PYT:response_get3.text
+->RET:u'''{
+  "_links": {
+    "self": {
+      "href": "http://localhost:8153/go/api/admin/pipelines/copy-this"
+    },
+    "doc": {
+      "href": "http://api.go.cd/#pipeline_config"
+    },
+    "find": {
+      "href": "http://localhost:8153/go/api/admin/pipelines/:name"
+    }
+  },
+  "label_template": "${COUNT}",
+  "enable_pipeline_locking": false,
+  "name": "copy-this",
+  "template": "T1",
+  "parameters": [
+
+  ],
+  "environment_variables": [
+
+  ],
+  "materials": [
+    {
+      "type": "git",
+      "attributes": {
+        "url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git",
+        "destination": null,
+        "filter": null,
+        "name": null,
+        "auto_update": true,
+        "branch": "master",
+        "submodule_folder": null
+      }
+    }
+  ],
+  "stages": null,
+  "tracking_tool": null,
+  "timer": null
+}
+'''
+<-PYT:response_get3.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict3')
+<-PYT:caseinsensitivedict3.__getitem__('etag')
+->RET:'"f055ad915dddc3230272ef7ac63bb4eb--gzip"'
+<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"pipeline": {"_links": {"self": {"href": "http://localhost:8153/go/api/admin/pipelines/copy-this"}, "doc": {"href": "http://api.go.cd/#pipeline_config"}, "find": {"href": "http://localhost:8153/go/api/admin/pipelines/:name"}}, "label_template": "${COUNT}", "enable_pipeline_locking": false, "name": "copy-this-RELEASE-2016-02-09", "template": "T1", "parameters": [], "environment_variables": [], "materials": [{"type": "git", "attributes": {"url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git", "destination": null, "filter": null, "name": null, "auto_update": true, "branch": "RELEASE-2016-02-09", "submodule_folder": null}}], "stages": null, "tracking_tool": null, "timer": null}, "group": "RELEASE-2016-02-09"}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
+->RET:Instance('Response', 'response_post2')
+<-PYT:response_post2.status_code
+->RET:200
+<-PYT:requests.request('GET', u'http://localhost:8153/go/api/admin/pipelines/copy-this-too-RELEASE-2016-02-09', auth=('gouser', 'verysecret'), headers={'Accept': 'application/vnd.go.cd.v1+json'})
+->RET:Instance('Response', 'response_get4')
+<-PYT:response_get4.status_code
+->RET:200
+<-PYT:response_get4.text
+->RET:u'''{
+  "_links": {
+    "self": {
+      "href": "http://localhost:8153/go/api/admin/pipelines/copy-this-too-RELEASE-2016-02-09"
+    },
+    "doc": {
+      "href": "http://api.go.cd/#pipeline_config"
+    },
+    "find": {
+      "href": "http://localhost:8153/go/api/admin/pipelines/:name"
+    }
+  },
+  "label_template": "${COUNT}",
+  "enable_pipeline_locking": false,
+  "name": "copy-this-too-RELEASE-2016-02-09",
+  "template": "T1",
+  "parameters": [
+
+  ],
+  "environment_variables": [
+
+  ],
+  "materials": [
+    {
+      "type": "git",
+      "attributes": {
+        "url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git",
+        "destination": null,
+        "filter": null,
+        "name": null,
+        "auto_update": true,
+        "branch": "RELEASE-2016-02-09",
+        "submodule_folder": null
+      }
+    },
+    {
+      "type": "dependency",
+      "attributes": {
+        "pipeline": "copy-this",
+        "stage": "defaultStage",
+        "name": "copy-this",
+        "auto_update": true
+      }
+    }
+  ],
+  "stages": null,
+  "tracking_tool": null,
+  "timer": null
+}
+'''
+<-PYT:response_get4.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict4')
+<-PYT:caseinsensitivedict4.__getitem__('etag')
+->RET:'"4d42b4465e12081355d029d6f1243846--gzip"'
+<-PYT:requests.request('PUT', u'http://localhost:8153/go/api/admin/pipelines/copy-this-too-RELEASE-2016-02-09', auth=('gouser', 'verysecret'), data='{"_links": {"self": {"href": "http://localhost:8153/go/api/admin/pipelines/copy-this-too-RELEASE-2016-02-09"}, "doc": {"href": "http://api.go.cd/#pipeline_config"}, "find": {"href": "http://localhost:8153/go/api/admin/pipelines/:name"}}, "label_template": "${COUNT}", "enable_pipeline_locking": false, "name": "copy-this-too-RELEASE-2016-02-09", "template": "T1", "parameters": [], "environment_variables": [], "materials": [{"type": "git", "attributes": {"url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git", "destination": null, "filter": null, "name": null, "auto_update": true, "branch": "RELEASE-2016-02-09", "submodule_folder": null}}, {"type": "dependency", "attributes": {"pipeline": "copy-this-RELEASE-2016-02-09", "stage": "defaultStage", "name": "copy-this", "auto_update": true}}], "stages": null, "tracking_tool": null, "timer": null}', headers={'Accept': 'application/vnd.go.cd.v1+json',
+ 'Content-Type': 'application/json',
+ 'If-Match': '"4d42b4465e12081355d029d6f1243846--gzip"'})
+->RET:Instance('Response', 'response_put')
+<-PYT:response_put.status_code
+->RET:200
+<-PYT:requests.request('GET', u'http://localhost:8153/go/api/admin/pipelines/copy-this-RELEASE-2016-02-09', auth=('gouser', 'verysecret'), headers={'Accept': 'application/vnd.go.cd.v1+json'})
+->RET:Instance('Response', 'response_get5')
+<-PYT:response_get5.status_code
+->RET:200
+<-PYT:response_get5.text
+->RET:u'''{
+  "_links": {
+    "self": {
+      "href": "http://localhost:8153/go/api/admin/pipelines/copy-this-RELEASE-2016-02-09"
+    },
+    "doc": {
+      "href": "http://api.go.cd/#pipeline_config"
+    },
+    "find": {
+      "href": "http://localhost:8153/go/api/admin/pipelines/:name"
+    }
+  },
+  "label_template": "${COUNT}",
+  "enable_pipeline_locking": false,
+  "name": "copy-this-RELEASE-2016-02-09",
+  "template": "T1",
+  "parameters": [
+
+  ],
+  "environment_variables": [
+
+  ],
+  "materials": [
+    {
+      "type": "git",
+      "attributes": {
+        "url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git",
+        "destination": null,
+        "filter": null,
+        "name": null,
+        "auto_update": true,
+        "branch": "RELEASE-2016-02-09",
+        "submodule_folder": null
+      }
+    }
+  ],
+  "stages": null,
+  "tracking_tool": null,
+  "timer": null
+}
+'''
+<-PYT:response_get5.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict5')
+<-PYT:caseinsensitivedict5.__getitem__('etag')
+->RET:'"96cb79b40319ca43906b09eab6ba0ee3--gzip"'
+<-PYT:requests.request('PUT', u'http://localhost:8153/go/api/admin/pipelines/copy-this-RELEASE-2016-02-09', auth=('gouser', 'verysecret'), data='{"_links": {"self": {"href": "http://localhost:8153/go/api/admin/pipelines/copy-this-RELEASE-2016-02-09"}, "doc": {"href": "http://api.go.cd/#pipeline_config"}, "find": {"href": "http://localhost:8153/go/api/admin/pipelines/:name"}}, "label_template": "${COUNT}", "enable_pipeline_locking": false, "name": "copy-this-RELEASE-2016-02-09", "template": "T1", "parameters": [], "environment_variables": [], "materials": [{"type": "git", "attributes": {"url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git", "destination": null, "filter": null, "name": null, "auto_update": true, "branch": "RELEASE-2016-02-09", "submodule_folder": null}}], "stages": null, "tracking_tool": null, "timer": null}', headers={'Accept': 'application/vnd.go.cd.v1+json',
+ 'Content-Type': 'application/json',
+ 'If-Match': '"96cb79b40319ca43906b09eab6ba0ee3--gzip"'})
+->RET:Instance('Response', 'response_put1')
+<-PYT:response_put1.status_code
+->RET:200
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response', 'response_get6')
+<-PYT:response_get6.status_code
+->RET:200
+<-PYT:response_get6.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict6')
+<-PYT:caseinsensitivedict6.__getitem__('x-cruise-config-md5')
+->RET:'89bfae252613e5e26a1ce7bfab7ee49f'
+<-PYT:response_get6.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="RELEASE-2016-02-09">
+    <pipeline name="copy-this-too-RELEASE-2016-02-09" isLocked="false" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" branch="RELEASE-2016-02-09" />
+        <pipeline pipelineName="copy-this-RELEASE-2016-02-09" stageName="defaultStage" materialName="copy-this" />
+      </materials>
+    </pipeline>
+    <pipeline name="copy-this-RELEASE-2016-02-09" isLocked="false" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" branch="RELEASE-2016-02-09" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="never-mind">
+    <pipeline name="do-not-copy" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="release-template">
+    <pipeline name="copy-this" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline name="copy-this-too" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="copy-this" stageName="defaultStage" />
+        <pipeline pipelineName="do-not-copy" stageName="defaultStage" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="T1">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="do-not-copy" />
+        <pipeline name="copy-this" />
+        <pipeline name="copy-this-too" />
+      </pipelines>
+    </environment>
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+
+'''
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '89bfae252613e5e26a1ce7bfab7ee49f',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="RELEASE-2016-02-09">
+    <pipeline isLocked="false" name="copy-this-too-RELEASE-2016-02-09" template="T1">
+      <materials>
+        <git branch="RELEASE-2016-02-09" url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline materialName="copy-this" pipelineName="copy-this-RELEASE-2016-02-09" stageName="defaultStage" />
+      </materials>
+    </pipeline>
+    <pipeline isLocked="false" name="copy-this-RELEASE-2016-02-09" template="T1">
+      <materials>
+        <git branch="RELEASE-2016-02-09" url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="never-mind">
+    <pipeline name="do-not-copy" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="release-template">
+    <pipeline name="copy-this" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline name="copy-this-too" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="copy-this" stageName="defaultStage" />
+        <pipeline pipelineName="do-not-copy" stageName="defaultStage" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="T1">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="do-not-copy" />
+        <pipeline name="copy-this" />
+        <pipeline name="copy-this-too" />
+        <pipeline name="copy-this-too-RELEASE-2016-02-09" />
+        <pipeline name="copy-this-RELEASE-2016-02-09" />
+      </pipelines>
+    </environment>
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+'''})
+->RET:Instance('Response', 'response_post3')
+<-PYT:response_post3.status_code
+->RET:200
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response', 'response_get7')
+<-PYT:response_get7.status_code
+->RET:200
+<-PYT:response_get7.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict7')
+<-PYT:caseinsensitivedict7.__getitem__('x-cruise-config-md5')
+->RET:'edbb0989e40ec30a34d700531a4232f0'
+<-PYT:response_get7.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="RELEASE-2016-02-09">
+    <pipeline name="copy-this-too-RELEASE-2016-02-09" isLocked="false" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" branch="RELEASE-2016-02-09" />
+        <pipeline pipelineName="copy-this-RELEASE-2016-02-09" stageName="defaultStage" materialName="copy-this" />
+      </materials>
+    </pipeline>
+    <pipeline name="copy-this-RELEASE-2016-02-09" isLocked="false" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" branch="RELEASE-2016-02-09" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="never-mind">
+    <pipeline name="do-not-copy" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="release-template">
+    <pipeline name="copy-this" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline name="copy-this-too" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="copy-this" stageName="defaultStage" />
+        <pipeline pipelineName="do-not-copy" stageName="defaultStage" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="T1">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="do-not-copy" />
+        <pipeline name="copy-this" />
+        <pipeline name="copy-this-too" />
+        <pipeline name="copy-this-too-RELEASE-2016-02-09" />
+        <pipeline name="copy-this-RELEASE-2016-02-09" />
+      </pipelines>
+    </environment>
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+
+'''

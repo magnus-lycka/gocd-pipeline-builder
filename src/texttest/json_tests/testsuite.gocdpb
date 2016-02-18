@@ -17,3 +17,9 @@ add_downstream_dependency_implicit
 
 # Add pipeline with upstream parameter in template
 add_pipeline_with_upstream_parameter_in_template
+
+# Create a pipeline group for a system release by cloning a template group (pipelines do not use templates)
+clone_pipeline_group_no_templates
+
+# Create a pipeline group for a system release by cloning a template group (pipelines use templates)
+clone_pipeline_group_templates

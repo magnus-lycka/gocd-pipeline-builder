@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="1">
+  <pipelines group="never-mind">
+    <pipeline name="do-not-copy">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <pipelines group="release-template">
+    <pipeline name="copy-this">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" branch="master" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="copy-this-too" >
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="copy-this" stageName="defaultStage" />
+        <pipeline pipelineName="do-not-copy" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="do-not-copy" />
+        <pipeline name="copy-this" />
+        <pipeline name="copy-this-too" />
+      </pipelines>
+    </environment>
+  </environments>
+</cruise>

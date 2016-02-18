@@ -6,10 +6,10 @@
 <-PYT:response_get.headers
 ->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
 <-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
-->RET:'f5f54200491f926776865f71db845e5e'
+->RET:'ab270d4524240138d0a0daa920c2d076'
 <-PYT:response_get.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
@@ -19,54 +19,32 @@
     </security>
   </server>
   <pipelines group="first">
-    <pipeline name="downstream" isLocked="false">
+    <pipeline name="new_pipeline" isLocked="true" template="my_template">
       <materials>
-        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
-        <pipeline pipelineName="upstream" stageName="defaultStage" />
+        <git url="git@github.com:sample_repo/example.git" dest="dest" />
       </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="my_template">
       <stage name="defaultStage">
         <jobs>
           <job name="defaultJob">
             <tasks>
-              <fetchartifact pipeline="upstream" stage="defaultStage" job="defaultJob" srcfile="message.txt">
-                <runif status="passed" />
-              </fetchartifact>
-              <exec command="/bin/cat">
-                <arg>message.txt</arg>
-                <runif status="passed" />
-              </exec>
-            </tasks>
-          </job>
-        </jobs>
-      </stage>
-    </pipeline>
-    <pipeline name="upstream" isLocked="true">
-      <materials>
-        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" dest="dest" />
-      </materials>
-      <stage name="defaultStage">
-        <jobs>
-          <job name="defaultJob" timeout="0">
-            <tasks>
-              <exec command="/bin/bash">
+              <exec command="/bin/bash" workingdir="gocd">
                 <arg>-c</arg>
-                <arg>echo \'Hello from upstream\' &gt; message.txt</arg>
-                <runif status="passed" />
+                <arg>echo $SHELL $GO_PIPELINE_LABEL</arg>
               </exec>
             </tasks>
-            <artifacts>
-              <artifact src="message.txt" />
-            </artifacts>
           </job>
         </jobs>
       </stage>
     </pipeline>
-  </pipelines>
+  </templates>
   <environments>
     <environment name="green">
       <pipelines>
-        <pipeline name="downstream" />
-        <pipeline name="upstream" />
+        <pipeline name="new_pipeline" />
       </pipelines>
     </environment>
   </environments>
@@ -76,8 +54,8 @@
 </cruise>
 
 '''
-<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'f5f54200491f926776865f71db845e5e',
- 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="76" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'ab270d4524240138d0a0daa920c2d076',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
@@ -131,10 +109,10 @@
 <-PYT:response_get1.headers
 ->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict2')
 <-PYT:caseinsensitivedict2.__getitem__('x-cruise-config-md5')
-->RET:'75c886fb87169064b734ac415e531afc'
+->RET:'b45c1dc3b4871f351c2a37fc13ae704d'
 <-PYT:response_get1.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
@@ -196,8 +174,8 @@
 </cruise>
 
 '''
-<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '75c886fb87169064b734ac415e531afc',
- 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="76" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'b45c1dc3b4871f351c2a37fc13ae704d',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
@@ -382,10 +360,10 @@
 <-PYT:response_get3.headers
 ->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict4')
 <-PYT:caseinsensitivedict4.__getitem__('x-cruise-config-md5')
-->RET:'c0e7f30b9798cf659e8d228976925372'
+->RET:'c73c517baa8306e33568dfd65c3c9d81'
 <-PYT:response_get3.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
   <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />

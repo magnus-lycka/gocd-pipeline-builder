@@ -1,0 +1,731 @@
+<-PYT:import requests
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response(object)', 'response_get')
+<-PYT:response_get.status_code
+->RET:200
+<-PYT:response_get.headers
+->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
+<-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
+->RET:'caac2ed2d4008afe9dfc06d83ac7b7a8'
+<-PYT:response_get.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="first">
+    <pipeline name="p1" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline name="p2" isLocked="false" template="t2">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline name="recipe" isLocked="false">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="p1" stageName="defaultStage" materialName="p1" />
+        <pipeline pipelineName="p2" stageName="defaultStage" materialName="p2" />
+        <pipeline pipelineName="put_pipeline_with_template_in_upstream_pipeline" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <fetchartifact pipeline="put_pipeline_with_template_in_upstream_pipeline" stage="defaultStage" job="defaultJob" srcfile="message.txt" dest="upstream_put_pipeline_with_template_in_upstream_pipeline">
+                <runif status="passed" />
+              </fetchartifact>
+              <fetchartifact pipeline="p1" stage="defaultStage" job="defaultJob" srcfile="artifact.txt" dest="upstream_p1">
+                <runif status="passed" />
+              </fetchartifact>
+              <fetchartifact pipeline="p2" stage="defaultStage" job="defaultJob" srcfile="artifact.txt" dest="upstream_p2">
+                <runif status="passed" />
+              </fetchartifact>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL $GO_PIPELINE_LABEL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="put_pipeline_with_template_in_upstream_pipeline" template="t2">
+      <materials>
+        <git url="git@github.com:sample_repo/example.git" dest="put_pipeline_with_template_in_upstream_pipeline" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="T1">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="artifact.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="t2">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>touch artifact.txt</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="artifact.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="p1" />
+        <pipeline name="p2" />
+        <pipeline name="put_pipeline_with_template_in_upstream_pipeline" />
+      </pipelines>
+    </environment>
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+
+'''
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'caac2ed2d4008afe9dfc06d83ac7b7a8',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="first">
+    <pipeline name="p1" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline isLocked="false" name="p2" template="t2">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline name="recipe">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="p1" stageName="defaultStage" />
+        <pipeline pipelineName="p2" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <fetchartifact dest="upstream_p1" job="defaultJob" pipeline="p1" srcfile="artifact.txt" stage="defaultStage">
+                <runif status="passed" />
+              </fetchartifact>
+              <fetchartifact dest="upstream_p2" job="defaultJob" pipeline="p2" srcfile="artifact.txt" stage="defaultStage">
+                <runif status="passed" />
+              </fetchartifact>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL $GO_PIPELINE_LABEL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="T1">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="artifact.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="t2">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>touch artifact.txt</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="artifact.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="p1" />
+        <pipeline name="p2" />
+      </pipelines>
+    </environment>
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+'''})
+->RET:Instance('Response', 'response_post')
+<-PYT:response_post.status_code
+->RET:200
+<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "first", "pipeline": {"name": "put_pipeline_with_template_in_upstream_pipeline", "template": "t2", "materials": [{"type": "git", "attributes": {"url": "git@github.com:sample_repo/example.git", "destination": "put_pipeline_with_template_in_upstream_pipeline", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}]}}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
+->RET:Instance('Response', 'response_post1')
+<-PYT:response_post1.status_code
+->RET:200
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response', 'response_get1')
+<-PYT:response_get1.status_code
+->RET:200
+<-PYT:response_get1.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict2')
+<-PYT:caseinsensitivedict2.__getitem__('x-cruise-config-md5')
+->RET:'0c17967b691023065a57002c244d3ba3'
+<-PYT:response_get1.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="first">
+    <pipeline name="p1" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline name="p2" isLocked="false" template="t2">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline name="recipe">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="p1" stageName="defaultStage" />
+        <pipeline pipelineName="p2" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <fetchartifact pipeline="p1" stage="defaultStage" job="defaultJob" srcfile="artifact.txt" dest="upstream_p1">
+                <runif status="passed" />
+              </fetchartifact>
+              <fetchartifact pipeline="p2" stage="defaultStage" job="defaultJob" srcfile="artifact.txt" dest="upstream_p2">
+                <runif status="passed" />
+              </fetchartifact>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL $GO_PIPELINE_LABEL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="put_pipeline_with_template_in_upstream_pipeline" template="t2">
+      <materials>
+        <git url="git@github.com:sample_repo/example.git" dest="put_pipeline_with_template_in_upstream_pipeline" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="T1">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="artifact.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="t2">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>touch artifact.txt</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="artifact.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="p1" />
+        <pipeline name="p2" />
+      </pipelines>
+    </environment>
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+
+'''
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '0c17967b691023065a57002c244d3ba3',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="first">
+    <pipeline name="p1" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline isLocked="false" name="p2" template="t2">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline name="recipe">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="p1" stageName="defaultStage" />
+        <pipeline pipelineName="p2" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <fetchartifact dest="upstream_p1" job="defaultJob" pipeline="p1" srcfile="artifact.txt" stage="defaultStage">
+                <runif status="passed" />
+              </fetchartifact>
+              <fetchartifact dest="upstream_p2" job="defaultJob" pipeline="p2" srcfile="artifact.txt" stage="defaultStage">
+                <runif status="passed" />
+              </fetchartifact>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL $GO_PIPELINE_LABEL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="put_pipeline_with_template_in_upstream_pipeline" template="t2">
+      <materials>
+        <git dest="put_pipeline_with_template_in_upstream_pipeline" url="git@github.com:sample_repo/example.git" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="T1">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="artifact.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="t2">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>touch artifact.txt</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="artifact.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="p1" />
+        <pipeline name="p2" />
+        <pipeline name="put_pipeline_with_template_in_upstream_pipeline" />
+      </pipelines>
+    </environment>
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+'''})
+->RET:Instance('Response', 'response_post2')
+<-PYT:response_post2.status_code
+->RET:200
+<-PYT:requests.request('GET', u'http://localhost:8153/go/api/pipelines/put_pipeline_with_template_in_upstream_pipeline/status', auth=('gouser', 'verysecret'), headers={'Accept': 'application/json'})
+->RET:Instance('Response', 'response_get2')
+<-PYT:response_get2.status_code
+->RET:200
+<-PYT:response_get2.text
+->RET:u'{"pausedCause":"Under construction","pausedBy":"gouser","paused":true,"schedulable":false,"locked":false}'
+<-PYT:requests.request('GET', u'http://localhost:8153/go/api/admin/pipelines/recipe', auth=('gouser', 'verysecret'), headers={'Accept': 'application/vnd.go.cd.v1+json'})
+->RET:Instance('Response', 'response_get3')
+<-PYT:response_get3.status_code
+->RET:200
+<-PYT:response_get3.text
+->RET:u'''{
+  "_links": {
+    "self": {
+      "href": "http://localhost:8153/go/api/admin/pipelines/recipe"
+    },
+    "doc": {
+      "href": "http://api.go.cd/#pipeline_config"
+    },
+    "find": {
+      "href": "http://localhost:8153/go/api/admin/pipelines/:name"
+    }
+  },
+  "label_template": "${COUNT}",
+  "enable_pipeline_locking": false,
+  "name": "recipe",
+  "template": null,
+  "parameters": [
+
+  ],
+  "environment_variables": [
+
+  ],
+  "materials": [
+    {
+      "type": "git",
+      "attributes": {
+        "url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git",
+        "destination": null,
+        "filter": null,
+        "name": null,
+        "auto_update": true,
+        "branch": "master",
+        "submodule_folder": null
+      }
+    },
+    {
+      "type": "dependency",
+      "attributes": {
+        "pipeline": "p1",
+        "stage": "defaultStage",
+        "name": "p1",
+        "auto_update": true
+      }
+    },
+    {
+      "type": "dependency",
+      "attributes": {
+        "pipeline": "p2",
+        "stage": "defaultStage",
+        "name": "p2",
+        "auto_update": true
+      }
+    }
+  ],
+  "stages": [
+    {
+      "name": "defaultStage",
+      "fetch_materials": true,
+      "clean_working_directory": false,
+      "never_cleanup_artifacts": false,
+      "approval": {
+        "type": "success",
+        "authorization": {
+          "roles": [
+
+          ],
+          "users": [
+
+          ]
+        }
+      },
+      "environment_variables": [
+
+      ],
+      "jobs": [
+        {
+          "name": "defaultJob",
+          "run_instance_count": null,
+          "timeout": null,
+          "environment_variables": [
+
+          ],
+          "resources": [
+
+          ],
+          "tasks": [
+            {
+              "type": "fetch",
+              "attributes": {
+                "run_if": [
+                  "passed"
+                ],
+                "on_cancel": null,
+                "pipeline": "p1",
+                "stage": "defaultStage",
+                "job": "defaultJob",
+                "is_source_a_file": true,
+                "source": "artifact.txt",
+                "destination": "upstream_p1"
+              }
+            },
+            {
+              "type": "fetch",
+              "attributes": {
+                "run_if": [
+                  "passed"
+                ],
+                "on_cancel": null,
+                "pipeline": "p2",
+                "stage": "defaultStage",
+                "job": "defaultJob",
+                "is_source_a_file": true,
+                "source": "artifact.txt",
+                "destination": "upstream_p2"
+              }
+            },
+            {
+              "type": "exec",
+              "attributes": {
+                "run_if": [
+
+                ],
+                "on_cancel": null,
+                "command": "/bin/bash",
+                "arguments": [
+                  "-c",
+                  "echo $SHELL $GO_PIPELINE_LABEL"
+                ],
+                "working_directory": null
+              }
+            }
+          ],
+          "tabs": [
+
+          ],
+          "artifacts": [
+
+          ],
+          "properties": null
+        }
+      ]
+    }
+  ],
+  "tracking_tool": null,
+  "timer": null
+}
+'''
+<-PYT:response_get3.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict3')
+<-PYT:caseinsensitivedict3.__getitem__('etag')
+->RET:'"79ab88fe2ec234f727b4b42fd66cb52e--gzip"'
+<-PYT:requests.request('PUT', u'http://localhost:8153/go/api/admin/pipelines/recipe', auth=('gouser', 'verysecret'), data='{"_links": {"self": {"href": "http://localhost:8153/go/api/admin/pipelines/recipe"}, "doc": {"href": "http://api.go.cd/#pipeline_config"}, "find": {"href": "http://localhost:8153/go/api/admin/pipelines/:name"}}, "label_template": "${COUNT}", "enable_pipeline_locking": false, "name": "recipe", "template": null, "parameters": [], "environment_variables": [], "materials": [{"type": "git", "attributes": {"url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git", "destination": null, "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}, {"type": "dependency", "attributes": {"pipeline": "p1", "stage": "defaultStage", "name": "p1", "auto_update": true}}, {"type": "dependency", "attributes": {"pipeline": "p2", "stage": "defaultStage", "name": "p2", "auto_update": true}}, {"type": "dependency", "attributes": {"pipeline": "put_pipeline_with_template_in_upstream_pipeline", "stage": "defaultStage", "auto_update": true}}], "stages": [{"name": "defaultStage", "fetch_materials": true, "clean_working_directory": false, "never_cleanup_artifacts": false, "approval": {"type": "success", "authorization": {"roles": [], "users": []}}, "environment_variables": [], "jobs": [{"name": "defaultJob", "run_instance_count": null, "timeout": null, "environment_variables": [], "resources": [], "tasks": [{"type": "fetch", "attributes": {"run_if": ["passed"], "pipeline": "put_pipeline_with_template_in_upstream_pipeline", "stage": "defaultStage", "job": "defaultJob", "is_source_a_file": true, "source": "message.txt", "destination": "upstream_put_pipeline_with_template_in_upstream_pipeline"}}, {"type": "fetch", "attributes": {"run_if": ["passed"], "on_cancel": null, "pipeline": "p1", "stage": "defaultStage", "job": "defaultJob", "is_source_a_file": true, "source": "artifact.txt", "destination": "upstream_p1"}}, {"type": "fetch", "attributes": {"run_if": ["passed"], "on_cancel": null, "pipeline": "p2", "stage": "defaultStage", "job": "defaultJob", "is_source_a_file": true, "source": "artifact.txt", "destination": "upstream_p2"}}, {"type": "exec", "attributes": {"run_if": [], "on_cancel": null, "command": "/bin/bash", "arguments": ["-c", "echo $SHELL $GO_PIPELINE_LABEL"], "working_directory": null}}], "tabs": [], "artifacts": [], "properties": null}]}], "tracking_tool": null, "timer": null}', headers={'Accept': 'application/vnd.go.cd.v1+json',
+ 'Content-Type': 'application/json',
+ 'If-Match': '"79ab88fe2ec234f727b4b42fd66cb52e--gzip"'})
+->RET:Instance('Response', 'response_put')
+<-PYT:response_put.status_code
+->RET:200
+<-PYT:requests.request('GET', u'http://localhost:8153/go/api/pipelines/put_pipeline_with_template_in_upstream_pipeline/status', auth=('gouser', 'verysecret'), headers={'Accept': 'application/json'})
+->RET:Instance('Response', 'response_get4')
+<-PYT:response_get4.status_code
+->RET:200
+<-PYT:response_get4.text
+->RET:u'{"pausedCause":"Under construction","pausedBy":"gouser","paused":true,"schedulable":false,"locked":false}'
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response', 'response_get5')
+<-PYT:response_get5.status_code
+->RET:200
+<-PYT:response_get5.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict4')
+<-PYT:caseinsensitivedict4.__getitem__('x-cruise-config-md5')
+->RET:'caac2ed2d4008afe9dfc06d83ac7b7a8'
+<-PYT:response_get5.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+    <security>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="first">
+    <pipeline name="p1" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline name="p2" isLocked="false" template="t2">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline name="recipe" isLocked="false">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline pipelineName="p1" stageName="defaultStage" materialName="p1" />
+        <pipeline pipelineName="p2" stageName="defaultStage" materialName="p2" />
+        <pipeline pipelineName="put_pipeline_with_template_in_upstream_pipeline" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <fetchartifact pipeline="put_pipeline_with_template_in_upstream_pipeline" stage="defaultStage" job="defaultJob" srcfile="message.txt" dest="upstream_put_pipeline_with_template_in_upstream_pipeline">
+                <runif status="passed" />
+              </fetchartifact>
+              <fetchartifact pipeline="p1" stage="defaultStage" job="defaultJob" srcfile="artifact.txt" dest="upstream_p1">
+                <runif status="passed" />
+              </fetchartifact>
+              <fetchartifact pipeline="p2" stage="defaultStage" job="defaultJob" srcfile="artifact.txt" dest="upstream_p2">
+                <runif status="passed" />
+              </fetchartifact>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL $GO_PIPELINE_LABEL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="put_pipeline_with_template_in_upstream_pipeline" template="t2">
+      <materials>
+        <git url="git@github.com:sample_repo/example.git" dest="put_pipeline_with_template_in_upstream_pipeline" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="T1">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="artifact.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="t2">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>touch artifact.txt</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="artifact.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="p1" />
+        <pipeline name="p2" />
+        <pipeline name="put_pipeline_with_template_in_upstream_pipeline" />
+      </pipelines>
+    </environment>
+  </environments>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+
+'''

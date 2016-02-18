@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="77" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
   <pipelines group="first">
     <pipeline name="add_pipeline_with_defaults">
       <materials>
@@ -16,6 +16,7 @@
       </stage>
     </pipeline>
   </pipelines>
+  <pipelines group="Tjong" />
   <environments>
     <environment name="green">
       <pipelines>

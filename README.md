@@ -5,70 +5,44 @@ The gocd-pipeline-builder should be able to build a GoCD
 pipeline automagically when you push a new git repository
 to your git server.
 
-This is still in beta state. Don't expect it to be useful.
-Don't let it near your production Go-server if you try it out!
+This is still in alpha state. Anything might change.
+Use at your own risk.
 
-Plans for Go 15.3 and beyond
-----------------------------
+Supported Go CD versions
+------------------------
 
-From Go version 15.3, there is a REST API for pipeline config,
-see https://api.go.cd/current/#pipeline-config
+Go CD 16.2.1 or newer.
 
-This means that we can remove a lot of current functionality
-from the pipeline-builder, and avoid adding a lot of planned
-features. We simply use the json format stated in the REST API
-and push interpretation and error handling to the Go server.
+The gocd-pipeline-builder relies on features which appeared
+in Go CD 15.3, see https://api.go.cd/current/#pipeline-config
 
-The new approach is to use this API and not support older versions of Go.
+Due to a bug in 15.3, you need version 16.2.1 or
+later if your Go CD configuration uses pipeline templates.
 
-The pipeline-builder will mainly consist of the following parts:
-- Wrapping the REST calls and interpretation of results.
-- Integrating this with git hooks.
-- Provide a templating mechanism (pattern files) using jinja2,
-  so that we can avoid duplicating common behaviour in the pipelines.
-- Manage dependencies, e.g. state downstream pipelines that
-  should add an upstream pipeline as a dependency.
+Overview
+--------
 
-The pattern file should then be a json file of the format described
-in https://api.go.cd/current/#create-a-pipeline
+The actions of the gocd-pipeline-builder are driven by
+a json file containing a list of operations to perform.
+See below and the pattern.json files under src/texttest.
 
-When the program is run, we should first get the pipeline groups,
-see https://api.go.cd/current/#pipeline-groups
-and see if a pipeline with the same name exists.
-If the pipeline name is not in the configuration, we should
-create a new pipeline, see https://api.go.cd/current/#create-a-pipeline
-If the pipeline name is in the configuration, and it's in the
-pipeline group stated in the given input, we should edit the
-pipeline config, see https://api.go.cd/current/#edit-pipeline-config
-If the pipeline exists in a different pipeline group, we should exit
-with an error message.
+This json file can use Jinja2 templates to pass in
+custom values etc, so that the .json-files can be generic
+templates.
 
+The values to pass to the Jinja2 template can either be
+passed to the tool on the command file, and/or come from
+a .yaml file.
 
-What works?
------------
- * Fetch XML config from go-server.
- * The templating mechanism.
- * Updating XML config with a pipeline using the Go Server 15.3 REST API.
- * Creating a new pipeline in an existing pipeline group.
- * Add pipeline in environment
- * Include new pipeline as dependency material in downstream pipeline, and fetch artifact.
-
-
-Obviously missing
------------------
- * Update existing pipeline
- * Git hooks
+As of today, there is no builtin githook support, but
+it's no rocket science to call the tool on post-receive.
 
 
 Known Issues
 ------------
 
- * Can't add dependency to pipeline with dependencies on templated pipelines
-   due to GoCD bug #1799. (Validation for POST/PUT pipeline config in GoCD
-   REST API doesn't look in template when it checks whether a fetchartifact
-   is correct.)
- * Adding pipeline to environment is done by updating the XML config, since
-   there is not REST API for this yet.
+ * Adding pipeline to environment is done by updating the XML
+   config, since there is not REST API for this yet.
 
 
 gocdpb Command Line Interface
@@ -149,6 +123,13 @@ you use a json file which follows this pattern:
         }
     ]
 
+
+Use `gocdpb -j` to pass the json settings file to the builder.
+
+See *.json files under src/texttest for more examples of
+intended usage.
+
+
 `<action>` can be one of:
 
   - "create-a-pipeline": This means that we plan
@@ -183,11 +164,58 @@ you use a json file which follows this pattern:
     - "task" should be a fetch task as described in the
       REST API which fetches some build artifact from
       the newly created pipeline.
+  - "clone-pipelines":
+    This operation is intended for creating a group
+    of pipelines for e.g. managing hot fixes of a
+    released version of the software, when there is
+    new development going on in master. Not really
+    relevant if you do full Continuous Delivery,
+    but some of us still need to maintain released
+    versions in parallel with the development version.
+    This section contains:
+    - "FIND-group": the name of the pipeline group we want to clone/copy.
+    - "CREATE-group": Name of the new group we create.
+    - "pipeline" contains the following:
+      - "FIND-name": A regular expression for pipelines we want to copy.
+      - "REPLACE-name": Used by Python's re.sub to give pipelines a new name.
+      - "materials" with a list of source code or dependency material:
+        - "REPLACE-branch": used in source code material to point to the branch we want to work with in our clone
+        - "FIND-group": Used for dependency material to only copy dependencies from pipelines in the appropriate group.
+        - "FIND-pipeline": RE like the one for pipeline name above.
+        - "REPLACE-pipeline": String like "REPLACE-name" above for dependency material.
+    Example below:
 
-Use `gocdpb -j` to pass the json settings file to the builder.
+        [
+          {
+            "environment": "green",
+            "unpause": true,
+            "clone-pipelines": {
+              "FIND-group": "release-template",
+              "CREATE-group": "RELEASE-2016-02-09",
+              "pipeline": {
+                "FIND-name": "(.+)",
+                "REPLACE-name": "\\1-RELEASE-2016-02-09",
+                "materials": [
+                  {
+                    "type": "git",
+                    "attributes": {
+                      "REPLACE-branch": "RELEASE-2016-02-09"
+                    }
+                  },
+                  {
+                    "type": "dependency",
+                    "attributes": {
+                      "FIND-group": "release-template",
+                      "FIND-pipeline": "^(copy.+)",
+                      "REPLACE-pipeline": "\\1-RELEASE-2016-02-09"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
 
-See *.json files under src/texttest for more examples of
-intended usage.
 
 
 GoCD Pipeline Builder Patterns
@@ -285,5 +313,3 @@ start texttest:
 
 Since the tests change the state of the Go server, it's important to run them
 sequentially unless capturemock is in replay mode.
-
-

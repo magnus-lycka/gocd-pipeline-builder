@@ -23,7 +23,14 @@ class Goserver(object):
         self.tree = None
         self._initial_xml = None
         self.need_to_download_config = True
-        self.init()
+
+    def check_config(self):
+        for param in (
+            'url',
+            'username',
+            'password',
+        ):
+            self.__config[param]
 
     def init(self):
         """
@@ -129,6 +136,18 @@ class Goserver(object):
 
     def get_pipeline_status(self, pipeline_name):
         path = "/go/api/pipelines/" + pipeline_name + "/status"
+        headers = {
+            'Accept': 'application/json'
+        }
+        response = self.request('get', path, headers=headers)
+        if response.status_code != 200:
+            raise RuntimeError(str(response.status_code))
+        json_data = json.loads(response.text.replace("\\'", "'"),
+                               object_pairs_hook=OrderedDict)
+        return json_data
+
+    def get_pipeline_groups(self):
+        path = "/go/api/config/pipeline_groups"
         headers = {
             'Accept': 'application/json'
         }

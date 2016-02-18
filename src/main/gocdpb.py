@@ -5,7 +5,7 @@ import getpass
 import argparse
 import requests
 from goserver_adapter import Goserver
-from gocd_restapi import JsonSettings, YamlSettings
+from gocd_settings import JsonSettings, YamlSettings
 
 
 def list2dict(list_of_pairs):
@@ -86,6 +86,12 @@ def main(args=sys.argv):
     extra_config = list2dict(pargs.config_param)
     add_secrets_to_config(extra_config, pargs.password_prompt)
     go = Goserver(pargs.config, pargs.verbose, extra_config)
+    try:
+        go.check_config()
+    except KeyError as error:
+        print "Missing {} in configuration.".format(error)
+        sys.exit(1)
+    go.init()
 
     if pargs.set_test_config is not None:
         go.tree.set_test_settings_xml(pargs.set_test_config)

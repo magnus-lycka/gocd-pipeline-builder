@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <pipelines group="first">
+    <pipeline name="p1" template="T1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline isLocked="false" name="p2" template="t2">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+    </pipeline>
+    <pipeline isLocked="false" name="recipe">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+        <pipeline materialName="p1" pipelineName="p1" stageName="defaultStage" />
+        <pipeline materialName="p2" pipelineName="p2" stageName="defaultStage" />
+        <pipeline pipelineName="put_pipeline_with_template_in_upstream_pipeline" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <fetchartifact dest="upstream_put_pipeline_with_template_in_upstream_pipeline" job="defaultJob" pipeline="put_pipeline_with_template_in_upstream_pipeline" srcfile="message.txt" stage="defaultStage">
+                <runif status="passed" />
+              </fetchartifact>
+              <fetchartifact dest="upstream_p1" job="defaultJob" pipeline="p1" srcfile="artifact.txt" stage="defaultStage">
+                <runif status="passed" />
+              </fetchartifact>
+              <fetchartifact dest="upstream_p2" job="defaultJob" pipeline="p2" srcfile="artifact.txt" stage="defaultStage">
+                <runif status="passed" />
+              </fetchartifact>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL $GO_PIPELINE_LABEL</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="put_pipeline_with_template_in_upstream_pipeline" template="t2">
+      <materials>
+        <git dest="put_pipeline_with_template_in_upstream_pipeline" url="git@github.com:sample_repo/example.git" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="T1">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo $SHELL</arg>
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="artifact.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="t2">
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>touch artifact.txt</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="artifact.txt" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="p1" />
+        <pipeline name="p2" />
+        <pipeline name="put_pipeline_with_template_in_upstream_pipeline" />
+      </pipelines>
+    </environment>
+  </environments>
+</cruise>
