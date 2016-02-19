@@ -1,0 +1,102 @@
+<-PYT:import requests
+<-PYT:requests.request('GET', 'http://localhost:18153/go/admin/restful/configuration/file/GET/xml')
+->RET:Instance('Response(object)', 'response_get')
+<-PYT:response_get.status_code
+->RET:200
+<-PYT:response_get.headers
+->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
+<-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
+->RET:'a7345f4fa29053d0288368a08e18797a'
+<-PYT:response_get.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID" />
+  <pipelines group="defaultGroup">
+    <pipeline name="test1">
+      <materials>
+        <git url="/tmp/test1" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo</arg>
+                <arg>text1.txt</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="test2">
+      <materials>
+        <git url="/tmp/test2" />
+        <pipeline pipelineName="test1" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo</arg>
+                <arg>text2.txt</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="test3">
+      <materials>
+        <git url="/tmp/test3" />
+        <pipeline pipelineName="test1" stageName="defaultStage" />
+        <pipeline pipelineName="test2" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="/bin/bash">
+                <arg>-c</arg>
+                <arg>echo</arg>
+                <arg>text3.txt</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <agents>
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
+  </agents>
+</cruise>
+
+'''
+<-PYT:requests.request('GET', 'http://localhost:18153/go/api/pipelines/test3/instance/3', headers={'Accept': 'application/json'})
+->RET:Instance('Response', 'response_get1')
+<-PYT:response_get1.status_code
+->RET:200
+<-PYT:response_get1.text
+->RET:u'{"build_cause":{"approver":"","material_revisions":[{"modifications":[{"email_address":null,"id":3,"modified_time":1455889817000,"user_name":"Your Name \\u003Cyou@example.com\\u003E","comment":"test","revision":"ecc9ba924d30b29401ff06af6e6b7aa002a65ec6"}],"material":{"description":"URL: /tmp/test3, Branch: master","fingerprint":"48cba2b88c48c4ad485fb9dab6ba505170d0a02fce6e1b6cdaa1f2af730aec17","type":"Git","id":2},"changed":false},{"modifications":[{"email_address":null,"id":7,"modified_time":1455890779505,"user_name":"Unknown","comment":"Unknown","revision":"test1/2/defaultStage/1"}],"material":{"description":"test1","fingerprint":"74a4c922452603d7ceb7950807208172bdacefebe1d3e43bdb05bac21750a995","type":"Pipeline","id":4},"changed":false},{"modifications":[{"email_address":null,"id":8,"modified_time":1455890819738,"user_name":"Unknown","comment":"Unknown","revision":"test2/3/defaultStage/1"}],"material":{"description":"test2","fingerprint":"ba8efc100441d356366f169dc4d10f0c30b410f11ea58cb36c34fe987ed7980e","type":"Pipeline","id":5},"changed":true}],"trigger_forced":false,"trigger_message":"triggered by test2/3/defaultStage/1"},"name":"test3","natural_order":3.0,"can_run":true,"comment":null,"stages":[{"name":"defaultStage","approved_by":"changes","jobs":[{"name":"defaultJob","result":"Passed","state":"Completed","id":8,"scheduled_date":1455890861129}],"can_run":true,"result":"Passed","approval_type":"success","counter":"1","id":8,"operate_permission":true,"rerun_of_counter":null,"scheduled":true}],"counter":3,"id":8,"preparing_to_schedule":false,"label":"3"}'
+<-PYT:requests.request('GET', u'http://localhost:18153/go/api/pipelines/test1/instance/2', headers={'Accept': 'application/json'})
+->RET:Instance('Response', 'response_get2')
+<-PYT:response_get2.status_code
+->RET:200
+<-PYT:response_get2.text
+->RET:u'{"build_cause":{"approver":"anonymous","material_revisions":[{"modifications":[{"email_address":null,"id":1,"modified_time":1455889589000,"user_name":"Your Name \\u003Cyou@example.com\\u003E","comment":"test","revision":"c142925e8d183b108020072143a669515612e8f3"}],"material":{"description":"URL: /tmp/test1, Branch: master","fingerprint":"36609f3c764eb0b3273488dd47adc3b33d24fc7725ee5976f20e720f3d600e61","type":"Git","id":1},"changed":false}],"trigger_forced":true,"trigger_message":"Forced by anonymous"},"name":"test1","natural_order":2.0,"can_run":true,"comment":null,"stages":[{"name":"defaultStage","approved_by":"anonymous","jobs":[{"name":"defaultJob","result":"Passed","state":"Completed","id":5,"scheduled_date":1455890757114}],"can_run":true,"result":"Passed","approval_type":"success","counter":"1","id":5,"operate_permission":true,"rerun_of_counter":null,"scheduled":true}],"counter":2,"id":5,"preparing_to_schedule":false,"label":"2"}'
+<-PYT:requests.request('GET', u'http://localhost:18153/go/api/pipelines/test2/instance/3', headers={'Accept': 'application/json'})
+->RET:Instance('Response', 'response_get3')
+<-PYT:response_get3.status_code
+->RET:200
+<-PYT:response_get3.text
+->RET:u'{"build_cause":{"approver":"","material_revisions":[{"modifications":[{"email_address":null,"id":2,"modified_time":1455889761000,"user_name":"Your Name \\u003Cyou@example.com\\u003E","comment":"test","revision":"8e1ddbf0aa8f65295028413d0433247a72258aaf"}],"material":{"description":"URL: /tmp/test2, Branch: master","fingerprint":"3ef41561b60d58882c47f298e7377c50242d6766eab18ec8dc3f5ce43cd88a4b","type":"Git","id":3},"changed":false},{"modifications":[{"email_address":null,"id":7,"modified_time":1455890779505,"user_name":"Unknown","comment":"Unknown","revision":"test1/2/defaultStage/1"}],"material":{"description":"test1","fingerprint":"74a4c922452603d7ceb7950807208172bdacefebe1d3e43bdb05bac21750a995","type":"Pipeline","id":4},"changed":true}],"trigger_forced":false,"trigger_message":"triggered by test1/2/defaultStage/1"},"name":"test2","natural_order":3.0,"can_run":true,"comment":null,"stages":[{"name":"defaultStage","approved_by":"changes","jobs":[{"name":"defaultJob","result":"Passed","state":"Completed","id":6,"scheduled_date":1455890801120}],"can_run":true,"result":"Passed","approval_type":"success","counter":"1","id":6,"operate_permission":true,"rerun_of_counter":null,"scheduled":true}],"counter":3,"id":6,"preparing_to_schedule":false,"label":"3"}'
+<-PYT:requests.request('GET', u'http://localhost:18153/go/api/pipelines/test1/instance/2', headers={'Accept': 'application/json'})
+->RET:Instance('Response', 'response_get4')
+<-PYT:response_get4.status_code
+->RET:200
+<-PYT:response_get4.text
+->RET:u'{"build_cause":{"approver":"anonymous","material_revisions":[{"modifications":[{"email_address":null,"id":1,"modified_time":1455889589000,"user_name":"Your Name \\u003Cyou@example.com\\u003E","comment":"test","revision":"c142925e8d183b108020072143a669515612e8f3"}],"material":{"description":"URL: /tmp/test1, Branch: master","fingerprint":"36609f3c764eb0b3273488dd47adc3b33d24fc7725ee5976f20e720f3d600e61","type":"Git","id":1},"changed":false}],"trigger_forced":true,"trigger_message":"Forced by anonymous"},"name":"test1","natural_order":2.0,"can_run":true,"comment":null,"stages":[{"name":"defaultStage","approved_by":"anonymous","jobs":[{"name":"defaultJob","result":"Passed","state":"Completed","id":5,"scheduled_date":1455890757114}],"can_run":true,"result":"Passed","approval_type":"success","counter":"1","id":5,"operate_permission":true,"rerun_of_counter":null,"scheduled":true}],"counter":2,"id":5,"preparing_to_schedule":false,"label":"2"}'

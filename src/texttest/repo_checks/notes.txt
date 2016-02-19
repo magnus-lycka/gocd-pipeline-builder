@@ -1,0 +1,43 @@
+Setting up tests. To be automated...
+
+docker pull gocd/gocd-dev
+
+docker run -e MSG_TIME=0 -p 18153:8153 -tiP gocd/gocd-dev
+
+docker exec -i -t 56f8bea32953 bash
+
+root@56f8bea32953:/tmp# git config --global user.email "you@example.com"
+root@56f8bea32953:/tmp# git config --global user.name "Your Name"
+root@56f8bea32953:/tmp# git init test1
+Initialized empty Git repository in /tmp/test1/.git/
+root@56f8bea32953:/tmp# cd test1/
+root@56f8bea32953:/tmp/test1# touch text1.txt
+root@56f8bea32953:/tmp/test1# git add text1.txt
+root@56f8bea32953:/tmp/test1# git commit -m test
+[master (root-commit) c142925] test
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 text1.txt
+root@56f8bea32953:/tmp# cd ..
+
+root@56f8bea32953:/tmp# git init test2
+Initialized empty Git repository in /tmp/test2/.git/
+root@56f8bea32953:/tmp# cd test2
+root@56f8bea32953:/tmp/test2# touch text2.txt
+root@56f8bea32953:/tmp/test2# git add text2.txt
+root@56f8bea32953:/tmp/test2# git commit -m test
+[master (root-commit) 8e1ddbf] test
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 text2.txt
+root@56f8bea32953:/tmp/test2# cd ..
+
+root@56f8bea32953:/tmp# git init test3
+Initialized empty Git repository in /tmp/test3/.git/
+root@56f8bea32953:/tmp# cd test3
+root@56f8bea32953:/tmp/test2# touch text3.txt
+root@56f8bea32953:/tmp/test2# git add text3.txt
+root@56f8bea32953:/tmp/test2# git commit -m test
+[master (root-commit) ecc9ba9] test
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 text3.txt
+root@56f8bea32953:/tmp/test2# cd ..
+

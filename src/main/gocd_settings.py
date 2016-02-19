@@ -255,3 +255,70 @@ class YamlSettings(JsonSettings):
         parameters = settings['parameters']
         parameters.update(extra_settings)
         self.load_template(open(template_path).read(), parameters)
+
+
+def last_modification(modifications):
+        return sorted(modifications, key=lambda rev: rev['modified_time'])[-1]
+
+
+class SourceMaterial(object):
+    def __init__(self, material_revision):
+        self.__type = material_revision['material']['type']
+        self.__description = material_revision['material']['description']
+        last_mod = last_modification(material_revision['modifications'])
+        self.__revision = last_mod['revision']
+        self.format = None
+
+    def as_dict(self):
+        return dict(type=self.__type, description=self.__description, revision=self.__revision)
+
+    def __str__(self):
+        return "; ".join((self.__type, self.__description, self.__revision))
+
+    def __hash__(self):
+        return hash(self.__revision)
+
+    def __eq__(self, other):
+        return self.__revision == other.__revision
+
+
+class Pipeline(object):
+    def __init__(self, pipeline_instance, go, output_format):
+        self.pipeline, self.instance = pipeline_instance.split('/')[:2]
+        self.go = go
+        self.format = output_format
+        self.upstreams = []
+        self.source_repos = []
+        self.recursive_repos = set()
+
+    def print_recursive_repos(self):
+        self.prepare_recursive_repos()
+        self.collect_recursive_repos()
+        if self.format == 'json':
+            print json.dumps([repo.as_dict() for repo in self.recursive_repos],
+                             indent=4, sort_keys=True)
+        elif self.format == 'semicolon':
+            for repo in self.recursive_repos:
+                print repo
+        else:
+            raise TypeError("Don't know how to print in format: {}".format(self.format))
+
+    def prepare_recursive_repos(self):
+        pipeline_instance = self.go.get_pipeline_instance(self.pipeline, self.instance)
+        for material_revision in pipeline_instance['build_cause']['material_revisions']:
+            if material_revision['material']['type'] == 'Pipeline':
+                last_mod = last_modification(material_revision['modifications'])
+                upstream_pipeline = Pipeline(last_mod['revision'], self.go, self.format)
+                self.upstreams.append(upstream_pipeline)
+                upstream_pipeline.prepare_recursive_repos()
+            else:
+                self.source_repos.append(SourceMaterial(material_revision))
+
+    def collect_recursive_repos(self):
+        for upstream in self.upstreams:
+            upstream.collect_recursive_repos()
+            for repo in upstream.recursive_repos:
+                self.recursive_repos.add(repo)
+        for repo in self.source_repos:
+            self.recursive_repos.add(repo)
+

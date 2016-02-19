@@ -5,7 +5,7 @@ import getpass
 import argparse
 import requests
 from goserver_adapter import Goserver
-from gocd_settings import JsonSettings, YamlSettings
+from gocd_settings import JsonSettings, YamlSettings, Pipeline
 
 
 def list2dict(list_of_pairs):
@@ -39,6 +39,17 @@ def main(args=sys.argv):
         "-y", "--yaml-settings",
         type=argparse.FileType('r'),
         help="Read yaml files with parameters for GoCD pipeline."
+    )
+    main_action_group.add_argument(
+        "-m", "--material-revisions",
+        help=("Recursively fetch all source code revisions used in a pipeline build. "
+              "Provide pipeline name and pipeline counter separated by /.")
+    )
+    argparser.add_argument(
+        "-f", "--format",
+        choices=['semicolon', 'json'],
+        default='json',
+        help="Format for output from --material-revisions."
     )
     argparser.add_argument(
         "-D", "--define",
@@ -105,6 +116,9 @@ def main(args=sys.argv):
     if pargs.yaml_settings is not None:
         YamlSettings(pargs.yaml_settings, list2dict(pargs.define)
                      ).server_operations(go)
+
+    if pargs.material_revisions is not None:
+        Pipeline(pargs.material_revisions, go, pargs.format).print_recursive_repos()
 
     if pargs.dump is not None:
         go.init()

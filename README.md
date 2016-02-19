@@ -48,8 +48,10 @@ Known Issues
 gocdpb Command Line Interface
 ------------------------------
 
-    usage: gocdpb.py [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-D DEFINE]
-                     [-c CONFIG] [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
+    usage: gocdpb.py [-h]
+                     [-j JSON_SETTINGS | -y YAML_SETTINGS | -m MATERIAL_REVISIONS]
+                     [-f {semicolon,json}] [-D DEFINE] [-c CONFIG]
+                     [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
                      [--set-test-config SET_TEST_CONFIG]
                      [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v]
 
@@ -61,6 +63,12 @@ gocdpb Command Line Interface
                             Read json file / url with settings for GoCD pipeline.
       -y YAML_SETTINGS, --yaml-settings YAML_SETTINGS
                             Read yaml files with parameters for GoCD pipeline.
+      -m MATERIAL_REVISIONS, --material-revisions MATERIAL_REVISIONS
+                            Recursively fetch all source code revisions used in a
+                            pipeline build. Provide pipeline name and pipeline
+                            counter separated by /.
+      -f {semicolon,json}, --format {semicolon,json}
+                            Format for output from --material-revisions.
       -D DEFINE, --define DEFINE
                             Define setting parameter on command line.
       -c CONFIG, --config CONFIG

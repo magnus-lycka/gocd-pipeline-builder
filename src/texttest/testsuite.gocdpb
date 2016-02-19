@@ -16,3 +16,6 @@ yaml_tests
 
 # Check CLI for faulty use
 command_line_mistakes
+
+# Checks on source code material
+repo_checks

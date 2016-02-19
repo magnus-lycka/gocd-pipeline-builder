@@ -27,8 +27,6 @@ class Goserver(object):
     def check_config(self):
         for param in (
             'url',
-            'username',
-            'password',
         ):
             self.__config[param]
 
@@ -47,7 +45,8 @@ class Goserver(object):
 
     @property
     def __auth(self):
-        return self.__config['username'], self.__config['password']
+        if 'username' in self.__config:
+            return self.__config['username'], self.__config['password']
 
     @property
     def cruise_xml(self):
@@ -67,7 +66,9 @@ class Goserver(object):
             # change some more...
             self.need_to_download_config = True
         url = self.__config['url'] + path
-        response = requests.request(action, url, auth=self.__auth, **kwargs)
+        if self.__auth:
+            kwargs['auth'] = self.__auth
+        response = requests.request(action, url, **kwargs)
         if response.status_code != 200:
             sys.stderr.write("Failed to {} {}\n".format(action, path))
             sys.stderr.write("status-code: {}\n".format(response.status_code))
@@ -158,6 +159,18 @@ class Goserver(object):
                                object_pairs_hook=OrderedDict)
         return json_data
 
+    def get_pipeline_instance(self, pipeline, instance):
+        path = "/go/api/pipelines/" + pipeline + "/instance/" + instance
+        headers = {
+            'Accept': 'application/json'
+        }
+        response = self.request('get', path, headers=headers)
+        if response.status_code != 200:
+            raise RuntimeError(str(response.status_code))
+        json_data = json.loads(response.text.replace("\\'", "'"),
+                               object_pairs_hook=OrderedDict)
+        return json_data
+
     def upload_config(self):
         """
         This method pushes a new cruise-config.xml to the go server.
@@ -184,3 +197,4 @@ class Goserver(object):
                 sys.stderr.write(
                     "originalContent:\n%s\n" % json_data["originalContent"])
                 raise RuntimeError(response.status_code)
+
