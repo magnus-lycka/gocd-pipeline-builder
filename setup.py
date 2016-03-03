@@ -27,7 +27,7 @@ if __name__ == '__main__':
             "Programming Language :: Python :: 2.7",
             "License :: OSI Approved :: MIT License",
             "Operating System :: OS Independent",
-            "Development Status :: 3 - Alpha",
+            "Development Status :: 4 - Beta",
             "Intended Audience :: Developers",
             "Topic :: Software Development :: Build Tools",
             "Environment :: Console",
