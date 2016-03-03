@@ -1,16 +1,34 @@
 [
     {
         "description": "URL: /tmp/test3, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "3", 
+                "name": "test3"
+            }
+        ], 
         "revision": "ecc9ba924d30b29401ff06af6e6b7aa002a65ec6", 
         "type": "Git"
     }, 
     {
         "description": "URL: /tmp/test1, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "test1"
+            }
+        ], 
         "revision": "c142925e8d183b108020072143a669515612e8f3", 
         "type": "Git"
     }, 
     {
         "description": "URL: /tmp/test2, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "3", 
+                "name": "test2"
+            }
+        ], 
         "revision": "8e1ddbf0aa8f65295028413d0433247a72258aaf", 
         "type": "Git"
     }

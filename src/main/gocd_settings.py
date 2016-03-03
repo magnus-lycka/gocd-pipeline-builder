@@ -2,7 +2,7 @@ import re
 import sys
 import json
 import os.path
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from xml.etree import ElementTree
 
 import yaml
@@ -267,10 +267,13 @@ class SourceMaterial(object):
         self.__description = material_revision['material']['description']
         last_mod = last_modification(material_revision['modifications'])
         self.__revision = last_mod['revision']
-        self.format = None
 
-    def as_dict(self):
-        return dict(type=self.__type, description=self.__description, revision=self.__revision)
+    def as_dict(self, **kwargs):
+        data = dict(type=self.__type,
+                    description=self.__description,
+                    revision=self.__revision)
+        data.update(kwargs)
+        return data
 
     def __str__(self):
         return "; ".join((self.__type, self.__description, self.__revision))
@@ -289,17 +292,18 @@ class Pipeline(object):
         self.format = output_format
         self.upstreams = []
         self.source_repos = []
-        self.recursive_repos = set()
+        self.recursive_repos = defaultdict(set)
 
     def print_recursive_repos(self):
         self.prepare_recursive_repos()
         self.collect_recursive_repos()
         if self.format == 'json':
-            print json.dumps([repo.as_dict() for repo in self.recursive_repos],
-                             indent=4, sort_keys=True)
+            repos = [repo.as_dict(pipelines=[dict(zip(('name', 'counter'), pl)) for pl in pipelines])
+                     for repo, pipelines in self.recursive_repos.items()]
+            print json.dumps(repos, indent=4, sort_keys=True)
         elif self.format == 'semicolon':
-            for repo in self.recursive_repos:
-                print repo
+            for repo, pipelines in self.recursive_repos.items():
+                print "%s; %s" % (repo, ", ".join(["%s/%s" % (p, i) for p, i in pipelines]))
         else:
             raise TypeError("Don't know how to print in format: {}".format(self.format))
 
@@ -318,7 +322,6 @@ class Pipeline(object):
         for upstream in self.upstreams:
             upstream.collect_recursive_repos()
             for repo in upstream.recursive_repos:
-                self.recursive_repos.add(repo)
+                self.recursive_repos[repo].update(upstream.recursive_repos[repo])
         for repo in self.source_repos:
-            self.recursive_repos.add(repo)
-
+            self.recursive_repos[repo].add((self.pipeline, self.instance))

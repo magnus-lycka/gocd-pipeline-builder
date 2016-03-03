@@ -26,6 +26,27 @@ def get_json_settings(path):
         return open(path).read()
 
 
+def repos(args=sys.argv):
+    argparser = argparse.ArgumentParser(
+        description="Recursively fetch all source code revisions used in a pipeline build."
+    )
+    argparser.add_argument(
+        "pipeline_instance",
+        help="pipeline/instance to start at."
+    )
+    argparser.add_argument(
+        "-f", "--format",
+        choices=['semicolon', 'json'],
+        default='json',
+        help="Format for output."
+    )
+
+    go, pargs = init_run(argparser, args)
+
+    Pipeline(pargs.pipeline_instance, go, pargs.format).print_recursive_repos()
+
+
+
 def main(args=sys.argv):
     argparser = argparse.ArgumentParser(
         description="Add pipeline to Go CD server."
@@ -40,21 +61,49 @@ def main(args=sys.argv):
         type=argparse.FileType('r'),
         help="Read yaml files with parameters for GoCD pipeline."
     )
-    main_action_group.add_argument(
-        "-m", "--material-revisions",
-        help=("Recursively fetch all source code revisions used in a pipeline build. "
-              "Provide pipeline name and pipeline counter separated by /.")
-    )
-    argparser.add_argument(
-        "-f", "--format",
-        choices=['semicolon', 'json'],
-        default='json',
-        help="Format for output from --material-revisions."
-    )
     argparser.add_argument(
         "-D", "--define",
         action="append",
         help="Define setting parameter on command line."
+    )
+    argparser.add_argument(
+        "--dump-test-config",
+        type=argparse.FileType('w'),
+        help="Copy of some sections of new GoCD configuration XML file."
+    )
+    argparser.add_argument(
+        "-d", "--dump",
+        type=argparse.FileType('w'),
+        help="Copy of new GoCD configuration XML file."
+    )
+
+    go, pargs = init_run(argparser, args)
+
+    if pargs.json_settings:
+        json_settings = get_json_settings(pargs.json_settings)
+        JsonSettings(json_settings, list2dict(pargs.define)
+                     ).server_operations(go)
+
+    if pargs.yaml_settings is not None:
+        YamlSettings(pargs.yaml_settings, list2dict(pargs.define)
+                     ).server_operations(go)
+
+    if pargs.dump is not None:
+        go.init()
+        envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'
+        pargs.dump.write(envelope % go.cruise_xml)
+
+    if pargs.dump_test_config is not None:
+        go.init()
+        envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'
+        pargs.dump_test_config.write(envelope % go.cruise_xml_subset)
+
+
+def init_run(argparser, args):
+    argparser.add_argument(
+        "-v", "--verbose",
+        action="store_true",
+        help="Write status of created pipeline."
     )
     argparser.add_argument(
         "-c", "--config",
@@ -76,24 +125,7 @@ def main(args=sys.argv):
         type=argparse.FileType('r'),
         help="Set some sections in config first. (For test setup.)"
     )
-    argparser.add_argument(
-        "--dump-test-config",
-        type=argparse.FileType('w'),
-        help="Copy of some sections of new GoCD configuration XML file."
-    )
-    argparser.add_argument(
-        "-d", "--dump",
-        type=argparse.FileType('w'),
-        help="Copy of new GoCD configuration XML file."
-    )
-    argparser.add_argument(
-        "-v", "--verbose",
-        action="store_true",
-        help="Write status of created pipeline."
-    )
-
     pargs = argparser.parse_args(args[1:])
-
     extra_config = list2dict(pargs.config_param)
     add_secrets_to_config(extra_config, pargs.password_prompt)
     go = Goserver(pargs.config, pargs.verbose, extra_config)
@@ -103,32 +135,10 @@ def main(args=sys.argv):
         print "Missing {} in configuration.".format(error)
         sys.exit(1)
     go.init()
-
     if pargs.set_test_config is not None:
         go.tree.set_test_settings_xml(pargs.set_test_config)
         go.upload_config()
-
-    if pargs.json_settings:
-        json_settings = get_json_settings(pargs.json_settings)
-        JsonSettings(json_settings, list2dict(pargs.define)
-                     ).server_operations(go)
-
-    if pargs.yaml_settings is not None:
-        YamlSettings(pargs.yaml_settings, list2dict(pargs.define)
-                     ).server_operations(go)
-
-    if pargs.material_revisions is not None:
-        Pipeline(pargs.material_revisions, go, pargs.format).print_recursive_repos()
-
-    if pargs.dump is not None:
-        go.init()
-        envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'
-        pargs.dump.write(envelope % go.cruise_xml)
-
-    if pargs.dump_test_config is not None:
-        go.init()
-        envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'
-        pargs.dump_test_config.write(envelope % go.cruise_xml_subset)
+    return go, pargs
 
 
 if __name__ == '__main__':

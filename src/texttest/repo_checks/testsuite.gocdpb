@@ -3,3 +3,6 @@ test_material_revisions_semicolon
 
 # Check recursively what revisions of source code material we use. Json output.
 test_material_revisions_json
+
+# helptext
+helptext

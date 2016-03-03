@@ -1,0 +1,42 @@
+# Full path to the System Under Test (or Java Main Class name)
+executable:${TEXTTEST_CHECKOUT}/src/main/test_gocdrepos.py
+
+import_config_file:capturemock_config
+
+# Naming scheme to use for files for stdin,stdout and stderr
+filename_convention_scheme:standard
+
+# Expanded name to use for application
+full_name:Go CD Pipeline Builder
+
+default_checkout:gocd-pipeline-builder
+
+link_test_path:config-before.xml
+link_test_path:goplbld.yaml
+link_test_path:pipeline.json
+link_test_path:pipeline.yaml
+link_test_path:pattern.json
+link_test_path:.git
+
+link_test_path:coveragerc
+
+[collate_file]
+config-after:config-after.xml
+[end]
+
+[run_dependent_text]
+config-after:hostname="[\d\w\-]+"{REPLACE hostname="HOST"}
+config-after:ipaddress="[\d\.]+"{REPLACE ipaddress="N.N.N.N"}
+config-after:serverId="[\d\w\-]+"{REPLACE serverId="UUID"}
+config-after:uuid="[\d\w\-]+"{REPLACE uuid="UUID"}
+stderr:hostname="[\d\w\-]+"{REPLACE hostname="HOST"}
+stderr:ipaddress="[\d\.]+"{REPLACE ipaddress="N.N.N.N"}
+stderr:serverId="[\d\w\-]+"{REPLACE serverId="UUID"}
+stderr:uuid="[\d\w\-]+"{REPLACE uuid="UUID"}
+stderr:line \d+,{REPLACE line XX,}
+stderr:Traceback (most recent call last):{->}RuntimeError:
+[end]
+
+[test_data_environment]
+coveragerc:COVERAGE_PROCESS_START
+[end]

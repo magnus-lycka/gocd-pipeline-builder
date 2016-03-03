@@ -8,7 +8,7 @@ from setuptools import setup
 if __name__ == '__main__':
     setup(
         name='gocdpb',
-        version='2',
+        version='4',
         description='Configure GoCD pipeline from the commandline.',
         long_description=(
             'The Go CD Pipeline Builder is designed to have the same '
@@ -39,6 +39,7 @@ if __name__ == '__main__':
         entry_points={
             'console_scripts': [
                 'gocdpb=gocdpb.gocdpb:main',
+                'gocdrepos=gocdpb.gocdpb:repos',
             ]
         }
     )

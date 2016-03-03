@@ -1,0 +1,23 @@
+usage: test_gocdrepos.py [-h] [-f {semicolon,json}] [-v] [-c CONFIG]
+                         [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
+                         [--set-test-config SET_TEST_CONFIG]
+                         pipeline_instance
+
+Recursively fetch all source code revisions used in a pipeline build.
+
+positional arguments:
+  pipeline_instance     pipeline/instance to start at.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f {semicolon,json}, --format {semicolon,json}
+                        Format for output.
+  -v, --verbose         Write status of created pipeline.
+  -c CONFIG, --config CONFIG
+                        Yaml file with configuration.
+  -C CONFIG_PARAM, --config-param CONFIG_PARAM
+                        Define config parameter on command line.
+  -P PASSWORD_PROMPT, --password-prompt PASSWORD_PROMPT
+                        Prompt for config parameter without echo.
+  --set-test-config SET_TEST_CONFIG
+                        Set some sections in config first. (For test setup.)

@@ -5,19 +5,21 @@ The gocd-pipeline-builder should be able to build a GoCD
 pipeline automagically when you push a new git repository
 to your git server.
 
-This is still in alpha state. Anything might change.
+This is still in beta state. Things might change.
 Use at your own risk.
+
 
 Supported Go CD versions
 ------------------------
 
-Go CD 16.2.1 or newer.
+Use release 16.2.1 or newer of the GoCD server.
 
 The gocd-pipeline-builder relies on features which appeared
 in Go CD 15.3, see https://api.go.cd/current/#pipeline-config
 
 Due to a bug in 15.3, you need version 16.2.1 or
 later if your Go CD configuration uses pipeline templates.
+
 
 Overview
 --------
@@ -48,12 +50,12 @@ Known Issues
 gocdpb Command Line Interface
 ------------------------------
 
-    usage: gocdpb.py [-h]
-                     [-j JSON_SETTINGS | -y YAML_SETTINGS | -m MATERIAL_REVISIONS]
-                     [-f {semicolon,json}] [-D DEFINE] [-c CONFIG]
-                     [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
-                     [--set-test-config SET_TEST_CONFIG]
-                     [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v]
+The gocdpb script configures new pipelines in a GoCD server.
+
+    usage: gocdpb [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-D DEFINE]
+                  [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v] [-c CONFIG]
+                  [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
+                  [--set-test-config SET_TEST_CONFIG]
 
     Add pipeline to Go CD server.
 
@@ -63,14 +65,13 @@ gocdpb Command Line Interface
                             Read json file / url with settings for GoCD pipeline.
       -y YAML_SETTINGS, --yaml-settings YAML_SETTINGS
                             Read yaml files with parameters for GoCD pipeline.
-      -m MATERIAL_REVISIONS, --material-revisions MATERIAL_REVISIONS
-                            Recursively fetch all source code revisions used in a
-                            pipeline build. Provide pipeline name and pipeline
-                            counter separated by /.
-      -f {semicolon,json}, --format {semicolon,json}
-                            Format for output from --material-revisions.
       -D DEFINE, --define DEFINE
                             Define setting parameter on command line.
+      --dump-test-config DUMP_TEST_CONFIG
+                            Copy of some sections of new GoCD configuration XML
+                            file.
+      -d DUMP, --dump DUMP  Copy of new GoCD configuration XML file.
+      -v, --verbose         Write status of created pipeline.
       -c CONFIG, --config CONFIG
                             Yaml file with configuration.
       -C CONFIG_PARAM, --config-param CONFIG_PARAM
@@ -79,11 +80,6 @@ gocdpb Command Line Interface
                             Prompt for config parameter without echo.
       --set-test-config SET_TEST_CONFIG
                             Set some sections in config first. (For test setup.)
-      --dump-test-config DUMP_TEST_CONFIG
-                            Copy of some sections of new GoCD configuration XML
-                            file.
-      -d DUMP, --dump DUMP  Copy of new GoCD configuration XML file.
-      -v, --verbose         Write status of created pipeline.
 
 
 -c and -C/-P are two ways of providing the same information:
@@ -225,7 +221,6 @@ intended usage.
         ]
 
 
-
 GoCD Pipeline Builder Patterns
 ------------------------------
 
@@ -269,6 +264,44 @@ template mechanism. The following builtin parameters exist:
 |-----------|-------------------------------------|
 | repo_url  | URL for git repo from ./.git/config |
 | repo_name | Name of current working directory   |
+
+
+gocdrepos Command Line Interface
+--------------------------------
+
+The gocdrepos tool lists all the source code repositories used directly or
+indirectly to build a certain instance of a pipeline. The `-f` flag is used to
+decide whether to use json format or a flat semicolon separated format for the
+output. All other flags work just as for `gocdpb`.
+The pipeline_instance parameter has to be provided on the form
+<pipeline name>/<pipeline counter>, so if you want to have a json listing
+of the source code repositories used to create build 12 or the `hello`
+pipeline, you might type this and provide the password when prompted:
+`gocdrepos -C url=http://go -C username=gouser -P password -f json hello/12`
+
+
+    usage: gocdrepos [-h] [-f {semicolon,json}] [-v] [-c CONFIG] [-C CONFIG_PARAM]
+                     [-P PASSWORD_PROMPT] [--set-test-config SET_TEST_CONFIG]
+                     pipeline_instance
+
+    Recursively fetch all source code revisions used in a pipeline build.
+
+    positional arguments:
+      pipeline_instance     pipeline/instance to start at.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -f {semicolon,json}, --format {semicolon,json}
+                            Format for output.
+      -v, --verbose         Write status of created pipeline.
+      -c CONFIG, --config CONFIG
+                            Yaml file with configuration.
+      -C CONFIG_PARAM, --config-param CONFIG_PARAM
+                            Define config parameter on command line.
+      -P PASSWORD_PROMPT, --password-prompt PASSWORD_PROMPT
+                            Prompt for config parameter without echo.
+      --set-test-config SET_TEST_CONFIG
+                            Set some sections in config first. (For test setup.)
 
 
 How to run the self-tests
@@ -321,3 +354,5 @@ start texttest:
 
 Since the tests change the state of the Go server, it's important to run them
 sequentially unless capturemock is in replay mode.
+
+TODO: Document how to set up docker for the repo_checks tests.

@@ -1,9 +1,7 @@
-usage: gocdpb.py [-h]
-                 [-j JSON_SETTINGS | -y YAML_SETTINGS | -m MATERIAL_REVISIONS]
-                 [-f {semicolon,json}] [-D DEFINE] [-c CONFIG]
-                 [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
-                 [--set-test-config SET_TEST_CONFIG]
+usage: gocdpb.py [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-D DEFINE]
                  [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v]
+                 [-c CONFIG] [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
+                 [--set-test-config SET_TEST_CONFIG]
 
 Add pipeline to Go CD server.
 
@@ -13,14 +11,13 @@ optional arguments:
                         Read json file / url with settings for GoCD pipeline.
   -y YAML_SETTINGS, --yaml-settings YAML_SETTINGS
                         Read yaml files with parameters for GoCD pipeline.
-  -m MATERIAL_REVISIONS, --material-revisions MATERIAL_REVISIONS
-                        Recursively fetch all source code revisions used in a
-                        pipeline build. Provide pipeline name and pipeline
-                        counter separated by /.
-  -f {semicolon,json}, --format {semicolon,json}
-                        Format for output from --material-revisions.
   -D DEFINE, --define DEFINE
                         Define setting parameter on command line.
+  --dump-test-config DUMP_TEST_CONFIG
+                        Copy of some sections of new GoCD configuration XML
+                        file.
+  -d DUMP, --dump DUMP  Copy of new GoCD configuration XML file.
+  -v, --verbose         Write status of created pipeline.
   -c CONFIG, --config CONFIG
                         Yaml file with configuration.
   -C CONFIG_PARAM, --config-param CONFIG_PARAM
@@ -29,8 +26,3 @@ optional arguments:
                         Prompt for config parameter without echo.
   --set-test-config SET_TEST_CONFIG
                         Set some sections in config first. (For test setup.)
-  --dump-test-config DUMP_TEST_CONFIG
-                        Copy of some sections of new GoCD configuration XML
-                        file.
-  -d DUMP, --dump DUMP  Copy of new GoCD configuration XML file.
-  -v, --verbose         Write status of created pipeline.
