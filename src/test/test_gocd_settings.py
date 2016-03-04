@@ -1,6 +1,6 @@
 import unittest
 import json
-from gocd_settings import Pipeline
+from gocdpb.gocd_settings import Pipeline
 
 TEST_DATA1 = '''{
     "build_cause": {

@@ -1,0 +1,987 @@
+[
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/notcon/protocol-notcon-spec.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "protocol-notcon-spec"
+            }
+        ], 
+        "revision": "057cd73588faac27c89a7411af042782ec3fd07f", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/monitor/alien/alien.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "5", 
+                "name": "alien"
+            }
+        ], 
+        "revision": "f87fb41be59f48f5f8e2b021dae415ed2593a762", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/services/archive/fridgesignaturedb, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "8", 
+                "name": "fridgesignaturedb"
+            }
+        ], 
+        "revision": "674b405b2a33f999b47059044b629b7d8bea44cb", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/swinto/swinto.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "113", 
+                "name": "swinto"
+            }, 
+            {
+                "counter": "184", 
+                "name": "old-system-tests"
+            }
+        ], 
+        "revision": "97df22483f5268b222b0b75c6aa74e744f72c492", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/delivery/delivery.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "9", 
+                "name": "delivery"
+            }
+        ], 
+        "revision": "1a7a29f2efddb4964b7294218ed1c256b6bed227", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/abc/abc.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "abc"
+            }
+        ], 
+        "revision": "74d26417a83d818ca35b71677a9c18a7ce71c2cc", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/def/def.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "10", 
+                "name": "def"
+            }
+        ], 
+        "revision": "0e002e37abe7bc8bd8cc30f3c705afc5c9e309b1", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/ghi/pq.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "10", 
+                "name": "ghi-pq"
+            }
+        ], 
+        "revision": "352b5c04e95e32dc01a29ff74509742871f2f196", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/monitor/monitor.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "monitor"
+            }
+        ], 
+        "revision": "8a84109da77941132148d8e6f3773ddb0fe01717", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/services/communication/notcon/protocol-notcon-inbound, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "9", 
+                "name": "protocol-notcon-inbound"
+            }
+        ], 
+        "revision": "26f658a9f5c1af13743dc50a9549a0b436f2718b", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/bar/bar-service.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "9", 
+                "name": "bar-service"
+            }
+        ], 
+        "revision": "a9805f11d2f246e10f767e88b45a71d7d706bb5c", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/swinto/swinto-parent.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "225", 
+                "name": "swinto-parent"
+            }
+        ], 
+        "revision": "f4cc8cc8dacada4b5889bb76661ebcddec3d1904", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/swinto/jkl.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "24", 
+                "name": "jkl"
+            }
+        ], 
+        "revision": "e81b254afd8f71f7dc5cf84eb7512a2019e7768f", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/archive/mno.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "mno"
+            }
+        ], 
+        "revision": "54b2cb7e08c962ca8b6b65b1c8fd8cf767397eec", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/pqr/pqr.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "pqr"
+            }
+        ], 
+        "revision": "296fa73762763ababa429f97c013ff1ad531aeb0", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/monitor/alien/container-exporter.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "4", 
+                "name": "container-exporter"
+            }
+        ], 
+        "revision": "cf7e1b10425b87aca43ba2818c07831c6d8a2f84", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/services/swinto/swinto-rest-client, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "54", 
+                "name": "swinto-rest-client"
+            }
+        ], 
+        "revision": "96253bc150036866c50128722b29a7979bdc1949", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/stu/stu.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "19", 
+                "name": "stu"
+            }
+        ], 
+        "revision": "78879ab12544d81e9a1b7a7eedb5db39486a3700", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/hbv/vxy-api.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "9", 
+                "name": "vxy-api"
+            }
+        ], 
+        "revision": "89b9694f364f9599f69f9087ae972b9511338ebd", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/efg/bcd-for-efg.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "bcd-for-efg"
+            }
+        ], 
+        "revision": "b9c821bab89075eb529ef69ab79fc49f706d87fa", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/test/hij-server-keys.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "hij-server-keys"
+            }
+        ], 
+        "revision": "822a22381176b1dfd7aeee7e6263e43852953b37", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/services/communication/notcon/notconinbounddb, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "notconinbounddb"
+            }
+        ], 
+        "revision": "10de67e32e80913a92be3f805071a939ff497bb5", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/services/klm/klm, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "25", 
+                "name": "klm"
+            }
+        ], 
+        "revision": "ca5fd87dcba8c95acff7caee60ba95a15147f342", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/efg/nop.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "nop"
+            }
+        ], 
+        "revision": "c2251095f3882417a5e9f7914f153e76334971dc", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/storage/qrs-maintenance.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "3", 
+                "name": "qrs-maintenance"
+            }
+        ], 
+        "revision": "e54de7ab8a07376ddd9353d5cbcefad3f1148ba2", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/misc/swinto-commons, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "4", 
+                "name": "swinto-commons"
+            }
+        ], 
+        "revision": "ea008ce2490f3b3de1f65c751c7259b6a6549964", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/test/test-hij-server.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "4", 
+                "name": "test-hij-server"
+            }
+        ], 
+        "revision": "8c5e10e4dc85519b07845ae60a33bdd98bcc8ed7", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/test/test-tuv-server.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "test-tuv-server"
+            }
+        ], 
+        "revision": "c4de22a1eb36ec35023b62f121fc9d09fb310b34", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/swinto/wxy-mock.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "wxy-mock"
+            }
+        ], 
+        "revision": "f41f8c76f9adbde8c833185744a93ad548a6d5ad", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/cde/protocol-cde.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "protocol-cde"
+            }
+        ], 
+        "revision": "1613dd982faca9694ddc1647cb326a9ff69ef159", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/fgh/fgh-spec.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "8", 
+                "name": "fgh-spec"
+            }
+        ], 
+        "revision": "c682d7a7eb08b75220771f387bf2bc4581d6163a", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/services/archive/mnodb, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "mnodb"
+            }
+        ], 
+        "revision": "cffe4692c92d9282be4796e8e4b01dda7dbcfdb6", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/ijk.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "ijk"
+            }
+        ], 
+        "revision": "107bd775f83b12c2a4080b42b52cf01c8ca7a3cd", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/lmn/protocol-lmn.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "protocol-lmn"
+            }
+        ], 
+        "revision": "5d16bb0c8597ffe4b8a500a9ed1d3d2d46639bc6", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/opq/opq.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "15", 
+                "name": "opq"
+            }
+        ], 
+        "revision": "024b4994b7496c552e6ca7eb9a101d9eb75110ea", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/test/zzz-systemtest, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "156", 
+                "name": "zzz-systemtest"
+            }
+        ], 
+        "revision": "ac6f4b38a108d8444d1ee0c504ceb0842ebdaf28", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/archive/fridge-signature.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "fridge-signature"
+            }
+        ], 
+        "revision": "4f30030ae65571f85badf2b9f160415fa4fc0854", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/http/protocolbuzzs.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "protocolbuzzs"
+            }
+        ], 
+        "revision": "1b35f56d64e476975691cad7a70e92784d77f2e6", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/test/bofftest, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "911", 
+                "name": "zzz-bofftest"
+            }
+        ], 
+        "revision": "020b628ca21815fd9ad834f9aa84ce831f1f4be3", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/delivery/delivery-spec.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "8", 
+                "name": "delivery-spec"
+            }
+        ], 
+        "revision": "74d482117a9cf9dc5656bccff97a8d1fb58ad938", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/foo/foo.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "16", 
+                "name": "foo"
+            }
+        ], 
+        "revision": "fc7a6d74e65793cc314529af91e683ed9aefe690", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/test/mock-datastorage.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "mock-datastorage"
+            }
+        ], 
+        "revision": "cfc0caa57c9e89f5a4f70e7407effc06737b0bac", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/pqr/pqr-acme.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "10", 
+                "name": "pqr-acme"
+            }
+        ], 
+        "revision": "7d66172bbf80d7856ed84ef45eb97efc539a845b", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/misc/dockerimages/vms-apl.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "vms-apl"
+            }
+        ], 
+        "revision": "72941e8cc71f0424a0cfb35ee1b07074beb9c0ba", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/format/swinto-mogriation.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "183", 
+                "name": "swinto-mogriation"
+            }
+        ], 
+        "revision": "72926933bf6a79adc577a4fed75b8978ee5cfbed", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/notcon/protocol-notcon-outbound.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "7", 
+                "name": "protocol-notcon-outbound"
+            }
+        ], 
+        "revision": "4a7441a711c42c44cb9ad610d343ea90335fa06d", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/commons/commons-def.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "5", 
+                "name": "commons-def"
+            }
+        ], 
+        "revision": "b73203aa20aebd3e0ea3c39fb4863206b6f23e44", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/registry-lookup/lookup.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "10", 
+                "name": "lookup"
+            }
+        ], 
+        "revision": "3927c9cc8bf0f1ded3b65219c4d11be72ee54c4a", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/digitalsignature/digitalsignature.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "digitalsignature"
+            }
+        ], 
+        "revision": "ffefe92c53c7e530dd3036a7e7074890b9cda930", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/format/swinto-rules.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "17", 
+                "name": "swinto-rules"
+            }
+        ], 
+        "revision": "1c8619012b63878634626be614bfa566aa0c9704", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/fgh/fgh-service.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "53", 
+                "name": "fgh"
+            }
+        ], 
+        "revision": "62b88f7ceda4c4f34a9d8bed617a36ebb55bcb9f", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/format/businessparty-import.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "12", 
+                "name": "business-party-import"
+            }
+        ], 
+        "revision": "cea70500085a8e36ec2a86da90c23038fd596169", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/storage/qrs.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "5", 
+                "name": "qrs"
+            }
+        ], 
+        "revision": "8fcd4a28dc4da43a057941c467175e40426f9560", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/hbv/hbv.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "hbv"
+            }
+        ], 
+        "revision": "40438234b4f757b5efcbd4d1016fcb2cfc9904a4", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/commons/document-def.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "10", 
+                "name": "document-def"
+            }
+        ], 
+        "revision": "89a0e6da171b05441e17cd3fec7c856a24f0c3bf", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:format/swinto-internal-format, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "22", 
+                "name": "swinto-internal-format"
+            }
+        ], 
+        "revision": "36c02021337b56de52e2a68f57cecb7de33e2509", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/efg/efg.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "efg"
+            }
+        ], 
+        "revision": "9d9184a36f56d997ecffe5c3046a92568c545515", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/test/zzz-feature-tests.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "901", 
+                "name": "fridge-feature-tests"
+            }, 
+            {
+                "counter": "949", 
+                "name": "archive-feature-tests"
+            }, 
+            {
+                "counter": "910", 
+                "name": "digsig-feature-tests"
+            }, 
+            {
+                "counter": "1218", 
+                "name": "swinto-feature-tests"
+            }, 
+            {
+                "counter": "988", 
+                "name": "pricecheck-feature-tests"
+            }, 
+            {
+                "counter": "972", 
+                "name": "efg-feature-tests"
+            }
+        ], 
+        "revision": "a84f5f43230118ab454577506c9c303c31118765", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/opq/opq-spec.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "8", 
+                "name": "opq-spec"
+            }
+        ], 
+        "revision": "099401d8619963f2f808482ff8c8debe70f9bf19", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/services/archive/archiveindexdb, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "archiveindexdb"
+            }
+        ], 
+        "revision": "fad3089f087c7d0a2e977ccdadb914f654fb1c06", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services-core/platformrecipe.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1031", 
+                "name": "update-platformrecipe"
+            }, 
+            {
+                "counter": "1032", 
+                "name": "update-platformrecipe"
+            }
+        ], 
+        "revision": "863dce04840980b2526029e8938d2ee0be7789d2", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/communications/http/httpclient-mock.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "httpclient-mock"
+            }
+        ], 
+        "revision": "ed261983c2f06c20c9181036519933a3ef59da1d", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/finbank/protocol-finbankws.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "3", 
+                "name": "protocol-finbankws"
+            }
+        ], 
+        "revision": "33df091580d6c16d0c631ac54e029b6cfe0e0274", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/tpb/protocol-tpb.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "protocol-tpb"
+            }
+        ], 
+        "revision": "38aa109038172a3918cf310be3dd2597a9a6f6b2", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/tra/protocol-tra.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "4", 
+                "name": "protocol-tra"
+            }
+        ], 
+        "revision": "468d360a76fffdbffc732351e794c27cd00ea033", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/mogri/mogri.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "6", 
+                "name": "mogri"
+            }
+        ], 
+        "revision": "39cad010fe3b3a89ba302b8adcd273d04ebd0cf2", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/services/archive/archivepushbackdb, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "archivepushbackdb"
+            }
+        ], 
+        "revision": "342e14377414fec517f92ca509ae2cf3df6a2802", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/mogri/guerilla-mogri-spec.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "4", 
+                "name": "guerilla-mogri-spec"
+            }
+        ], 
+        "revision": "852b0e01f210f04422a68a8d36b18e6154489583", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/communications/finbank/finbankws-mock.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "finbankws-mock"
+            }
+        ], 
+        "revision": "58ddb0516ba4a3d89c80ecf1d4430d22c9ebd8c1", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:/acmeonline/services/storage/storage-api, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "43", 
+                "name": "storage-api"
+            }
+        ], 
+        "revision": "ea2a5782857f5eee80a2e2b2f2837f71453c3860", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/archive/archive-index.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "archive-index"
+            }
+        ], 
+        "revision": "a63335151111c92e7f60bd94cd1b308f853d89c5", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/pqr/pqr-cluster.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "11", 
+                "name": "pqr-cluster"
+            }
+        ], 
+        "revision": "b4be22ee736d88b6a3a86962938aff3a8e0ccd89", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/nginx/nginx.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "nginx"
+            }
+        ], 
+        "revision": "79e7c1b506f077e22e657c01879f4a5aad817d22", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/monitor/alien/node-exporter.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "node-exporter"
+            }
+        ], 
+        "revision": "eb06251d3018b7dba9a1ba0a527d4a526bb8b7ce", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/test/zzz-characterize-tests, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "809", 
+                "name": "zzz-characterize-tests"
+            }
+        ], 
+        "revision": "d7b27eac7d1bf79a2276ae5da319586e787cfc5e", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services-core/platformdeployer.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "261", 
+                "name": "deploy-to-test"
+            }
+        ], 
+        "revision": "01d3da45f74f34e84d8d7bd6a29152808cde08f0", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/archive/archive-pushback.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "4", 
+                "name": "archive-pushback"
+            }
+        ], 
+        "revision": "45a6621baaac4fa1b2967ca9c6152bfac13f694d", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/services/klm/klm-api, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "14", 
+                "name": "klm-api"
+            }
+        ], 
+        "revision": "b930b3170e6e26c1828cc6a8570e48c215a11d2d", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/hbv/hbv-mock.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "hbv-mock"
+            }
+        ], 
+        "revision": "221fc89ef86ae70b7c7bd0ee7b9b614e9c4eee72", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/storage/qrs-single.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "14", 
+                "name": "qrs-single"
+            }
+        ], 
+        "revision": "2cea4d7f51cd78b6ae2d57dffa6ae61089223727", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/bar/bar-spec.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "4", 
+                "name": "bar-spec"
+            }
+        ], 
+        "revision": "bd861933064b89bce56ec958d8430709f7c94f1e", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/cde/protocol-cde-inbound.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "2", 
+                "name": "protocol-cde-inbound"
+            }
+        ], 
+        "revision": "c27071aa74292f334343cda4991394df42e82cf9", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/ghi/ghi.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "20", 
+                "name": "ghi"
+            }
+        ], 
+        "revision": "df68d2b2973850c60b009a69c57c1eda00fac7a8", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/efg/fra-mock.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "1", 
+                "name": "fra-mock"
+            }
+        ], 
+        "revision": "3600ed4f3e47a6c5d2169d5bcbf4ebe1f5132081", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/communication/hij/protocol-hij.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "9", 
+                "name": "protocol-hij"
+            }
+        ], 
+        "revision": "f2e3898a7a79ace2abf90eff6d2f271ed19acd39", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: git@git:acmeonline/services/swinto/swintominidb, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "5", 
+                "name": "swintominidb"
+            }
+        ], 
+        "revision": "72fac6a87ae2199af2882594c9e68a3e8cc027cf", 
+        "type": "Git"
+    }, 
+    {
+        "description": "URL: ssh://git@git/acmeonline/services/commons/party-def.git, Branch: master", 
+        "pipelines": [
+            {
+                "counter": "10", 
+                "name": "party-def"
+            }
+        ], 
+        "revision": "599d109be908f7271427d312c415a80debcdee2c", 
+        "type": "Git"
+    }
+]

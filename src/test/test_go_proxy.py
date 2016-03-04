@@ -1,7 +1,7 @@
 import unittest
 from xml.etree import ElementTree
 
-from goserver_config import CruiseTree
+from gocdpb.goserver_config import CruiseTree
 
 
 class TestCruiseTree(unittest.TestCase):

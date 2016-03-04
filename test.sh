@@ -2,4 +2,4 @@
 
 set -evo pipefail
 
-PYTHONPATH=src/main python -m unittest discover .
+PYTHONPATH=src/main python -m unittest discover src/test

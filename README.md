@@ -266,6 +266,20 @@ template mechanism. The following builtin parameters exist:
 | repo_name | Name of current working directory   |
 
 
+Branching/tagging releases
+--------------------------
+
+If you need to maintain a released version of your software in parallel with
+development of new features, you might want to tag and/or branch all source
+code repos involved in creating a release. The `gocdrepos` and `gocdtagrepos`
+tools help prepare that, while the `clone-pipelines` action for `gocdpb` will
+set up the actual pipelines you need for your release, with release pipelines
+in a separate pipeline-group using branched source code repos as material.
+
+(This might not be the ideal way of working with Continuous Deployment, but
+its a reality for many teams that strive towards Continuous Deployment.)
+
+
 gocdrepos Command Line Interface
 --------------------------------
 
@@ -302,6 +316,40 @@ pipeline, you might type this and provide the password when prompted:
                             Prompt for config parameter without echo.
       --set-test-config SET_TEST_CONFIG
                             Set some sections in config first. (For test setup.)
+
+
+gocdtagrepos Command Line Interface
+-----------------------------------
+
+The gocdtagrepos tool uses a json-file of the format created by gocdrepos. For
+each repo in the json-file, it will make a clone under DIRECTORY, tag it with
+TAG_NAME, and also branch it with the TAG_NAME if the pipeline used to create
+it was listed in BRANCH_LIST. The -p flag is used to automatically push the
+repository, and the -c flag to remove the clone when it's done.
+
+Currently, this tool only supports git.
+
+    usage: gocdtagrepos [-h] [-d DIRECTORY] -t TAG_NAME [-b BRANCH_LIST] [-p] [-c]
+                        [jsonfile]
+
+    Tag and/or branch a set of Git repositories as provided by json data.
+
+    positional arguments:
+      jsonfile              Json file as produced by gocdrepos. Read from stdin if
+                            no filename given.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -d DIRECTORY, --directory DIRECTORY
+                            Parent directory of repository clones clones. Default
+                            to /tmp.
+      -t TAG_NAME, --tag-name TAG_NAME
+                            Name of tag / branch to create.
+      -b BRANCH_LIST, --branch-list BRANCH_LIST
+                            Comma-separated list of pipeline names. Create
+                            branches for these.
+      -p, --push            Push changes to remote repo.
+      -c, --clean           Remove cloned repo.
 
 
 How to run the self-tests
