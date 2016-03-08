@@ -1,3 +1,4 @@
+from __future__ import print_function
 import re
 import sys
 import json
@@ -76,7 +77,7 @@ class JsonSettings(object):
                     go.unpause(pipeline_name)
                 if go.verbose:
                     status = go.get_pipeline_status(pipeline_name)
-                    print json.dumps(status, indent=4, sort_keys=True)
+                    print(json.dumps(status, indent=4, sort_keys=True))
 
     def clone_pipelines(self, go, operation):
         """
@@ -106,20 +107,25 @@ class JsonSettings(object):
         create_group = operation["CREATE-group"]
         find_name = operation['pipeline']["FIND-name"]
         replace_name = operation['pipeline']["REPLACE-name"]
-        etag, pipeline = go.get_pipeline_config(old_name)
         new_name = re.sub(find_name, replace_name, old_name)
         if new_name is None:
+            print("Pipeline named {} does not match pattern {}".format(old_name, find_name))
             return
+        etag, pipeline = go.get_pipeline_config(old_name)
         pipeline['name'] = new_name
         new_pipeline = dict(group=create_group, pipeline=pipeline)
         old_material = pipeline["materials"][:]
         pipeline["materials"] = []
+        environment_variables = pipeline["environment_variables"]
         for actual_material in old_material:
             for op_material in operation['pipeline']['materials']:
                 if actual_material["type"] == op_material["type"]:
-                    ok = self._update_material(actual_material, op_material)
+                    ok = self._update_material(actual_material, op_material,
+                                               environment_variables)
                     if ok:
                         pipeline["materials"].append(actual_material)
+                    else:
+                        print("Skipping material {}".format(actual_material))
         go.create_a_pipeline(new_pipeline)
         return new_name
 
@@ -128,10 +134,12 @@ class JsonSettings(object):
         for actual_material in pipeline["materials"]:
             for op_material in operation['pipeline']['materials']:
                 if actual_material["type"] == op_material["type"] == 'dependency':
-                    self._fix_dependencies(actual_material, op_material)
+                    parameters = pipeline['parameters']
+                    stages = pipeline['stages'] or []
+                    self._fix_dependencies(actual_material, op_material, parameters, stages)
         go.edit_pipeline_config(name, etag, pipeline)
 
-    def _update_material(self, actual_material, op_material):
+    def _update_material(self, actual_material, op_material, environment_variables):
         """
         This method is called on the material in pipelines we clone.
         It should copy source code repositories and update their branch.
@@ -140,25 +148,43 @@ class JsonSettings(object):
         cloned to avoid references to not yet created pipelines.
         """
         if actual_material["type"] == 'git':
-            actual_material["attributes"]["branch"] = op_material["attributes"]["REPLACE-branch"]
+            old_branch = actual_material["attributes"]["branch"]
+            new_branch = op_material["attributes"]["REPLACE-branch"]
+            actual_material["attributes"]["branch"] = new_branch
+            for env_var in environment_variables:
+                if env_var['value'] == old_branch:
+                    env_var['value'] = new_branch
             return True
         elif actual_material["type"] == 'dependency':
             find_pipeline = op_material['attributes']["FIND-pipeline"]
             pipeline_name = actual_material["attributes"]["pipeline"]
             if not re.search(find_pipeline, pipeline_name):
+                print('Rejecting material {} based on {}'.format(actual_material, op_material))
                 return False
             find_group = op_material['attributes']["FIND-group"]
             if self.pipeline_group_map[pipeline_name] == find_group:
                 return True
+            print('Rejecting material {} based on {}'.format(actual_material, op_material))
             return False
 
     @staticmethod
-    def _fix_dependencies(actual_material, op_material):
+    def _fix_dependencies(actual_material, op_material, parameters, stages):
         find_pipeline = op_material['attributes']["FIND-pipeline"]
         replace_pipeline = op_material['attributes']["REPLACE-pipeline"]
-        new_name = re.sub(find_pipeline, replace_pipeline, actual_material["attributes"]["pipeline"])
+        old_name = actual_material["attributes"]["pipeline"]
+        new_name = re.sub(find_pipeline, replace_pipeline, old_name)
         if new_name:
             actual_material["attributes"]["pipeline"] = new_name
+            actual_material["attributes"]["name"] = new_name
+            for parameter in parameters:
+                if parameter['value'] == old_name:
+                    parameter['value'] = new_name
+            for stage in stages:
+                for job in stage['jobs']:
+                    for task in job['tasks']:
+                        if task['type'] == 'fetch':
+                            if task['attributes']['pipeline'] == old_name:
+                                task['attributes']['pipeline'] = new_name
 
     def add_downstream_dependencies(self, pipeline, update):
         if "material" in update:
@@ -214,7 +240,7 @@ class JsonSettings(object):
         """
         conf_environments = configuration.find('environments')
         if conf_environments is None:
-            print "No environments section in configuration."
+            print("No environments section in configuration.")
             return
         op_env_name = operation.get('environment')
         if not op_env_name:
@@ -300,10 +326,10 @@ class Pipeline(object):
         if self.format == 'json':
             repos = [repo.as_dict(pipelines=[dict(zip(('name', 'counter'), pl)) for pl in pipelines])
                      for repo, pipelines in self.recursive_repos.items()]
-            print json.dumps(repos, indent=4, sort_keys=True)
+            print(json.dumps(repos, indent=4, sort_keys=True))
         elif self.format == 'semicolon':
             for repo, pipelines in self.recursive_repos.items():
-                print "%s; %s" % (repo, ", ".join(["%s/%s" % (p, i) for p, i in pipelines]))
+                print("%s; %s" % (repo, ", ".join(["%s/%s" % (p, i) for p, i in pipelines])))
         else:
             raise TypeError("Don't know how to print in format: {}".format(self.format))
 

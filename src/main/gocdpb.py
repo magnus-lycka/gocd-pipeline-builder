@@ -46,7 +46,6 @@ def repos(args=sys.argv):
     Pipeline(pargs.pipeline_instance, go, pargs.format).print_recursive_repos()
 
 
-
 def main(args=sys.argv):
     argparser = argparse.ArgumentParser(
         description="Add pipeline to Go CD server."
