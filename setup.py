@@ -8,7 +8,7 @@ from setuptools import setup
 if __name__ == '__main__':
     setup(
         name='gocdpb',
-        version='6.4',
+        version='6.5',
         description='Configure GoCD pipeline from the commandline.',
         long_description=(
             'The Go CD Pipeline Builder is designed to have the same '

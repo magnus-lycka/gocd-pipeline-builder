@@ -18,7 +18,12 @@ class Git(object):
     def _call_git(self, *args):
         if self.verbose:
             print("git", " ".join(map(pipes.quote, args)))
-        result = subprocess.check_output(['git'] + list(args), stderr=subprocess.STDOUT)
+        try:
+            result = subprocess.check_output(['git'] + list(args), stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            print(e.output) # make sure we always see what the stdout before re-raising the exception. Otherwise it gets lost
+            raise
+
         if self.verbose:
             print(result)
         return result
