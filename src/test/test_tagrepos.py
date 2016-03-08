@@ -114,7 +114,7 @@ class GitTaggerTests(TestsBase):
         tagger = tagrepos.GitTagger(directory)
         tagger.clone(repo, branch)
         tagger.tag(tag, rev)
-        tagger.push()
+        tagger.push(tag)
         tagger.clean()
 
         expected = [
@@ -128,7 +128,7 @@ class GitTaggerTests(TestsBase):
             u"'c142925e8d183b108020072143a669515612e8f3'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory/test1',), {}),
-            u"Return from check_output args=(['git', 'push', '--mirror'],), kwargs={'stderr': 'sys.stdout'}",
+            u"Return from check_output args=(['git', 'push', 'origin', 'RELEASE-1.2.3'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory',), {}),
             ('rmtree', ('test1',), {}),
@@ -223,7 +223,7 @@ class TagReposTests(TestsBase):
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test3',), {}),
-            u"Return from check_output args=(['git', 'push', '--mirror'],), kwargs={'stderr': 'sys.stdout'}",
+            u"Return from check_output args=(['git', 'push', 'origin', 'GUTEN_TAG'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory',), {}),
             ('rmtree', ('test3',), {}),
@@ -241,7 +241,7 @@ class TagReposTests(TestsBase):
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test1',), {}),
-            u"Return from check_output args=(['git', 'push', '--mirror'],), kwargs={'stderr': 'sys.stdout'}",
+            u"Return from check_output args=(['git', 'push', 'origin', 'GUTEN_TAG'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory',), {}),
             ('rmtree', ('test1',), {}),
@@ -264,7 +264,7 @@ class TagReposTests(TestsBase):
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test2',), {}),
-            u"Return from check_output args=(['git', 'push', '--mirror'],), kwargs={'stderr': 'sys.stdout'}",
+            u"Return from check_output args=(['git', 'push', 'origin', 'GUTEN_TAG'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory',), {}),
             ('rmtree', ('test2',), {}),

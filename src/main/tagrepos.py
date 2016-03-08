@@ -73,9 +73,9 @@ class GitTagger(object):
         self.msg = 'Branched {}:{} with {}'.format(self.repo_name, revision, name)
         chdir(self.start_dir)
 
-    def push(self):
+    def push(self, tag_or_branch):
         chdir(path.join(self.directory, self.repo_name))
-        self.git.push('--mirror')
+        self.git.push('origin', tag_or_branch)
         chdir(self.start_dir)
 
     def clean(self):
@@ -107,7 +107,7 @@ def tag_repos(directory, name, structure, branch_list=None, push=False, clean=Fa
         if should_branch:
             tagger.branch(name, rev)
         if push:
-            tagger.push()
+            tagger.push(name)
         if clean:
             tagger.clean()
 
