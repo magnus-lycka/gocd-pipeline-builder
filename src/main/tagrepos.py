@@ -108,9 +108,10 @@ def tag_repos(directory, name, structure, branch_list=None, push=False, clean=Fa
         rev = repo['revision']
         tagger = GitTagger(directory, verbose)
         tagger.clone(url, branch)
-        tagger.tag(name, rev)
         if should_branch:
             tagger.branch(name, rev)
+        else:
+            tagger.tag(name, rev)
         if push:
             tagger.push(name)
         if clean:

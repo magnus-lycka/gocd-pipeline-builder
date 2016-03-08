@@ -213,11 +213,6 @@ class TagReposTests(TestsBase):
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test3',), {}),
-            u"Return from check_output args=(['git', 'tag', 'GUTEN_TAG', "
-            u"'ecc9ba924d30b29401ff06af6e6b7aa002a65ec6'],), kwargs={'stderr': 'sys.stdout'}",
-            ('chdir', (startdir,), {}),
-
-            ('chdir', ('directory/test3',), {}),
             u"Return from check_output args=(['git', 'branch', 'GUTEN_TAG', "
             u"'ecc9ba924d30b29401ff06af6e6b7aa002a65ec6'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
@@ -251,11 +246,6 @@ class TagReposTests(TestsBase):
             u"Return from check_output args=(['git', 'clone', '/tmp/test2'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', ('test2',), {}),
             u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stderr': 'sys.stdout'}",
-            ('chdir', (startdir,), {}),
-
-            ('chdir', ('directory/test2',), {}),
-            u"Return from check_output args=(['git', 'tag', 'GUTEN_TAG', "
-            u"'8e1ddbf0aa8f65295028413d0433247a72258aaf'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test2',), {}),
