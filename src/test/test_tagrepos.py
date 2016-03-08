@@ -13,7 +13,7 @@ from subprocess import CalledProcessError as CPE
 class MockSubprocess(object):
     response = u"Return from check_output args={}, kwargs={}"
     CalledProcessError = CPE
-    STDERR = "sys.stderr"
+    STDOUT = "sys.stdout"
 
     def __init__(self, log=None):
         self.check_output_args = []
@@ -119,16 +119,16 @@ class GitTaggerTests(TestsBase):
 
         expected = [
             ('chdir', ('directory',), {}),
-            u"Return from check_output args=(['git', 'clone', '/tmp/test1'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'clone', '/tmp/test1'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', ('test1',), {}),
-            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory/test1',), {}),
             u"Return from check_output args=(['git', 'tag', 'RELEASE-1.2.3', "
-            u"'c142925e8d183b108020072143a669515612e8f3'],), kwargs={'stdout': 'sys.stderr'}",
+            u"'c142925e8d183b108020072143a669515612e8f3'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory/test1',), {}),
-            u"Return from check_output args=(['git', 'push', '--mirror'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'push', '--mirror'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory',), {}),
             ('rmtree', ('test1',), {}),
@@ -154,13 +154,13 @@ class GitTaggerTests(TestsBase):
 
         expected = [
             ('chdir', ('directory',), {}),
-            u"Return from check_output args=(['git', 'clone', '/tmp/test1'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'clone', '/tmp/test1'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', ('test1',), {}),
-            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory/test1',), {}),
             u"Return from check_output args=(['git', 'tag', 'RELEASE-1.2.3', "
-            u"'c142925e8d183b108020072143a669515612e8f3'],), kwargs={'stdout': 'sys.stderr'}",
+            u"'c142925e8d183b108020072143a669515612e8f3'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
 
         ]
@@ -180,13 +180,13 @@ class GitTaggerTests(TestsBase):
 
         expected = [
             ('chdir', ('directory',), {}),
-            u"Return from check_output args=(['git', 'clone', '/tmp/test1'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'clone', '/tmp/test1'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', ('test1',), {}),
-            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory/test1',), {}),
             u"Return from check_output args=(['git', 'branch', 'RELEASE-1.2.3', "
-            u"'c142925e8d183b108020072143a669515612e8f3'],), kwargs={'stdout': 'sys.stderr'}",
+            u"'c142925e8d183b108020072143a669515612e8f3'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {})
         ]
         self.assertEqual(expected, self.log)
@@ -207,64 +207,64 @@ class TagReposTests(TestsBase):
 
         expected = [
             ('chdir', ('directory',), {}),
-            u"Return from check_output args=(['git', 'clone', '/tmp/test3'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'clone', '/tmp/test3'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', ('test3',), {}),
-            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test3',), {}),
             u"Return from check_output args=(['git', 'tag', 'GUTEN_TAG', "
-            u"'ecc9ba924d30b29401ff06af6e6b7aa002a65ec6'],), kwargs={'stdout': 'sys.stderr'}",
+            u"'ecc9ba924d30b29401ff06af6e6b7aa002a65ec6'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test3',), {}),
             u"Return from check_output args=(['git', 'branch', 'GUTEN_TAG', "
-            u"'ecc9ba924d30b29401ff06af6e6b7aa002a65ec6'],), kwargs={'stdout': 'sys.stderr'}",
+            u"'ecc9ba924d30b29401ff06af6e6b7aa002a65ec6'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test3',), {}),
-            u"Return from check_output args=(['git', 'push', '--mirror'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'push', '--mirror'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory',), {}),
             ('rmtree', ('test3',), {}),
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory',), {}),
-            u"Return from check_output args=(['git', 'clone', '/tmp/test1'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'clone', '/tmp/test1'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', ('test1',), {}),
-            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test1',), {}),
             u"Return from check_output args=(['git', 'tag', 'GUTEN_TAG', "
-            u"'c142925e8d183b108020072143a669515612e8f3'],), kwargs={'stdout': 'sys.stderr'}",
+            u"'c142925e8d183b108020072143a669515612e8f3'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test1',), {}),
-            u"Return from check_output args=(['git', 'push', '--mirror'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'push', '--mirror'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory',), {}),
             ('rmtree', ('test1',), {}),
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory',), {}),
-            u"Return from check_output args=(['git', 'clone', '/tmp/test2'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'clone', '/tmp/test2'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', ('test2',), {}),
-            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test2',), {}),
             u"Return from check_output args=(['git', 'tag', 'GUTEN_TAG', "
-            u"'8e1ddbf0aa8f65295028413d0433247a72258aaf'],), kwargs={'stdout': 'sys.stderr'}",
+            u"'8e1ddbf0aa8f65295028413d0433247a72258aaf'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test2',), {}),
             u"Return from check_output args=(['git', 'branch', 'GUTEN_TAG', "
-            u"'8e1ddbf0aa8f65295028413d0433247a72258aaf'],), kwargs={'stdout': 'sys.stderr'}",
+            u"'8e1ddbf0aa8f65295028413d0433247a72258aaf'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test2',), {}),
-            u"Return from check_output args=(['git', 'push', '--mirror'],), kwargs={'stdout': 'sys.stderr'}",
+            u"Return from check_output args=(['git', 'push', '--mirror'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory',), {}),
             ('rmtree', ('test2',), {}),

@@ -18,7 +18,7 @@ class Git(object):
     def _call_git(self, *args):
         if self.verbose:
             print("git", " ".join(map(pipes.quote, args)))
-        result = subprocess.check_output(['git'] + list(args), stdout=subprocess.STDERR)
+        result = subprocess.check_output(['git'] + list(args), stderr=subprocess.STDOUT)
         if self.verbose:
             print(result)
         return result
