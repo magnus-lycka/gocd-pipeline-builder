@@ -27,12 +27,13 @@ class Git(object):
 
 
 class GitTagger(object):
-    def __init__(self, directory):
+    def __init__(self, directory, verbose=False):
         self.directory = directory
         self.repo_name = None
         self.msg = None
         self.start_dir = None
         self.git = None
+        self.verbose = verbose
 
     @staticmethod
     def get_repo_name(url):
@@ -44,7 +45,7 @@ class GitTagger(object):
     def clone(self, repo, branch):
         self.start_dir = getcwd()
         chdir(self.directory)
-        self.git = Git()
+        self.git = Git(verbose=self.verbose)
         self.git.clone(repo)
         self.repo_name = self.get_repo_name(repo)
         chdir(self.repo_name)
@@ -74,7 +75,7 @@ class GitTagger(object):
         chdir(self.start_dir)
 
 
-def tag_repos(directory, name, structure, branch_list=None, push=False, clean=False):
+def tag_repos(directory, name, structure, branch_list=None, push=False, clean=False, verbose=False):
     if branch_list is None:
         branch_list = []
     for repo in structure:
@@ -91,7 +92,7 @@ def tag_repos(directory, name, structure, branch_list=None, push=False, clean=Fa
         url = url_part.split(':', 1)[1].strip()
         branch = branch_part.split(':', 1)[1].strip()
         rev = repo['revision']
-        tagger = GitTagger(directory)
+        tagger = GitTagger(directory, verbose)
         tagger.clone(url, branch)
         tagger.tag(name, rev)
         if should_branch:
@@ -157,13 +158,18 @@ def main():
         action='store_true',
         help="Remove cloned repo."
     )
+    parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        help="Verbose Git output."
+    )
 
     pargs = parser.parse_args()
     branch_list = [] if not pargs.branch_list else pargs.branch_list.split(',')
     structure = json.load(pargs.jsonfile)
 
     check_consistent(structure, pargs.jsonfile.name)
-    tag_repos(pargs.directory, pargs.tag_name, structure, branch_list, pargs.push, pargs.clean)
+    tag_repos(pargs.directory, pargs.tag_name, structure, branch_list, pargs.push, pargs.clean, pargs.verbose)
 
 
 if __name__ == '__main__':
