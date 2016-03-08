@@ -16,9 +16,10 @@ class Git(object):
         self.verbose = verbose
 
     def _call_git(self, *args):
-        result = subprocess.check_output(['git'] + list(args))
         if self.verbose:
             print("git", " ".join(map(pipes.quote, args)))
+        result = subprocess.check_output(['git'] + list(args), stdout=subprocess.STDERR)
+        if self.verbose:
             print(result)
         return result
 
@@ -54,7 +55,15 @@ class GitTagger(object):
 
     def tag(self, name, revision):
         chdir(path.join(self.directory, self.repo_name))
-        self.git.tag(name, revision)
+        try:
+            self.git.tag(name, revision)
+        except subprocess.CalledProcessError as e:
+            # if the tag already exists, we should just carry on
+            if "already exists" in e.output:
+                print("tag {} already exists, continuing".format(name))
+            else:
+                raise
+
         self.msg = 'Tagged {}:{} with {}'.format(self.repo_name, revision, name)
         chdir(self.start_dir)
 
