@@ -21,7 +21,9 @@ class Git(object):
         try:
             result = subprocess.check_output(['git'] + list(args), stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            print(e.output) # make sure we always see what the stdout before re-raising the exception. Otherwise it gets lost
+            # Make sure we always see what the stdout before re-raising the exception.
+            # Otherwise it gets lost.
+            print(e.output)
             raise
 
         if self.verbose:

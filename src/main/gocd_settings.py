@@ -10,6 +10,31 @@ import yaml
 from jinja2 import Template
 
 
+class GoProxy(object):
+    """
+    Intercept calls to go.create_a_pipeline_wrapper
+    to figure out which pipelines should potentially
+    be added to environment, unpaused etc.
+    """
+    def __init__(self, go_server, settings):
+        self.go = go_server
+        self.settings = settings
+
+    def __getattr__(self, item):
+        if item == 'create_a_pipeline':
+            return self.create_a_pipeline_wrapper
+        else:
+            return getattr(self.go, item)
+
+    def create_a_pipeline_wrapper(self, pipeline):
+        self.go.create_a_pipeline(pipeline)
+        self.settings.pipeline_names.append(pipeline["pipeline"]["name"])
+        self.settings.pipeline_stage_names.append([
+            stage["name"] for stage
+            in pipeline["pipeline"].get("stages") or []
+        ])
+
+
 class JsonSettings(object):
     """
     A json file passed to the this class should have the following structure:
@@ -27,6 +52,7 @@ class JsonSettings(object):
         self.pipeline_names = []
         self.pipeline_stage_names = []
         self.pipeline_group_map = {}
+        self.action_plugins = OrderedDict()
 
     def load_file(self, settings_file, extra_settings):
         self.load_template(settings_file, extra_settings)
@@ -37,6 +63,9 @@ class JsonSettings(object):
         data.update(parameters)
         self.list = json.loads(template.render(data),
                                object_pairs_hook=OrderedDict)
+
+    def register_plugin(self, module):
+        self.action_plugins.update(module.action_plugins)
 
     @staticmethod
     def get_default_parameters(git_config_path='.git/config'):
@@ -49,16 +78,13 @@ class JsonSettings(object):
         return data
 
     def server_operations(self, go):
+        go = GoProxy(go, self)
         for operation in self.list:
+            for action, plugin in self.action_plugins.items():
+                if action in operation:
+                    plugin(go=go, operation=operation[action])
             if "create-a-pipeline" in operation:
                 go.create_a_pipeline(operation["create-a-pipeline"])
-                self.pipeline_names.append(operation["create-a-pipeline"]["pipeline"]["name"])
-                self.pipeline_stage_names.append([
-                    stage["name"] for stage
-                    in operation["create-a-pipeline"]["pipeline"].get("stages") or []
-                ])
-            if "clone-pipelines" in operation:
-                self.clone_pipelines(go, operation["clone-pipelines"])
             if self.pipeline_names and "environment" in operation:
                 go.init()
                 self.update_environment(go.tree, operation)
@@ -78,113 +104,6 @@ class JsonSettings(object):
                 if go.verbose:
                     status = go.get_pipeline_status(pipeline_name)
                     print(json.dumps(status, indent=4, sort_keys=True))
-
-    def clone_pipelines(self, go, operation):
-        """
-        For now, this is fairly limited.
-        Given a "FIND-group" and a "CREATE-group" in the operation,
-        we use re.sub with FIND-name and REPLACE-name in the pipeline
-        to make a new pipeline in the group "REPLACE-name" with a
-        new name for each pipeline in group "FIND-name".
-        The new pipelines will use the git branch indicated by
-        "REPLACE-branch" for their Git material.
-        """
-        find_group = operation["FIND-group"]
-        all_groups = go.get_pipeline_groups()
-
-        for pipeline_group in all_groups:
-            for pipeline in pipeline_group["pipelines"]:
-                self.pipeline_group_map[pipeline['name']] = pipeline_group['name']
-        for pipeline, group in self.pipeline_group_map.items():
-            if group == find_group:
-                name = self.clone_pipeline(go, operation, pipeline)
-                if name:
-                    self.pipeline_names.append(name)
-        for pipeline_name in self.pipeline_names:
-            self.fix_pipeline(go, operation, pipeline_name)
-
-    def clone_pipeline(self, go, operation, old_name):
-        create_group = operation["CREATE-group"]
-        find_name = operation['pipeline']["FIND-name"]
-        replace_name = operation['pipeline']["REPLACE-name"]
-        new_name = re.sub(find_name, replace_name, old_name)
-        if new_name is None:
-            print("Pipeline named {} does not match pattern {}".format(old_name, find_name))
-            return
-        etag, pipeline = go.get_pipeline_config(old_name)
-        pipeline['name'] = new_name
-        new_pipeline = dict(group=create_group, pipeline=pipeline)
-        old_material = pipeline["materials"][:]
-        pipeline["materials"] = []
-        environment_variables = pipeline["environment_variables"]
-        for actual_material in old_material:
-            for op_material in operation['pipeline']['materials']:
-                if actual_material["type"] == op_material["type"]:
-                    ok = self._update_material(actual_material, op_material,
-                                               environment_variables)
-                    if ok:
-                        pipeline["materials"].append(actual_material)
-                    else:
-                        print("Skipping material {}".format(actual_material))
-        go.create_a_pipeline(new_pipeline)
-        return new_name
-
-    def fix_pipeline(self, go, operation, name):
-        etag, pipeline = go.get_pipeline_config(name)
-        for actual_material in pipeline["materials"]:
-            for op_material in operation['pipeline']['materials']:
-                if actual_material["type"] == op_material["type"] == 'dependency':
-                    parameters = pipeline['parameters']
-                    stages = pipeline['stages'] or []
-                    self._fix_dependencies(actual_material, op_material, parameters, stages)
-        go.edit_pipeline_config(name, etag, pipeline)
-
-    def _update_material(self, actual_material, op_material, environment_variables):
-        """
-        This method is called on the material in pipelines we clone.
-        It should copy source code repositories and update their branch.
-        It should copy the matching dependency material, but we should
-        postpone updates of the names, until all pipelines have been
-        cloned to avoid references to not yet created pipelines.
-        """
-        if actual_material["type"] == 'git':
-            old_branch = actual_material["attributes"]["branch"]
-            new_branch = op_material["attributes"]["REPLACE-branch"]
-            actual_material["attributes"]["branch"] = new_branch
-            for env_var in environment_variables:
-                if env_var['value'] == old_branch:
-                    env_var['value'] = new_branch
-            return True
-        elif actual_material["type"] == 'dependency':
-            find_pipeline = op_material['attributes']["FIND-pipeline"]
-            pipeline_name = actual_material["attributes"]["pipeline"]
-            if not re.search(find_pipeline, pipeline_name):
-                print('Rejecting material {} based on {}'.format(actual_material, op_material))
-                return False
-            find_group = op_material['attributes']["FIND-group"]
-            if self.pipeline_group_map[pipeline_name] == find_group:
-                return True
-            print('Rejecting material {} based on {}'.format(actual_material, op_material))
-            return False
-
-    @staticmethod
-    def _fix_dependencies(actual_material, op_material, parameters, stages):
-        find_pipeline = op_material['attributes']["FIND-pipeline"]
-        replace_pipeline = op_material['attributes']["REPLACE-pipeline"]
-        old_name = actual_material["attributes"]["pipeline"]
-        new_name = re.sub(find_pipeline, replace_pipeline, old_name)
-        if new_name:
-            actual_material["attributes"]["pipeline"] = new_name
-            actual_material["attributes"]["name"] = new_name
-            for parameter in parameters:
-                if parameter['value'] == old_name:
-                    parameter['value'] = new_name
-            for stage in stages:
-                for job in stage['jobs']:
-                    for task in job['tasks']:
-                        if task['type'] == 'fetch':
-                            if task['attributes']['pipeline'] == old_name:
-                                task['attributes']['pipeline'] = new_name
 
     def add_downstream_dependencies(self, pipeline, update):
         if "material" in update:
@@ -217,6 +136,8 @@ class JsonSettings(object):
             raise ValueError('Explicit dependency material is needed unless'
                              ' there is exactly one stage in new pipeline')
 
+    # We only call get_job if we actually have stages
+    # noinspection PyUnboundLocalVariable
     @staticmethod
     def get_job(pipeline, update):
         if "stage" in update:

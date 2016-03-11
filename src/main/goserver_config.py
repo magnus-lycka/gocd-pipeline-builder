@@ -1,13 +1,12 @@
 import copy
 from xml.etree import ElementTree
 
-__author__ = 'magnusl'
-
 
 class CruiseTree(ElementTree.ElementTree):
     """
     A thin layer on top of the cruise-config.xml used by the Go server.
     """
+
     @classmethod
     def fromstring(cls, text):
         return cls(ElementTree.fromstring(text))

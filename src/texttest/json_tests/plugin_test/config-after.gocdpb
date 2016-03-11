@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <pipelines group="first">
+    <pipeline isLocked="true" name="new_pipeline">
+      <materials>
+        <git dest="dest" url="git@github.com:sample_repo/example.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob" timeout="0">
+            <tasks>
+              <exec command="ls">
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <environments>
+    <environment name="green">
+      <pipelines>
+        <pipeline name="new_pipeline" />
+      </pipelines>
+    </environment>
+  </environments>
+</cruise>

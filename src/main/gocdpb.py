@@ -3,6 +3,7 @@
 import sys
 import getpass
 import argparse
+import importlib
 import requests
 from goserver_adapter import Goserver
 from gocd_settings import JsonSettings, YamlSettings, Pipeline
@@ -61,6 +62,11 @@ def main(args=sys.argv):
         help="Read yaml files with parameters for GoCD pipeline."
     )
     argparser.add_argument(
+        "-p", "--plugin",
+        action="append",
+        help="Plugin module for custom functions."
+    )
+    argparser.add_argument(
         "-D", "--define",
         action="append",
         help="Define setting parameter on command line."
@@ -78,14 +84,19 @@ def main(args=sys.argv):
 
     go, pargs = init_run(argparser, args)
 
+    settings = None
     if pargs.json_settings:
         json_settings = get_json_settings(pargs.json_settings)
-        JsonSettings(json_settings, list2dict(pargs.define)
-                     ).server_operations(go)
+        settings = JsonSettings(json_settings, list2dict(pargs.define))
 
     if pargs.yaml_settings is not None:
-        YamlSettings(pargs.yaml_settings, list2dict(pargs.define)
-                     ).server_operations(go)
+        settings = YamlSettings(pargs.yaml_settings, list2dict(pargs.define))
+
+    if settings:
+        if pargs.plugin:
+            for plugin in pargs.plugin:
+                settings.register_plugin(importlib.import_module(plugin))
+        settings.server_operations(go)
 
     if pargs.dump is not None:
         go.init()
@@ -130,8 +141,8 @@ def init_run(argparser, args):
     go = Goserver(pargs.config, pargs.verbose, extra_config)
     try:
         go.check_config()
-    except KeyError as error:
-        print "Missing {} in configuration.".format(error)
+    except AssertionError as error:
+        print "Missing '{}' in configuration.".format(error)
         sys.exit(1)
     go.init()
     if pargs.set_test_config is not None:

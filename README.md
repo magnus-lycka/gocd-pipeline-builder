@@ -52,9 +52,9 @@ gocdpb Command Line Interface
 
 The gocdpb script configures new pipelines in a GoCD server.
 
-    usage: gocdpb [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-D DEFINE]
-                  [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v] [-c CONFIG]
-                  [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
+    usage: gocdpb [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-p PLUGIN]
+                  [-D DEFINE] [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP]
+                  [-v] [-c CONFIG] [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
                   [--set-test-config SET_TEST_CONFIG]
 
     Add pipeline to Go CD server.
@@ -65,6 +65,8 @@ The gocdpb script configures new pipelines in a GoCD server.
                             Read json file / url with settings for GoCD pipeline.
       -y YAML_SETTINGS, --yaml-settings YAML_SETTINGS
                             Read yaml files with parameters for GoCD pipeline.
+      -p PLUGIN, --plugin PLUGIN
+                            Plugin module for custom functions.
       -D DEFINE, --define DEFINE
                             Define setting parameter on command line.
       --dump-test-config DUMP_TEST_CONFIG
@@ -100,6 +102,8 @@ You will be prompted for password.
 
 If you want the pipeline to be called `Y` instead of the directory name,
 simply add `-D repo_name=Y` to the command line.
+
+The `-p | --plugin` flag is new in version 7. See section on plugins below.
 
 
 GoCD Pipeline Templates and parameters
@@ -168,58 +172,7 @@ intended usage.
     - "task" should be a fetch task as described in the
       REST API which fetches some build artifact from
       the newly created pipeline.
-  - "clone-pipelines":
-    This operation is intended for creating a group
-    of pipelines for e.g. managing hot fixes of a
-    released version of the software, when there is
-    new development going on in master. Not really
-    relevant if you do full Continuous Delivery,
-    but some of us still need to maintain released
-    versions in parallel with the development version.
-    This section contains:
-    - "FIND-group": the name of the pipeline group we want to clone/copy.
-    - "CREATE-group": Name of the new group we create.
-    - "pipeline" contains the following:
-      - "FIND-name": A regular expression for pipelines we want to copy.
-      - "REPLACE-name": Used by Python's re.sub to give pipelines a new name.
-      - "materials" with a list of source code or dependency material:
-        - "REPLACE-branch": used in source code material to point to the branch we want to work with in our clone
-        - "FIND-group": Used for dependency material to only copy dependencies from pipelines in the appropriate group.
-        - "FIND-pipeline": RE like the one for pipeline name above.
-        - "REPLACE-pipeline": String like "REPLACE-name" above for dependency material.
-    Example below:
-
-        [
-          {
-            "environment": "green",
-            "unpause": true,
-            "clone-pipelines": {
-              "FIND-group": "release-template",
-              "CREATE-group": "RELEASE-2016-02-09",
-              "pipeline": {
-                "FIND-name": "(.+)",
-                "REPLACE-name": "\\1-RELEASE-2016-02-09",
-                "materials": [
-                  {
-                    "type": "git",
-                    "attributes": {
-                      "REPLACE-branch": "RELEASE-2016-02-09"
-                    }
-                  },
-                  {
-                    "type": "dependency",
-                    "attributes": {
-                      "FIND-group": "release-template",
-                      "FIND-pipeline": "^(copy.+)",
-                      "REPLACE-pipeline": "\\1-RELEASE-2016-02-09"
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        ]
-
+  - Custom value: See section on Plugins below.
 
 GoCD Pipeline Builder Patterns
 ------------------------------
@@ -278,6 +231,57 @@ in a separate pipeline-group using branched source code repos as material.
 
 (This might not be the ideal way of working with Continuous Deployment, but
 its a reality for many teams that strive towards Continuous Deployment.)
+
+
+Plugins
+-------
+
+Features not supported by `gocdpb` can be added through plugins.
+
+You need to provide a Python module with a module level dictionary
+called `action_plugins` with the action names as keys, and each
+corresponding handler as values. A handler could be any callable
+Python object, i.e. a class with an `__init__`, an instance with
+a `__call__`, or a function or method.
+
+The callable should only accept keyword arguments, and accept any
+keyword argument to be able to deal with future expansions without
+breaking. The caller of the callable doesn't expect any return
+value. Throw an explanatory exception if the expectations of
+calling can't be met.
+
+Something like this:
+
+    # my_plugin_module.py
+    def beer_pipeline_handler(go=None, operation=None, **kwargs):
+       ...
+       if brand not in inventory:
+           raise ValueError('Unknown brand')
+       ...
+
+    action_plugins = {'beer-pipeline': beer_pipeline_handler}
+
+
+By calling `gocdpb` with `-p my_plugin_module` and using `beer-pipeline`
+as action in the GoCD Pipeline Builder Setting File, as described above,
+we'll make `gocdpb` run the `beer_pipeline_handler`.
+
+The parameter `go` is an instance of goserver_adapter.Goserver. The general
+idea is that Goserver has methods corresponding to the GoCD REST API calls
+which take the needed parameters (url and login is already taken care of)
+and returns either `json_data` as the result of json.load (with OrderedDict)
+or a tuple of  `etag, json_data`.
+
+The parameter `operation` in the value in the Json settings file corresponding
+to the key in the `action_plugins` dictionary. So, for the example above, if
+we have the following in our settings file...
+
+    ...
+    'beer-pipeline': {'brand': 'Carnegie Porter', 'flow': '600l/h', 'alc': '6.2%'},
+    ...
+
+...we'll call `beer_pipeline_handler` with `operation` set to
+`{'brand': 'Carnegie Porter', 'amount': '600', 'alc': '6.2%'}`.
 
 
 gocdrepos Command Line Interface
@@ -355,7 +359,13 @@ Currently, this tool only supports git.
 How to run the self-tests
 -------------------------
 
-Install a go-server for testing.
+This software is mainly developed through an ATDD approach, with the bulk of tests in
+texttest. Unit tests exist are mainly complements to the the functional tests.
+
+Run ./test.sh in the root folder for unit tests, and follow the instructions below
+for functional tests:
+
+Install a go-server for functional tests.
 See https://www.go.cd/documentation/user/current/installation/installing_go_server.html
 
 The test will wipe most of the configuration before each test, so don't use a go-server

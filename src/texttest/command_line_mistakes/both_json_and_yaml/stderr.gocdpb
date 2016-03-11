@@ -1,5 +1,5 @@
-usage: gocdpb.py [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-D DEFINE]
-                 [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP] [-v]
-                 [-c CONFIG] [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
+usage: gocdpb.py [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-p PLUGIN]
+                 [-D DEFINE] [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP]
+                 [-v] [-c CONFIG] [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
                  [--set-test-config SET_TEST_CONFIG]
 gocdpb.py: error: argument -j/--json-settings: not allowed with argument -y/--yaml-settings

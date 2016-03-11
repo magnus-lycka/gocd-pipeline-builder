@@ -1,6 +1,6 @@
 import unittest
 import json
-from gocdpb.gocd_settings import Pipeline
+from gocdpb.gocd_settings import Pipeline, JsonSettings
 
 TEST_DATA1 = '''{
     "build_cause": {
@@ -142,18 +142,60 @@ TEST_DATA2 = '''{
 
 
 class StubGo(object):
-    def __init__(self):
-        self.first_call = True
+    def __init__(self, settings=None):
+        self.settings = settings
+        self.waiting_for_first_call = True
+        self.verbose = False
 
     def get_pipeline_instance(self, pipeline, instance):
-        if self.first_call:
-            self.first_call = False
+        if self.waiting_for_first_call:
+            self.waiting_for_first_call = False
             return json.loads(TEST_DATA1)
         else:
             return json.loads(TEST_DATA2)
 
+    def create_a_pipeline(self, pipeline):
+        self.settings.pipeline_names.append(pipeline["pipeline"]["name"])
+
+
+class DummyPluginFunction(object):
+    call_log = []
+
+    @classmethod
+    def __call__(cls, *args, **kwargs):
+        if 'dummy-action' in kwargs['operation']:
+            pipeline = kwargs['operation']['dummy-action']
+            kwargs['go'].create_a_pipeline(pipeline)
+        cls.call_log.append((args, kwargs))
+
+
+class DummyPluginModule(object):
+    action_plugins = {'dummy-action': DummyPluginFunction()}
+
 
 class GocdSettingsTests(unittest.TestCase):
+    def test_register_plugin(self):
+        settings = JsonSettings("[]", {})
+        settings.register_plugin(DummyPluginModule)
+        self.assertIn('dummy-action', settings.action_plugins)
+        self.assertIsInstance(settings.action_plugins['dummy-action'], DummyPluginFunction)
+
+    def test_run_plugin(self):
+        operation = '[{"dummy-action": {"pipeline": {"name": "NAME"}}}]'
+        settings = JsonSettings(operation, {})
+        settings.register_plugin(DummyPluginModule)
+        go = StubGo(settings)
+        settings.server_operations(go)
+        func = DummyPluginFunction()
+        self.assertEqual(1, len(func.call_log))
+        # No positional args
+        args = func.call_log[0][0]
+        self.assertEqual(args, ())
+        kwargs = func.call_log[0][1]
+        self.assertEqual(kwargs['go'], go)
+        self.assertEqual(kwargs['go'], go)
+        self.assertEqual(settings.pipeline_names, ['NAME'])
+
     def test_get_pipelines_with_several_version_of_same_material(self):
         pl = Pipeline('test3/3', StubGo(), 'json')
         pl.prepare_recursive_repos()

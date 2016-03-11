@@ -28,7 +28,7 @@ class Goserver(object):
         for param in (
             'url',
         ):
-            self.__config[param]
+            assert param in self.__config, param
 
     def init(self):
         """
