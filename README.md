@@ -137,6 +137,7 @@ Use `gocdpb -j` to pass the json settings file to the builder.
 See *.json files under src/texttest for more examples of
 intended usage.
 
+Both `environment` and `unpause` are optional.
 
 `<action>` can be one of:
 

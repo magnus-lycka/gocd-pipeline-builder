@@ -1,5 +1,4 @@
 from __future__ import print_function
-import re
 import sys
 import json
 import os.path
@@ -158,6 +157,8 @@ class JsonSettings(object):
         """
         If the setting names an environment, the pipelines in the
         setting, should be assigned to that environment in the cruise-config.
+        :param configuration: Go configuration as xml.etree.ElementTree
+        :param operation: Operation to perform in the Json settings
         """
         conf_environments = configuration.find('environments')
         if conf_environments is None:
@@ -196,6 +197,8 @@ class YamlSettings(JsonSettings):
         """
         Find the json template and parameter in the yaml file,
         render the template, and pass it to the super class.
+        :param settings_file: Yaml file
+        :param extra_settings: settings from e.g. command line
         """
         settings = yaml.load(settings_file)
         template_path = settings['path']

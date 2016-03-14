@@ -31,6 +31,8 @@ class CruiseTree(ElementTree.ElementTree):
         """
         Fredrik Lundh's standard recipe.
         (Why isn't this in xml.etree???)
+        :param elem: the XML element
+        :param level: how much indentation
         """
         i = "\n" + level * "  "
         if len(elem):
@@ -60,6 +62,7 @@ class CruiseTree(ElementTree.ElementTree):
         We want to replace the sections pipelines*, templates and environments.
         Let server and agents stay as usual.
         We've never used repositories so far.
+        :param test_settings_xml:
         """
         root = self.getroot()
 

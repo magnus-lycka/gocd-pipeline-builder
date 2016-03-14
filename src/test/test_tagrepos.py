@@ -6,13 +6,13 @@ import unittest
 from gocdpb import tagrepos
 import json
 from os import getcwd, path, chdir
-import sys
 
-from subprocess import CalledProcessError as CPE
+from subprocess import CalledProcessError as Cpe
+
 
 class MockSubprocess(object):
     response = u"Return from check_output args={}, kwargs={}"
-    CalledProcessError = CPE
+    CalledProcessError = Cpe
     STDOUT = "sys.stdout"
 
     def __init__(self, log=None):
@@ -29,9 +29,7 @@ class MockSubprocess(object):
         response = self.response.format(args, kwargs)
         self.log.append(response)
         if self.raise_when_tagging and args and 'tag' in args[0]:
-            raise CPE(128, args[0], "tag already exists")
-            #e.output = "tag already exists"
-            #raise e
+            raise Cpe(128, args[0], "tag already exists")
         return response
 
     def set_raise_when_tagging(self):
@@ -128,7 +126,8 @@ class GitTaggerTests(TestsBase):
             u"'c142925e8d183b108020072143a669515612e8f3'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory/test1',), {}),
-            u"Return from check_output args=(['git', 'push', 'origin', 'RELEASE-1.2.3'],), kwargs={'stderr': 'sys.stdout'}",
+            u"Return from check_output args=(['git', 'push', 'origin', "
+            u"'RELEASE-1.2.3'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
             ('chdir', ('directory',), {}),
             ('rmtree', ('test1',), {}),
@@ -136,9 +135,7 @@ class GitTaggerTests(TestsBase):
         ]
         self.assertEqual(expected, self.log)
 
-
     def test_tag_repos_when_tag_already_exists(self):
-
         tagrepos.subprocess.set_raise_when_tagging()
 
         directory = 'directory'

@@ -142,11 +142,11 @@ TEST_DATA2 = '''{
 
 
 class StubGo(object):
-    def __init__(self, settings=None):
-        self.settings = settings
+    def __init__(self):
         self.waiting_for_first_call = True
         self.verbose = False
 
+    # noinspection PyUnusedLocal
     def get_pipeline_instance(self, pipeline, instance):
         if self.waiting_for_first_call:
             self.waiting_for_first_call = False
@@ -155,7 +155,7 @@ class StubGo(object):
             return json.loads(TEST_DATA2)
 
     def create_a_pipeline(self, pipeline):
-        self.settings.pipeline_names.append(pipeline["pipeline"]["name"])
+        pass
 
 
 class DummyPluginFunction(object):
@@ -163,9 +163,8 @@ class DummyPluginFunction(object):
 
     @classmethod
     def __call__(cls, *args, **kwargs):
-        if 'dummy-action' in kwargs['operation']:
-            pipeline = kwargs['operation']['dummy-action']
-            kwargs['go'].create_a_pipeline(pipeline)
+        pipeline = kwargs['operation']
+        kwargs['go'].create_a_pipeline(pipeline)
         cls.call_log.append((args, kwargs))
 
 
@@ -184,7 +183,7 @@ class GocdSettingsTests(unittest.TestCase):
         operation = '[{"dummy-action": {"pipeline": {"name": "NAME"}}}]'
         settings = JsonSettings(operation, {})
         settings.register_plugin(DummyPluginModule)
-        go = StubGo(settings)
+        go = StubGo()
         settings.server_operations(go)
         func = DummyPluginFunction()
         self.assertEqual(1, len(func.call_log))
@@ -192,8 +191,7 @@ class GocdSettingsTests(unittest.TestCase):
         args = func.call_log[0][0]
         self.assertEqual(args, ())
         kwargs = func.call_log[0][1]
-        self.assertEqual(kwargs['go'], go)
-        self.assertEqual(kwargs['go'], go)
+        self.assertEqual(kwargs['go'].get_pipeline_instance, go.get_pipeline_instance)
         self.assertEqual(settings.pipeline_names, ['NAME'])
 
     def test_get_pipelines_with_several_version_of_same_material(self):
