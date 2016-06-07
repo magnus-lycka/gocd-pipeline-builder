@@ -1,5 +1,6 @@
 #!/usr/bin/python -tt
 # coding:utf-8
+from __future__ import print_function
 import sys
 import getpass
 import argparse
@@ -87,10 +88,10 @@ def main(args=sys.argv):
     settings = None
     if pargs.json_settings:
         json_settings = get_json_settings(pargs.json_settings)
-        settings = JsonSettings(json_settings, list2dict(pargs.define))
+        settings = JsonSettings(json_settings, list2dict(pargs.define), verbose=pargs.verbose)
 
     if pargs.yaml_settings is not None:
-        settings = YamlSettings(pargs.yaml_settings, list2dict(pargs.define))
+        settings = YamlSettings(pargs.yaml_settings, list2dict(pargs.define), verbose=pargs.verbose)
 
     if settings:
         if pargs.plugin:
@@ -142,7 +143,7 @@ def init_run(argparser, args):
     try:
         go.check_config()
     except AssertionError as error:
-        print "Missing '{}' in configuration.".format(error)
+        print("Missing '{}' in configuration.".format(error))
         sys.exit(1)
     go.init()
     if pargs.set_test_config is not None:

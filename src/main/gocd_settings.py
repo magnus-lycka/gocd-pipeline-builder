@@ -45,8 +45,9 @@ class JsonSettings(object):
 
     See README.md for details.
     """
-    def __init__(self, settings_file, extra_settings):
+    def __init__(self, settings_file, extra_settings, verbose=False):
         self.list = None
+        self.verbose = verbose
         self.load_file(settings_file, extra_settings)
         self.pipeline_names = []
         self.pipeline_stage_names = []
@@ -60,7 +61,10 @@ class JsonSettings(object):
         template = Template(template_data)
         data = self.get_default_parameters()
         data.update(parameters)
-        self.list = json.loads(template.render(data),
+        json_text = template.render(data)
+        if self.verbose:
+            print("Rendered json settings:\n\n{}\n".format(json_text))
+        self.list = json.loads(json_text,
                                object_pairs_hook=OrderedDict)
 
     def register_plugin(self, module):

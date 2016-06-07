@@ -1,3 +1,63 @@
+Rendered json settings:
+
+[
+  {
+    "environment": "green",
+    "create-a-pipeline": {
+      "group": "first",
+      "pipeline": {
+        "name": "put_pipeline_with_template_in_upstream_pipeline",
+        "template": "t2",
+        "materials": [
+          {
+            "type": "git",
+            "attributes": {
+              "url": "git@github.com:sample_repo/example.git",
+              "destination": "put_pipeline_with_template_in_upstream_pipeline",
+              "filter": null,
+              "name": null,
+              "auto_update": true,
+              "branch": "master",
+              "submodule_folder": null
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "add-downstream-dependencies": [
+      {
+        "name": "recipe",
+        "material": {
+          "type": "dependency",
+          "attributes": {
+            "pipeline": "put_pipeline_with_template_in_upstream_pipeline",
+            "stage": "defaultStage",
+            "auto_update": true
+          }
+        },
+        "stage": "defaultStage",
+        "job": "defaultJob",
+        "task":     {
+          "type": "fetch",
+          "attributes": {
+            "run_if": [
+              "passed"
+            ],
+            "pipeline": "put_pipeline_with_template_in_upstream_pipeline",
+            "stage": "defaultStage",
+            "job": "defaultJob",
+            "is_source_a_file": true,
+            "source": "message.txt",
+            "destination": "upstream_put_pipeline_with_template_in_upstream_pipeline"
+          }
+        }
+      }
+    ]
+  }
+]
+
 {
     "locked": false, 
     "paused": true, 

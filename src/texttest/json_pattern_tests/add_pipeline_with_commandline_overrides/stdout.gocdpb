@@ -1,3 +1,49 @@
+Rendered json settings:
+
+[
+  {
+    "environment": "green",
+    "create-a-pipeline": {
+      "group": "Tjong",
+      "pipeline": {
+        "name": "pajplajn",
+        "materials": [
+          {
+            "type": "git",
+            "attributes": {
+              "url": "git@github.com:magnus-lycka/gocd-pipeline-builder.git",
+              "destination": "pajplajn",
+              "filter": null,
+              "name": null,
+              "auto_update": true,
+              "branch": "master",
+              "submodule_folder": null
+            }
+          }
+        ],
+        "stages": [
+          {
+            "name": "defaultStage",
+            "jobs": [
+              {
+                "name": "defaultJob",
+                "tasks": [
+                  {
+                    "type": "exec",
+                    "attributes": {
+                      "command": "ls"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]
+
 {
     "locked": false, 
     "paused": true, 

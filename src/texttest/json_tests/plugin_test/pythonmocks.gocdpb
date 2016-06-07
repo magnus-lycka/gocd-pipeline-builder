@@ -10,7 +10,7 @@
 <-PYT:response_get.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="0bac3126-6821-4071-86d9-1261d7f5556e">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
       <admins>
@@ -23,14 +23,14 @@
     <environment name="green" />
   </environments>
   <agents>
-    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 
 '''
 <-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '3077b87adb9b41b648110bddd256008c',
  'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="0bac3126-6821-4071-86d9-1261d7f5556e">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
       <admins>
@@ -46,7 +46,7 @@
     </environment>
   </environments>
   <agents>
-    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 '''})
@@ -68,7 +68,7 @@
 <-PYT:response_get1.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="0bac3126-6821-4071-86d9-1261d7f5556e">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
       <admins>
@@ -98,14 +98,14 @@
     <environment name="green" />
   </environments>
   <agents>
-    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 
 '''
 <-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'ad1d15ed5eda3b3986668ceb3c62e295',
  'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="0bac3126-6821-4071-86d9-1261d7f5556e">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
       <admins>
@@ -139,7 +139,7 @@
     </environment>
   </environments>
   <agents>
-    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 '''})
@@ -157,7 +157,7 @@
 <-PYT:response_get2.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="0bac3126-6821-4071-86d9-1261d7f5556e">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
       <admins>
@@ -191,7 +191,7 @@
     </environment>
   </environments>
   <agents>
-    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
 

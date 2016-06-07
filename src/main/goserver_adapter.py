@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import json
 import yaml
@@ -35,8 +36,12 @@ class Goserver(object):
         Fetch configuration from Go server
         """
         if self.need_to_download_config:
-            self.tree = CruiseTree.fromstring(self.xml_from_url())
-            self._initial_xml = self.cruise_xml
+            try:
+                self.tree = CruiseTree.fromstring(self.xml_from_url())
+                self._initial_xml = self.cruise_xml
+            except RuntimeError as error:
+                print('Could not get XML configuration. That might not be a problem...')
+                print(error)
             self.need_to_download_config = False
 
     @property
@@ -128,7 +133,7 @@ class Goserver(object):
         }
         response = self.request('put', path, data=data, headers=headers)
         if response.status_code != 200:
-            print response.text
+            print(response.text)
             raise RuntimeError(str(response.status_code))
 
     def unpause(self, pipeline_name):
@@ -180,7 +185,7 @@ class Goserver(object):
         if the Go server config was just changed through the REST API.
         """
         if self.cruise_xml == self._initial_xml:
-            print "No changes done. Not uploading config."
+            print("No changes done. Not uploading config.")
         else:
             data = {'xmlFile': self.cruise_xml, 'md5': self._cruise_config_md5}
             action = 'POST'
