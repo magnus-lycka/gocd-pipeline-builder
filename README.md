@@ -415,3 +415,17 @@ Since the tests change the state of the Go server, it's important to run them
 sequentially unless capturemock is in replay mode.
 
 TODO: Document how to set up docker for the repo_checks tests.
+
+
+Upgrading gocdpb in PyPI
+------------------------
+
+Make sure that all tests pass and that the version has been updated in setup.py.
+Commit and push changes to the repository before doing the following.
+
+    $ python setup.py sdist
+    $ twine upload dist/gocdpb-<new version>.tar.gz
+    $ sudo pip install --upgrade gocdpb
+
+Verify that the new version is downloaded, and works as intended.
+
