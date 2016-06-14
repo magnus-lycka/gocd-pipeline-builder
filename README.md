@@ -1,4 +1,4 @@
-GO CD Pipeline Builder
+GoCD Pipeline Builder
 =====================
 
 The gocd-pipeline-builder should be able to build a GoCD
@@ -15,10 +15,10 @@ Supported Go CD versions
 Use release 16.2.1 or newer of the GoCD server.
 
 The gocd-pipeline-builder relies on features which appeared
-in Go CD 15.3, see https://api.go.cd/current/#pipeline-config
+in GoCD 15.3, see https://api.go.cd/current/#pipeline-config
 
 Due to a bug in 15.3, you need version 16.2.1 or
-later if your Go CD configuration uses pipeline templates.
+later if your GoCD configuration uses pipeline templates.
 
 
 Overview
@@ -45,6 +45,8 @@ Known Issues
 
  * Adding pipeline to environment is done by updating the XML
    config, since there is not REST API for this yet.
+   This means that the user needs full admin rights in GoCD
+   if environments are in use. (Consider resources...)
 
 
 gocdpb Command Line Interface
