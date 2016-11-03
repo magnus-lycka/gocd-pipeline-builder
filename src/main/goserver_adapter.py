@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 import sys
 import json
@@ -77,7 +78,7 @@ class Goserver(object):
         if response.status_code != 200:
             sys.stderr.write("Failed to {} {}\n".format(action, path))
             sys.stderr.write("status-code: {}\n".format(response.status_code))
-            sys.stderr.write("text: {}\n".format(response.text))
+            sys.stderr.write(u"text: {}\n".format(response.text))
         return response
 
     @staticmethod
@@ -137,8 +138,11 @@ class Goserver(object):
             raise RuntimeError(str(response.status_code))
 
     def unpause(self, pipeline_name):
+        headers = {
+            'Confirm': 'true'
+        }
         path = "/go/api/pipelines/" + pipeline_name + "/unpause"
-        self.request('post', path)
+        self.request('post', path, headers=headers)
 
     def get_pipeline_status(self, pipeline_name):
         path = "/go/api/pipelines/" + pipeline_name + "/status"

@@ -1,3 +1,6 @@
+#!/usr/bin/python -tt
+# -*- coding: utf-8 -*-
+
 import unittest
 from xml.etree import ElementTree
 

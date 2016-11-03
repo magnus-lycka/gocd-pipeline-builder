@@ -166,7 +166,7 @@
 ->RET:Instance('Response', 'response_post2')
 <-PYT:response_post2.status_code
 ->RET:200
-<-PYT:requests.request('POST', u'http://localhost:8153/go/api/pipelines/gocd42/unpause', auth=('gouser', 'verysecret'))
+<-PYT:requests.request('POST', u'http://localhost:8153/go/api/pipelines/gocd42/unpause', auth=('gouser', 'verysecret'), headers={'Confirm': 'true'})
 ->RET:Instance('Response', 'response_post3')
 <-PYT:response_post3.status_code
 ->RET:200

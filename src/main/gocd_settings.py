@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 import sys
 import json
@@ -74,9 +75,10 @@ class JsonSettings(object):
     def get_default_parameters(git_config_path='.git/config'):
         data = {}
         if os.path.exists(git_config_path):
-            for row in open(git_config_path):
-                if row.strip().startswith('url = '):
-                    data['repo_url'] = row.split('=')[1].strip()
+            with open(git_config_path) as config_file:
+                for row in config_file:
+                    if row.strip().startswith('url = '):
+                        data['repo_url'] = row.split('=')[1].strip()
         data['repo_name'] = os.path.basename(os.getcwd())
         return data
 

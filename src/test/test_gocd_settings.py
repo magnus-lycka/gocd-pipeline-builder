@@ -1,3 +1,6 @@
+#!/usr/bin/python -tt
+# -*- coding: utf-8 -*-
+
 import unittest
 import json
 from gocdpb.gocd_settings import Pipeline, JsonSettings

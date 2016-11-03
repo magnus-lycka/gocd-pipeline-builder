@@ -1,14 +1,12 @@
 #!/usr/bin/python -tt
 # coding:utf-8
 
-
 from setuptools import setup
-
 
 if __name__ == '__main__':
     setup(
         name='gocdpb',
-        version='7.2',
+        version='7.3',
         description='Configure GoCD pipeline from the commandline.',
         long_description=(
             'The Go CD Pipeline Builder is designed to have the same '
@@ -32,7 +30,7 @@ if __name__ == '__main__':
             "Topic :: Software Development :: Build Tools",
             "Environment :: Console",
         ],
-        keywords='continuous deployment integration build automation gocd',
+        keywords='continuous deployment integration build automation go.cd',
         package_dir={'gocdpb': 'src/main'},
         packages=['gocdpb'],
         install_requires=['jinja2', 'requests', 'PyYAML'],
