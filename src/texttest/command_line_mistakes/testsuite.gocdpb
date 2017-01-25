@@ -3,3 +3,4 @@ both_json_and_yaml
 
 # runs the script with without command line parameters
 run_bare
+no_passwd

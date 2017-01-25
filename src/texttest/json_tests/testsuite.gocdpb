@@ -21,3 +21,4 @@ add_pipeline_with_upstream_parameter_in_template
 # Test plugin system for custom functionality
 # (pretty much a clone of add_simple_pipeline, but implemented through minimal plugin)
 plugin_test
+unpause_with_non_ASCII

@@ -6,11 +6,11 @@
 <-PYT:response_get.headers
 ->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
 <-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
-->RET:'9f1edf02d9fbb7a9dcd0e0eb8f57c745'
+->RET:'c4827abc8fc63092b62769fbd791992c'
 <-PYT:response_get.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="88">
+  <server artifactsdir="artifacts" agentAutoRegisterKey="UUID" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
       <admins>
@@ -37,11 +37,7 @@
     </pipeline>
   </pipelines>
   <environments>
-    <environment name="green">
-      <pipelines>
-        <pipeline name="new_pipeline" />
-      </pipelines>
-    </environment>
+    <environment name="green" />
   </environments>
   <agents>
     <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
@@ -49,9 +45,9 @@
 </cruise>
 
 '''
-<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '9f1edf02d9fbb7a9dcd0e0eb8f57c745',
- 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'c4827abc8fc63092b62769fbd791992c',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="88" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <server agentAutoRegisterKey="UUID" artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
       <admins>
@@ -90,111 +86,12 @@
 ->RET:Instance('Response', 'response_post')
 <-PYT:response_post.status_code
 ->RET:200
-<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "first", "pipeline": {"label_template": "${COUNT}", "enable_pipeline_locking": true, "name": "new_pipeline", "template": null, "materials": [{"type": "git", "attributes": {"url": "git@github.com:sample_repo/example.git", "destination": "dest", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}], "stages": [{"name": "defaultStage", "fetch_materials": true, "clean_working_directory": false, "never_cleanup_artifacts": false, "approval": {"type": "success", "authorization": {"roles": [], "users": []}}, "environment_variables": [], "jobs": [{"name": "defaultJob", "run_instance_count": null, "timeout": 0, "environment_variables": [], "resources": [], "tasks": [{"type": "exec", "attributes": {"run_if": ["passed"], "command": "ls", "working_directory": null}}]}]}]}}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
+<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "first", "pipeline": {"label_template": "${COUNT}", "enable_pipeline_locking": true, "name": "new_pipeline", "template": null, "materials": [{"type": "git", "attributes": {"url": "git@github.com:sample_repo/example.git", "destination": "dest", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}], "stages": [{"name": "defaultStage", "fetch_materials": true, "clean_working_directory": false, "never_cleanup_artifacts": false, "approval": {"type": "success", "authorization": {"roles": [], "users": []}}, "environment_variables": [], "jobs": [{"name": "defaultJob", "run_instance_count": null, "timeout": 0, "environment_variables": [], "resources": [], "tasks": [{"type": "exec", "attributes": {"run_if": ["passed"], "command": "ls", "working_directory": null}}]}]}]}}', headers={'Accept': 'application/vnd.go.cd.v3+json', 'Content-Type': 'application/json'})
 ->RET:Instance('Response', 'response_post1')
 <-PYT:response_post1.status_code
 ->RET:422
 <-PYT:response_post1.text
 ->RET:u'''{
-  "message": "Validations failed for pipeline \'new_pipeline\'. Please correct and resubmit.",
-  "data": {
-    "errors": {
-      "name": [
-        "You have defined multiple pipelines named \'new_pipeline\'. Pipeline names must be unique."
-      ]
-    },
-    "_links": {
-      "self": {
-        "href": "http://localhost:8153/go/api/admin/pipelines/new_pipeline"
-      },
-      "doc": {
-        "href": "http://api.go.cd/#pipeline_config"
-      },
-      "find": {
-        "href": "http://localhost:8153/go/api/admin/pipelines/:name"
-      }
-    },
-    "label_template": "${COUNT}",
-    "enable_pipeline_locking": true,
-    "name": "new_pipeline",
-    "template": null,
-    "parameters": [
-
-    ],
-    "environment_variables": [
-
-    ],
-    "materials": [
-      {
-        "type": "git",
-        "attributes": {
-          "url": "git@github.com:sample_repo/example.git",
-          "destination": "dest",
-          "filter": null,
-          "name": null,
-          "auto_update": true,
-          "branch": "master",
-          "submodule_folder": null
-        }
-      }
-    ],
-    "stages": [
-      {
-        "name": "defaultStage",
-        "fetch_materials": true,
-        "clean_working_directory": false,
-        "never_cleanup_artifacts": false,
-        "approval": {
-          "type": "success",
-          "authorization": {
-            "roles": [
-
-            ],
-            "users": [
-
-            ]
-          }
-        },
-        "environment_variables": [
-
-        ],
-        "jobs": [
-          {
-            "name": "defaultJob",
-            "run_instance_count": null,
-            "timeout": "never",
-            "environment_variables": [
-
-            ],
-            "resources": [
-
-            ],
-            "tasks": [
-              {
-                "type": "exec",
-                "attributes": {
-                  "run_if": [
-                    "passed"
-                  ],
-                  "on_cancel": null,
-                  "command": "ls",
-                  "working_directory": null
-                }
-              }
-            ],
-            "tabs": [
-
-            ],
-            "artifacts": [
-
-            ],
-            "properties": null
-          }
-        ]
-      }
-    ],
-    "tracking_tool": null,
-    "timer": null
-  }
+  "message": "Failed to add pipeline. The pipeline \'new_pipeline\' already exists."
 }
 '''

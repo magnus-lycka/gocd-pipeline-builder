@@ -1,115 +1,18 @@
 Failed to POST /go/api/admin/pipelines
 status-code: 422
 text: {
-  "message": "Validations failed for pipeline 'new_pipeline'. Please correct and resubmit.",
-  "data": {
-    "errors": {
-      "name": [
-        "You have defined multiple pipelines named 'new_pipeline'. Pipeline names must be unique."
-      ]
-    },
-    "_links": {
-      "self": {
-        "href": "http://localhost:8153/go/api/admin/pipelines/new_pipeline"
-      },
-      "doc": {
-        "href": "http://api.go.cd/#pipeline_config"
-      },
-      "find": {
-        "href": "http://localhost:8153/go/api/admin/pipelines/:name"
-      }
-    },
-    "label_template": "${COUNT}",
-    "enable_pipeline_locking": true,
-    "name": "new_pipeline",
-    "template": null,
-    "parameters": [
-
-    ],
-    "environment_variables": [
-
-    ],
-    "materials": [
-      {
-        "type": "git",
-        "attributes": {
-          "url": "git@github.com:sample_repo/example.git",
-          "destination": "dest",
-          "filter": null,
-          "name": null,
-          "auto_update": true,
-          "branch": "master",
-          "submodule_folder": null
-        }
-      }
-    ],
-    "stages": [
-      {
-        "name": "defaultStage",
-        "fetch_materials": true,
-        "clean_working_directory": false,
-        "never_cleanup_artifacts": false,
-        "approval": {
-          "type": "success",
-          "authorization": {
-            "roles": [
-
-            ],
-            "users": [
-
-            ]
-          }
-        },
-        "environment_variables": [
-
-        ],
-        "jobs": [
-          {
-            "name": "defaultJob",
-            "run_instance_count": null,
-            "timeout": "never",
-            "environment_variables": [
-
-            ],
-            "resources": [
-
-            ],
-            "tasks": [
-              {
-                "type": "exec",
-                "attributes": {
-                  "run_if": [
-                    "passed"
-                  ],
-                  "on_cancel": null,
-                  "command": "ls",
-                  "working_directory": null
-                }
-              }
-            ],
-            "tabs": [
-
-            ],
-            "artifacts": [
-
-            ],
-            "properties": null
-          }
-        ]
-      }
-    ],
-    "tracking_tool": null,
-    "timer": null
-  }
+  "message": "Failed to add pipeline. The pipeline 'new_pipeline' already exists."
 }
 
 Traceback (most recent call last):
-  File "/home/magnusl/work/gocd-pipeline-builder/src/main/goplbld.py", line 62, in <module>
+  File "/home/magnusl/work/gocd-pipeline-builder/src/gocdpb/gocdpb.py", line 156, in <module>
     main()
-  File "/home/magnusl/work/gocd-pipeline-builder/src/main/goplbld.py", line 48, in main
-    get_settings(pargs.settings).server_operations(go)
-  File "/home/magnusl/work/gocd-pipeline-builder/src/main/model.py", line 47, in server_operations
-    go.create_a_pipeline(operation["create-a-pipeline"])
-  File "/home/magnusl/work/gocd-pipeline-builder/src/main/go_proxy.py", line 94, in create_a_pipeline
+  File "/home/magnusl/work/gocd-pipeline-builder/src/gocdpb/gocdpb.py", line 100, in main
+    settings.server_operations(go)
+  File "/home/magnusl/work/gocd-pipeline-builder/src/main/gocd_settings.py", line 93, in server_operations
+    self.go.create_a_pipeline(operation["create-a-pipeline"])
+  File "/home/magnusl/work/gocd-pipeline-builder/src/main/gocd_settings.py", line 30, in create_a_pipeline_wrapper
+    self.go.create_a_pipeline(pipeline)
+  File "/home/magnusl/work/gocd-pipeline-builder/src/main/goserver_adapter.py", line 112, in create_a_pipeline
     raise RuntimeError(str(response.status_code))
 RuntimeError: 422

@@ -48,6 +48,7 @@ class JsonSettings(object):
     """
     def __init__(self, settings_file, extra_settings, verbose=False):
         self.list = None
+        self.go = None
         self.verbose = verbose
         self.load_file(settings_file, extra_settings)
         self.pipeline_names = []
@@ -82,32 +83,29 @@ class JsonSettings(object):
         data['repo_name'] = os.path.basename(os.getcwd())
         return data
 
-    def server_operations(self, go):
-        go = GoProxy(go, self)
+    def server_operations(self, go_server):
+        self.go = GoProxy(go_server, self)
         for operation in self.list:
             for action, plugin in self.action_plugins.items():
                 if action in operation:
-                    plugin(go=go, operation=operation[action])
+                    plugin(go=self.go, operation=operation[action])
             if "create-a-pipeline" in operation:
-                go.create_a_pipeline(operation["create-a-pipeline"])
+                self.go.create_a_pipeline(operation["create-a-pipeline"])
             if self.pipeline_names and "environment" in operation:
-                go.init()
-                self.update_environment(go.tree, operation)
-                if go.need_to_upload_config:
-                    go.upload_config()
+                self.update_environment(operation)
             if "add-downstream-dependencies" in operation:
                 dependency_updates = operation["add-downstream-dependencies"]
                 for dependency_update in dependency_updates:
                     downstream_name = dependency_update["name"]
-                    etag, pipeline = go.get_pipeline_config(downstream_name)
+                    etag, pipeline = self.go.get_pipeline_config(downstream_name)
                     # If this pipeline uses a template, we need to use that!!!
                     self.add_downstream_dependencies(pipeline, dependency_update)
-                    go.edit_pipeline_config(downstream_name, etag, pipeline)
+                    self.go.edit_pipeline_config(downstream_name, etag, pipeline)
             for pipeline_name in self.pipeline_names:
                 if "unpause" in operation and operation["unpause"]:
-                    go.unpause(pipeline_name)
-                if go.verbose:
-                    status = go.get_pipeline_status(pipeline_name)
+                    self.go.unpause(pipeline_name)
+                if self.go.verbose:
+                    status = self.go.get_pipeline_status(pipeline_name)
                     print(json.dumps(status, indent=4, sort_keys=True))
 
     def add_downstream_dependencies(self, pipeline, update):
@@ -159,25 +157,17 @@ class JsonSettings(object):
             job = stage["jobs"][0]
         return job
 
-    def update_environment(self, configuration, operation):
+    def update_environment(self, operation):
         """
         If the setting names an environment, the pipelines in the
         setting, should be assigned to that environment in the cruise-config.
         :param configuration: Go configuration as xml.etree.ElementTree
         :param operation: Operation to perform in the Json settings
         """
-        conf_environments = configuration.find('environments')
-        if conf_environments is None:
-            print("No environments section in configuration.")
-            return
         op_env_name = operation.get('environment')
         if not op_env_name:
             return
-        for conf_environment in conf_environments.findall('environment'):
-            if conf_environment.get('name') == op_env_name:
-                for name in self.pipeline_names:
-                    self._set_pipeline_in_environment(name, conf_environment)
-                break
+        self.go.patch_environment(op_env_name, pipelines_add=self.pipeline_names)
 
     @staticmethod
     def _set_pipeline_in_environment(name, conf_environment):

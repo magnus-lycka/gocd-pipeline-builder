@@ -11,11 +11,11 @@ from gocd_settings import JsonSettings, YamlSettings, Pipeline
 
 
 def list2dict(list_of_pairs):
-    return dict(tuple(pair.split('=', 1) for pair in list_of_pairs or []))
+    return dict(tuple(pair.split('=', 1) for pair in list_of_pairs))
 
 
 def add_secrets_to_config(config, password_parameters):
-    for password_parameter in password_parameters or []:
+    for password_parameter in password_parameters:
         config[password_parameter] = getpass.getpass(password_parameter + ': ')
 
 
@@ -88,10 +88,10 @@ def main(args=sys.argv):
     settings = None
     if pargs.json_settings:
         json_settings = get_json_settings(pargs.json_settings)
-        settings = JsonSettings(json_settings, list2dict(pargs.define), verbose=pargs.verbose)
+        settings = JsonSettings(json_settings, list2dict(pargs.define or []), verbose=pargs.verbose)
 
     if pargs.yaml_settings is not None:
-        settings = YamlSettings(pargs.yaml_settings, list2dict(pargs.define), verbose=pargs.verbose)
+        settings = YamlSettings(pargs.yaml_settings, list2dict(pargs.define or []), verbose=pargs.verbose)
 
     if settings:
         if pargs.plugin:
@@ -100,12 +100,12 @@ def main(args=sys.argv):
         settings.server_operations(go)
 
     if pargs.dump is not None:
-        go.init()
+        go.fetch_config()
         envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'
         pargs.dump.write(envelope % go.cruise_xml)
 
     if pargs.dump_test_config is not None:
-        go.init()
+        go.fetch_config()
         envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'
         pargs.dump_test_config.write(envelope % go.cruise_xml_subset)
 
@@ -137,16 +137,16 @@ def init_run(argparser, args):
         help="Set some sections in config first. (For test setup.)"
     )
     pargs = argparser.parse_args(args[1:])
-    extra_config = list2dict(pargs.config_param)
-    add_secrets_to_config(extra_config, pargs.password_prompt)
+    extra_config = list2dict(pargs.config_param or [])
+    add_secrets_to_config(extra_config, pargs.password_prompt or [])
     go = Goserver(pargs.config, pargs.verbose, extra_config)
     try:
         go.check_config()
     except AssertionError as error:
-        print("Missing '{}' in configuration.".format(error))
+        print("Configuration error: {}".format(error))
         sys.exit(1)
-    go.init()
     if pargs.set_test_config is not None:
+        go.fetch_config()
         go.tree.set_test_settings_xml(pargs.set_test_config)
         go.upload_config()
     return go, pargs

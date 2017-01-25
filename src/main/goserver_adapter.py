@@ -23,31 +23,17 @@ class Goserver(object):
         self.verbose = verbose
         self._cruise_config_md5 = None
         self.tree = None
-        self._initial_xml = None
-        self.need_to_download_config = True
 
     def check_config(self):
-        for param in (
-            'url',
-        ):
-            assert param in self.__config, param
+        assert 'url' in self.__config, "'url' missing."
+        assert not (('username' in self.__config) ^ ('password' in self.__config)), \
+            "Need both or neither of ('username', 'password') in configuration."
 
-    def init(self):
+    def fetch_config(self):
         """
         Fetch configuration from Go server
         """
-        if self.need_to_download_config:
-            try:
-                self.tree = CruiseTree.fromstring(self.xml_from_url())
-                self._initial_xml = self.cruise_xml
-            except RuntimeError as error:
-                print('Could not get XML configuration. That might not be a problem...')
-                print(error)
-            self.need_to_download_config = False
-
-    @property
-    def need_to_upload_config(self):
-        return self.cruise_xml != self._initial_xml
+        self.tree = CruiseTree.fromstring(self.xml_from_url())
 
     @property
     def __auth(self):
@@ -64,13 +50,6 @@ class Goserver(object):
 
     def request(self, action, path, **kwargs):
         action = action.upper()
-        if self._changing_call(action):
-            # If we change via REST API, we need to fetch the config
-            # again if we need to understand the state.
-            # If we uploaded the config XML, we need to fetch it
-            # again to get a new md5 checksum in case we want to
-            # change some more...
-            self.need_to_download_config = True
         url = self.__config['url'] + path
         if self.__auth:
             kwargs['auth'] = self.__auth
@@ -80,10 +59,6 @@ class Goserver(object):
             sys.stderr.write("status-code: {}\n".format(response.status_code))
             sys.stderr.write(u"text: {}\n".format(response.text))
         return response
-
-    @staticmethod
-    def _changing_call(action):
-        return action not in ('HEAD', 'GET')
 
     def xml_from_url(self):
         action = 'GET'
@@ -104,7 +79,7 @@ class Goserver(object):
         path = "/go/api/admin/pipelines"
         data = json.dumps(pipeline)
         headers = {
-            'Accept': 'application/vnd.go.cd.v1+json',
+            'Accept': 'application/vnd.go.cd.v3+json',
             'Content-Type': 'application/json'
         }
         response = self.request('post', path, data=data, headers=headers)
@@ -114,7 +89,7 @@ class Goserver(object):
     def get_pipeline_config(self, pipeline_name):
         path = "/go/api/admin/pipelines/" + pipeline_name
         headers = {
-            'Accept': 'application/vnd.go.cd.v1+json'
+            'Accept': 'application/vnd.go.cd.v3+json'
         }
         response = self.request('get', path, headers=headers)
         if response.status_code != 200:
@@ -128,7 +103,7 @@ class Goserver(object):
         path = "/go/api/admin/pipelines/" + pipeline_name
         data = json.dumps(pipeline)
         headers = {
-            'Accept': 'application/vnd.go.cd.v1+json',
+            'Accept': 'application/vnd.go.cd.v3+json',
             'Content-Type': 'application/json',
             'If-Match': etag
         }
@@ -180,30 +155,56 @@ class Goserver(object):
                                object_pairs_hook=OrderedDict)
         return json_data
 
+    def patch_environment(
+            self,
+            env_name,
+            pipelines_add=None,
+            pipelines_remove=None,
+            agents_add=None,
+            agents_remove=None):
+        path = "/go/api/admin/environments/" + env_name
+        pipelines = {}
+        if pipelines_add:
+            pipelines["add"] = pipelines_add
+        if pipelines_remove:
+            pipelines["remove"] = pipelines_remove
+        agents = {}
+        if agents_add:
+            agents["add"] = agents_add
+        if agents_remove:
+            agents["remove"] = agents_remove
+        data_structure = {}
+        if pipelines:
+            data_structure["pipelines"] = pipelines
+        if agents:
+            data_structure["agents"] = agents
+        data = json.dumps(data_structure)
+        headers = {
+            'Accept': 'application/vnd.go.cd.v1+json',
+            'Content-Type': 'application/json'
+        }
+        response = self.request('patch', path, data=data, headers=headers)
+        if response.status_code != 200:
+            raise RuntimeError(str(response.status_code))
+
     def upload_config(self):
         """
         This method pushes a new cruise-config.xml to the go server.
         It's used when there is no REST API for the changes we want to do.
-
-        Make sure to refresh the cruise-config by using the .init() method
-        if the Go server config was just changed through the REST API.
         """
-        if self.cruise_xml == self._initial_xml:
-            print("No changes done. Not uploading config.")
-        else:
-            data = {'xmlFile': self.cruise_xml, 'md5': self._cruise_config_md5}
-            action = 'POST'
-            response = self.request(action,
-                                    self.config_xml_rest_path.format(action),
-                                    data=data)
-            if response.status_code != 200:
-                sys.stderr.write("status-code: %s\n" % response.status_code)
-                # GoCD produces broken JSON???, see
-                # https://github.com/gocd/gocd/issues/1472
-                json_data = json.loads(response.text.replace("\\'", "'"),
-                                       object_pairs_hook=OrderedDict)
-                sys.stderr.write("result: %s\n" % json_data["result"])
-                sys.stderr.write(
-                    "originalContent:\n%s\n" % json_data["originalContent"])
-                raise RuntimeError(response.status_code)
+        data = {'xmlFile': self.cruise_xml, 'md5': self._cruise_config_md5}
+        action = 'POST'
+        response = self.request(action,
+                                self.config_xml_rest_path.format(action),
+                                data=data)
+        if response.status_code != 200:
+            sys.stderr.write("status-code: %s\n" % response.status_code)
+            # GoCD produces broken JSON???, see
+            # https://github.com/gocd/gocd/issues/1472
+            json_data = json.loads(response.text.replace("\\'", "'"),
+                                   object_pairs_hook=OrderedDict)
+            sys.stderr.write("result: %s\n" % json_data["result"])
+            sys.stderr.write(
+                "originalContent:\n%s\n" % json_data["originalContent"])
+            raise RuntimeError(response.status_code)
 

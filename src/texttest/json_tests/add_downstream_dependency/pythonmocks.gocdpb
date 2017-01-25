@@ -6,11 +6,11 @@
 <-PYT:response_get.headers
 ->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
 <-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
-->RET:'ab270d4524240138d0a0daa920c2d076'
+->RET:'524092ce03b4729c1601537055bddc14'
 <-PYT:response_get.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="88">
+  <server artifactsdir="artifacts" agentAutoRegisterKey="UUID" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
       <admins>
@@ -18,13 +18,7 @@
       </admins>
     </security>
   </server>
-  <pipelines group="first">
-    <pipeline name="new_pipeline" isLocked="true" template="my_template">
-      <materials>
-        <git url="git@github.com:sample_repo/example.git" dest="dest" />
-      </materials>
-    </pipeline>
-  </pipelines>
+  <pipelines group="first" />
   <templates>
     <pipeline name="my_template">
       <stage name="defaultStage">
@@ -42,11 +36,7 @@
     </pipeline>
   </templates>
   <environments>
-    <environment name="green">
-      <pipelines>
-        <pipeline name="new_pipeline" />
-      </pipelines>
-    </environment>
+    <environment name="green" />
   </environments>
   <agents>
     <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
@@ -54,9 +44,9 @@
 </cruise>
 
 '''
-<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'ab270d4524240138d0a0daa920c2d076',
- 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '524092ce03b4729c1601537055bddc14',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="88" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <server agentAutoRegisterKey="UUID" artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
       <admins>
@@ -98,163 +88,29 @@
 ->RET:Instance('Response', 'response_post')
 <-PYT:response_post.status_code
 ->RET:200
-<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "first", "pipeline": {"label_template": "${COUNT}", "enable_pipeline_locking": true, "name": "upstream", "template": null, "materials": [{"type": "git", "attributes": {"url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git", "destination": "dest", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}], "stages": [{"name": "defaultStage", "fetch_materials": true, "clean_working_directory": false, "never_cleanup_artifacts": false, "approval": {"type": "success", "authorization": {"roles": [], "users": []}}, "environment_variables": [], "jobs": [{"name": "defaultJob", "run_instance_count": null, "timeout": 0, "environment_variables": [], "resources": [], "tasks": [{"type": "exec", "attributes": {"run_if": ["passed"], "command": "/bin/bash", "arguments": ["-c", "echo \'Hello from upstream\' > message.txt"], "working_directory": null}}], "artifacts": [{"source": "message.txt", "type": "build"}]}]}]}}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
+<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "first", "pipeline": {"label_template": "${COUNT}", "enable_pipeline_locking": true, "name": "upstream", "template": null, "materials": [{"type": "git", "attributes": {"url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git", "destination": "dest", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}], "stages": [{"name": "defaultStage", "fetch_materials": true, "clean_working_directory": false, "never_cleanup_artifacts": false, "approval": {"type": "success", "authorization": {"roles": [], "users": []}}, "environment_variables": [], "jobs": [{"name": "defaultJob", "run_instance_count": null, "timeout": 0, "environment_variables": [], "resources": [], "tasks": [{"type": "exec", "attributes": {"run_if": ["passed"], "command": "/bin/bash", "arguments": ["-c", "echo \'Hello from upstream\' > message.txt"], "working_directory": null}}], "artifacts": [{"source": "message.txt", "type": "build"}]}]}]}}', headers={'Accept': 'application/vnd.go.cd.v3+json', 'Content-Type': 'application/json'})
 ->RET:Instance('Response', 'response_post1')
 <-PYT:response_post1.status_code
 ->RET:200
-<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+<-PYT:requests.request('PATCH', u'http://localhost:8153/go/api/admin/environments/green', auth=('gouser', 'verysecret'), data='{"pipelines": {"add": ["upstream"]}}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
+->RET:Instance('Response', 'response_patch')
+<-PYT:response_patch.status_code
+->RET:200
+<-PYT:requests.request('GET', u'http://localhost:8153/go/api/admin/pipelines/downstream', auth=('gouser', 'verysecret'), headers={'Accept': 'application/vnd.go.cd.v3+json'})
 ->RET:Instance('Response', 'response_get1')
 <-PYT:response_get1.status_code
 ->RET:200
-<-PYT:response_get1.headers
-->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict2')
-<-PYT:caseinsensitivedict2.__getitem__('x-cruise-config-md5')
-->RET:'b45c1dc3b4871f351c2a37fc13ae704d'
 <-PYT:response_get1.text
-->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
-    <security>
-      <passwordFile path="/etc/go/htpasswd" />
-      <admins>
-        <user>gouser</user>
-      </admins>
-    </security>
-  </server>
-  <pipelines group="first">
-    <pipeline name="downstream">
-      <materials>
-        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
-      </materials>
-      <stage name="defaultStage">
-        <jobs>
-          <job name="defaultJob">
-            <tasks>
-              <exec command="/bin/cat">
-                <arg>message.txt</arg>
-                <runif status="passed" />
-              </exec>
-            </tasks>
-          </job>
-        </jobs>
-      </stage>
-    </pipeline>
-    <pipeline name="upstream" isLocked="true">
-      <materials>
-        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" dest="dest" />
-      </materials>
-      <stage name="defaultStage">
-        <jobs>
-          <job name="defaultJob" timeout="0">
-            <tasks>
-              <exec command="/bin/bash">
-                <arg>-c</arg>
-                <arg>echo \'Hello from upstream\' &gt; message.txt</arg>
-                <runif status="passed" />
-              </exec>
-            </tasks>
-            <artifacts>
-              <artifact src="message.txt" />
-            </artifacts>
-          </job>
-        </jobs>
-      </stage>
-    </pipeline>
-  </pipelines>
-  <environments>
-    <environment name="green">
-      <pipelines>
-        <pipeline name="downstream" />
-      </pipelines>
-    </environment>
-  </environments>
-  <agents>
-    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
-  </agents>
-</cruise>
-
-'''
-<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': 'b45c1dc3b4871f351c2a37fc13ae704d',
- 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="78" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
-    <security>
-      <passwordFile path="/etc/go/htpasswd" />
-      <admins>
-        <user>gouser</user>
-      </admins>
-    </security>
-  </server>
-  <pipelines group="first">
-    <pipeline name="downstream">
-      <materials>
-        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
-      </materials>
-      <stage name="defaultStage">
-        <jobs>
-          <job name="defaultJob">
-            <tasks>
-              <exec command="/bin/cat">
-                <arg>message.txt</arg>
-                <runif status="passed" />
-              </exec>
-            </tasks>
-          </job>
-        </jobs>
-      </stage>
-    </pipeline>
-    <pipeline isLocked="true" name="upstream">
-      <materials>
-        <git dest="dest" url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
-      </materials>
-      <stage name="defaultStage">
-        <jobs>
-          <job name="defaultJob" timeout="0">
-            <tasks>
-              <exec command="/bin/bash">
-                <arg>-c</arg>
-                <arg>echo \'Hello from upstream\' &gt; message.txt</arg>
-                <runif status="passed" />
-              </exec>
-            </tasks>
-            <artifacts>
-              <artifact src="message.txt" />
-            </artifacts>
-          </job>
-        </jobs>
-      </stage>
-    </pipeline>
-  </pipelines>
-  <environments>
-    <environment name="green">
-      <pipelines>
-        <pipeline name="downstream" />
-        <pipeline name="upstream" />
-      </pipelines>
-    </environment>
-  </environments>
-  <agents>
-    <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
-  </agents>
-</cruise>
-'''})
-->RET:Instance('Response', 'response_post2')
-<-PYT:response_post2.status_code
-->RET:200
-<-PYT:requests.request('GET', u'http://localhost:8153/go/api/admin/pipelines/downstream', auth=('gouser', 'verysecret'), headers={'Accept': 'application/vnd.go.cd.v1+json'})
-->RET:Instance('Response', 'response_get2')
-<-PYT:response_get2.status_code
-->RET:200
-<-PYT:response_get2.text
 ->RET:u'''{
   "_links": {
     "self": {
       "href": "http://localhost:8153/go/api/admin/pipelines/downstream"
     },
     "doc": {
-      "href": "http://api.go.cd/#pipeline_config"
+      "href": "https://api.gocd.io/#pipeline-config"
     },
     "find": {
-      "href": "http://localhost:8153/go/api/admin/pipelines/:name"
+      "href": "http://localhost:8153/go/api/admin/pipelines/:pipeline_name"
     }
   },
   "label_template": "${COUNT}",
@@ -274,10 +130,12 @@
         "url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git",
         "destination": null,
         "filter": null,
+        "invert_filter": false,
         "name": null,
         "auto_update": true,
         "branch": "master",
-        "submodule_folder": null
+        "submodule_folder": null,
+        "shallow_clone": false
       }
     }
   ],
@@ -343,28 +201,28 @@
   "timer": null
 }
 '''
-<-PYT:response_get2.headers
-->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict3')
-<-PYT:caseinsensitivedict3.__getitem__('etag')
-->RET:'"951c25de5ef57531cb78a13ebb11fd28--gzip"'
-<-PYT:requests.request('PUT', u'http://localhost:8153/go/api/admin/pipelines/downstream', auth=('gouser', 'verysecret'), data='{"_links": {"self": {"href": "http://localhost:8153/go/api/admin/pipelines/downstream"}, "doc": {"href": "http://api.go.cd/#pipeline_config"}, "find": {"href": "http://localhost:8153/go/api/admin/pipelines/:name"}}, "label_template": "${COUNT}", "enable_pipeline_locking": false, "name": "downstream", "template": null, "parameters": [], "environment_variables": [], "materials": [{"type": "git", "attributes": {"url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git", "destination": null, "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}, {"type": "dependency", "attributes": {"pipeline": "upstream", "stage": "defaultStage", "auto_update": true}}], "stages": [{"name": "defaultStage", "fetch_materials": true, "clean_working_directory": false, "never_cleanup_artifacts": false, "approval": {"type": "success", "authorization": {"roles": [], "users": []}}, "environment_variables": [], "jobs": [{"name": "defaultJob", "run_instance_count": null, "timeout": null, "environment_variables": [], "resources": [], "tasks": [{"type": "fetch", "attributes": {"run_if": ["passed"], "pipeline": "upstream", "stage": "defaultStage", "job": "defaultJob", "is_source_a_file": true, "source": "message.txt"}}, {"type": "exec", "attributes": {"run_if": ["passed"], "on_cancel": null, "command": "/bin/cat", "arguments": ["message.txt"], "working_directory": null}}], "tabs": [], "artifacts": [], "properties": null}]}], "tracking_tool": null, "timer": null}', headers={'Accept': 'application/vnd.go.cd.v1+json',
+<-PYT:response_get1.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict2')
+<-PYT:caseinsensitivedict2.__getitem__('etag')
+->RET:'"e4ca5925982a46bfe39e91ae04e39cc1--gzip"'
+<-PYT:requests.request('PUT', u'http://localhost:8153/go/api/admin/pipelines/downstream', auth=('gouser', 'verysecret'), data='{"_links": {"self": {"href": "http://localhost:8153/go/api/admin/pipelines/downstream"}, "doc": {"href": "https://api.gocd.io/#pipeline-config"}, "find": {"href": "http://localhost:8153/go/api/admin/pipelines/:pipeline_name"}}, "label_template": "${COUNT}", "enable_pipeline_locking": false, "name": "downstream", "template": null, "parameters": [], "environment_variables": [], "materials": [{"type": "git", "attributes": {"url": "https://github.com/magnus-lycka/gocd-pipeline-builder.git", "destination": null, "filter": null, "invert_filter": false, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null, "shallow_clone": false}}, {"type": "dependency", "attributes": {"pipeline": "upstream", "stage": "defaultStage", "auto_update": true}}], "stages": [{"name": "defaultStage", "fetch_materials": true, "clean_working_directory": false, "never_cleanup_artifacts": false, "approval": {"type": "success", "authorization": {"roles": [], "users": []}}, "environment_variables": [], "jobs": [{"name": "defaultJob", "run_instance_count": null, "timeout": null, "environment_variables": [], "resources": [], "tasks": [{"type": "fetch", "attributes": {"run_if": ["passed"], "pipeline": "upstream", "stage": "defaultStage", "job": "defaultJob", "is_source_a_file": true, "source": "message.txt"}}, {"type": "exec", "attributes": {"run_if": ["passed"], "on_cancel": null, "command": "/bin/cat", "arguments": ["message.txt"], "working_directory": null}}], "tabs": [], "artifacts": [], "properties": null}]}], "tracking_tool": null, "timer": null}', headers={'Accept': 'application/vnd.go.cd.v3+json',
  'Content-Type': 'application/json',
- 'If-Match': '"951c25de5ef57531cb78a13ebb11fd28--gzip"'})
+ 'If-Match': '"e4ca5925982a46bfe39e91ae04e39cc1--gzip"'})
 ->RET:Instance('Response', 'response_put')
 <-PYT:response_put.status_code
 ->RET:200
 <-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
-->RET:Instance('Response', 'response_get3')
-<-PYT:response_get3.status_code
+->RET:Instance('Response', 'response_get2')
+<-PYT:response_get2.status_code
 ->RET:200
-<-PYT:response_get3.headers
-->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict4')
-<-PYT:caseinsensitivedict4.__getitem__('x-cruise-config-md5')
-->RET:'c73c517baa8306e33568dfd65c3c9d81'
-<-PYT:response_get3.text
+<-PYT:response_get2.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict3')
+<-PYT:caseinsensitivedict3.__getitem__('x-cruise-config-md5')
+->RET:'f642ef21c7f7fc8227bc7c2e1bbdf2c1'
+<-PYT:response_get2.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="78">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="88">
+  <server artifactsdir="artifacts" agentAutoRegisterKey="UUID" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
       <admins>

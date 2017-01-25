@@ -1,5 +1,5 @@
 # Full path to the System Under Test (or Java Main Class name)
-executable:${TEXTTEST_CHECKOUT}/src/main/test_gocdrepos.py
+executable:./test_gocdrepos.py
 
 import_config_file:capturemock_config
 
@@ -17,6 +17,7 @@ link_test_path:pipeline.json
 link_test_path:pipeline.yaml
 link_test_path:pattern.json
 link_test_path:.git
+link_test_path:test_gocdrepos.py
 
 link_test_path:coveragerc
 

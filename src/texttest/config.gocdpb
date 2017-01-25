@@ -1,5 +1,5 @@
 # Full path to the System Under Test (or Java Main Class name)
-executable:${TEXTTEST_CHECKOUT}/src/main/gocdpb.py
+executable:${TEXTTEST_CHECKOUT}/src/gocdpb/gocdpb.py
 
 import_config_file:capturemock_config
 
@@ -25,10 +25,17 @@ config-after:config-after.xml
 [end]
 
 [run_dependent_text]
+config-after:agentAutoRegisterKey="[\-\da-f]+"{REPLACE agentAutoRegisterKey="UUID"}
+pythonmocks:agentAutoRegisterKey="[\-\da-f]+"{REPLACE agentAutoRegisterKey="UUID"}
 config-after:hostname="[\d\w\-]+"{REPLACE hostname="HOST"}
+pythonmocks:hostname="[\d\w\-]+"{REPLACE hostname="HOST"}
 config-after:ipaddress="[\d\.]+"{REPLACE ipaddress="N.N.N.N"}
+pythonmocks:ipaddress="[\d\.]+"{REPLACE ipaddress="N.N.N.N"}
 config-after:serverId="[\d\w\-]+"{REPLACE serverId="UUID"}
+pythonmocks:serverId="[\d\w\-]+"{REPLACE serverId="UUID"}
 config-after:uuid="[\d\w\-]+"{REPLACE uuid="UUID"}
+pythonmocks:uuid="[\d\w\-]+"{REPLACE uuid="UUID"}
+pythonmocks:->RET:'[\da-f]{32}'{REPLACE ->RET:'00000000000000000000000000000000'}
 stderr:hostname="[\d\w\-]+"{REPLACE hostname="HOST"}
 stderr:ipaddress="[\d\.]+"{REPLACE ipaddress="N.N.N.N"}
 stderr:serverId="[\d\w\-]+"{REPLACE serverId="UUID"}

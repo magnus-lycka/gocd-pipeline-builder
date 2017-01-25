@@ -6,11 +6,11 @@
 <-PYT:response_get.headers
 ->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
 <-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
-->RET:'792a0f640f2cfb2fad859c78a689c354'
+->RET:'6a4c040b56ceb1b1d86725245ef7e972'
 <-PYT:response_get.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="76">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="88">
+  <server artifactsdir="artifacts" agentAutoRegisterKey="UUID" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
       <admins>

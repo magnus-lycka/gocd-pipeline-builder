@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="76" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
-  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="88" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <server agentAutoRegisterKey="UUID" artifactsdir="artifacts" commandRepositoryLocation="default" serverId="UUID">
     <security>
       <passwordFile path="/etc/go/htpasswd" />
       <admins>
