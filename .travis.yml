@@ -1,0 +1,18 @@
+language: python
+
+python:
+  - "2.7"
+
+sudo: required
+
+dist: trusty
+
+install:
+  - pip install -r requirements.txt
+  - python setup.py install
+  - pip install texttest
+
+script:
+  - ./test.sh
+  - texttest -a gocdpb -b -c /home/travis/build/magnus-lycka/gocddash -d /home/travis/build/magnus-lycka/gocddash/texttest "
+  - find ~/.texttest/tmp -name 'std*.gocdpb' | xargs more | cat
