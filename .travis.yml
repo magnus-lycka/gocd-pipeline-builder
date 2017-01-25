@@ -14,5 +14,5 @@ install:
 
 script:
   - ./test.sh
-  - texttest -a gocdpb -b -c /home/travis/build/magnus-lycka/gocd-pipeline-builder -d /home/travis/build/magnus-lycka/gocd-pipeline-builder/texttest "
+  - texttest -a gocdpb -b -c /home/travis/build/magnus-lycka/gocd-pipeline-builder/src -d /home/travis/build/magnus-lycka/gocd-pipeline-builder/src/texttest "
   - find ~/.texttest/tmp -name 'std*.gocdpb' | xargs more | cat
