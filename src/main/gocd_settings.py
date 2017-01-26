@@ -73,13 +73,15 @@ class JsonSettings(object):
         self.action_plugins.update(module.action_plugins)
 
     @staticmethod
-    def get_default_parameters(git_config_path='.git/config'):
+    def get_default_parameters(git_config_paths=['.git/config', '_git/config']):
+        # _git for test.
         data = {}
-        if os.path.exists(git_config_path):
-            with open(git_config_path) as config_file:
-                for row in config_file:
-                    if row.strip().startswith('url = '):
-                        data['repo_url'] = row.split('=')[1].strip()
+        for git_config_path in git_config_paths:
+            if os.path.exists(git_config_path):
+                with open(git_config_path) as config_file:
+                    for row in config_file:
+                        if row.strip().startswith('url = '):
+                            data['repo_url'] = row.split('=')[1].strip()
         data['repo_name'] = os.path.basename(os.getcwd())
         return data
 
