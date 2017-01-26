@@ -16,6 +16,7 @@ install:
 script:
   - ls -al
   - ls -la .git
+  - cat .git/config
   - ./test.sh
   - texttest -a gocdpb -b -c /home/travis/build/magnus-lycka/gocd-pipeline-builder -d /home/travis/build/magnus-lycka/gocd-pipeline-builder/src/texttest -l
   - find ~/.texttest/tmp -name 'std*.gocdpb' | xargs more | cat
