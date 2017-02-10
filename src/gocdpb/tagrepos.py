@@ -172,7 +172,6 @@ def main_updaterepolist():
     parser.add_argument(
         'jsonfile',
         help='Json file as produced by gocdrepos.',
-        nargs='1',
         type=argparse.FileType('r'))
     parser.add_argument(
         '-t', '--tag-name',
