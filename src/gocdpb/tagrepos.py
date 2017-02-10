@@ -187,7 +187,9 @@ def main_updaterepolist():
     structure = json.load(pargs.jsonfile)
     json_path = pargs.jsonfile.name
     check_consistent(structure, json_path)
-    new_structure = use_tag_in_repolist(structure, pargs.tag_name, pargs.repository)
+    new_structure, count = use_tag_in_repolist(structure, pargs.tag_name, pargs.repository)
+    if count != 1:
+        print("Expected one change in file, but noticed", count)
     check_consistent(structure, json_path)
     with open(json_path, 'w') as jsonfile:
         json.dump(new_structure, jsonfile)
