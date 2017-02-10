@@ -66,7 +66,12 @@ class Goserver(object):
         response = self.request(action, path)
         if response.status_code != 200:
             raise RuntimeError(str(response.status_code))
-        self._cruise_config_md5 = response.headers['x-cruise-config-md5']
+        try:
+            self._cruise_config_md5 = response.headers['x-cruise-config-md5']
+        except KeyError:
+            print("Missing 'x-cruise-config-md5' in:", file=sys.stderr)
+            print(response.headers, file=sys.stderr)
+            raise
         return response.text
 
     def create_a_pipeline(self, pipeline):

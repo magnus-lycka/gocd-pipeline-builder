@@ -6,7 +6,7 @@ from setuptools import setup
 if __name__ == '__main__':
     setup(
         name='gocdpb',
-        version='7.4',
+        version='7.5',
         description='Configure GoCD pipeline from the commandline.',
         long_description=(
             'The Go CD Pipeline Builder is designed to have the same '
@@ -31,7 +31,7 @@ if __name__ == '__main__':
             "Environment :: Console",
         ],
         keywords='continuous deployment integration build automation go.cd',
-        package_dir={'gocdpb': 'src/main'},
+        package_dir={'gocdpb': 'src/gocdpb'},
         packages=['gocdpb'],
         install_requires=['jinja2', 'requests', 'PyYAML'],
         entry_points={
@@ -39,6 +39,8 @@ if __name__ == '__main__':
                 'gocdpb=gocdpb.gocdpb:main',
                 'gocdrepos=gocdpb.gocdpb:repos',
                 'gocdtagrepos=gocdpb.tagrepos:main',
+                'gocdbranchrepos=gocdpb.tagrepos:main_branchrepos',
+                'gocdupdaterepolist=gocdpb.tagrepos:main_updaterepolist',
             ]
         }
     )

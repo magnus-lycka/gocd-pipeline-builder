@@ -1,2 +1,2 @@
 #DIRNAME:my/awsome/dir/
-PYTHONPATH: /home/magnusl/work/gocd-pipeline-builder/src/
+PYTHONPATH: ${TEXTTEST_CHECKOUT}/src/

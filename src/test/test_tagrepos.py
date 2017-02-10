@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import division, print_function
+from collections import namedtuple
 import unittest
 from gocdpb import tagrepos
 import json
@@ -78,7 +79,8 @@ testdata = [
                 "name": "test2"
             }
         ],
-        "revision": "8e1ddbf0aa8f65295028413d0433247a72258aaf",
+        #"revision": "8e1ddbf0aa8f65295028413d0433247a72258aaf",
+        "tag": "tagga-ner",
         "type": "Git"
     }
 ]
@@ -190,17 +192,17 @@ class GitTaggerTests(TestsBase):
 
 
 class TagReposTests(TestsBase):
-    def test_tag_repos(self):
+    def test_branch_and_tag_repos(self):
         directory = 'directory'
         tag = 'GUTEN_TAG'
         startdir = getcwd()
 
-        tagrepos.tag_repos(directory,
-                           tag,
-                           testdata,
-                           branch_list=['test2', 'test3', 'not_used'],
-                           push=True,
-                           clean=True)
+        tagrepos.branch_tag_repos(directory,
+                                  tag,
+                                  testdata,
+                                  branch_list=['test2', 'test3', 'not_used'],
+                                  push=True,
+                                  clean=True)
 
         expected = [
             ('chdir', ('directory',), {}),
@@ -247,7 +249,62 @@ class TagReposTests(TestsBase):
 
             ('chdir', ('directory/test2',), {}),
             u"Return from check_output args=(['git', 'branch', 'GUTEN_TAG', "
-            u"'8e1ddbf0aa8f65295028413d0433247a72258aaf'],), kwargs={'stderr': 'sys.stdout'}",
+            u"'tagga-ner'],), kwargs={'stderr': 'sys.stdout'}",
+            ('chdir', (startdir,), {}),
+
+            ('chdir', ('directory/test2',), {}),
+            u"Return from check_output args=(['git', 'push', 'origin', 'GUTEN_TAG'],), kwargs={'stderr': 'sys.stdout'}",
+            ('chdir', (startdir,), {}),
+            ('chdir', ('directory',), {}),
+            ('rmtree', ('test2',), {}),
+            ('chdir', (startdir,), {}),
+        ]
+        self.assertEqual(expected, self.log)
+
+    def test_branch_repos(self):
+        """
+        same as test_brand_and_tag_repos, but skip repos we don't tag
+        """
+        directory = 'directory'
+        tag = 'GUTEN_TAG'
+        startdir = getcwd()
+
+        tagrepos.branch_tag_repos(directory,
+                                  tag,
+                                  testdata,
+                                  branch_list=['test2', 'test3', 'not_used'],
+                                  push=True,
+                                  clean=True,
+                                  tag=False)
+
+        expected = [
+            ('chdir', ('directory',), {}),
+            u"Return from check_output args=(['git', 'clone', '/tmp/test3'],), kwargs={'stderr': 'sys.stdout'}",
+            ('chdir', ('test3',), {}),
+            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stderr': 'sys.stdout'}",
+            ('chdir', (startdir,), {}),
+
+            ('chdir', ('directory/test3',), {}),
+            u"Return from check_output args=(['git', 'branch', 'GUTEN_TAG', "
+            u"'ecc9ba924d30b29401ff06af6e6b7aa002a65ec6'],), kwargs={'stderr': 'sys.stdout'}",
+            ('chdir', (startdir,), {}),
+
+            ('chdir', ('directory/test3',), {}),
+            u"Return from check_output args=(['git', 'push', 'origin', 'GUTEN_TAG'],), kwargs={'stderr': 'sys.stdout'}",
+            ('chdir', (startdir,), {}),
+            ('chdir', ('directory',), {}),
+            ('rmtree', ('test3',), {}),
+            ('chdir', (startdir,), {}),
+
+            ('chdir', ('directory',), {}),
+            u"Return from check_output args=(['git', 'clone', '/tmp/test2'],), kwargs={'stderr': 'sys.stdout'}",
+            ('chdir', ('test2',), {}),
+            u"Return from check_output args=(['git', 'checkout', 'master'],), kwargs={'stderr': 'sys.stdout'}",
+            ('chdir', (startdir,), {}),
+
+            ('chdir', ('directory/test2',), {}),
+            u"Return from check_output args=(['git', 'branch', 'GUTEN_TAG', "
+            u"'tagga-ner'],), kwargs={'stderr': 'sys.stdout'}",
             ('chdir', (startdir,), {}),
 
             ('chdir', ('directory/test2',), {}),
@@ -274,6 +331,59 @@ class TagReposTests(TestsBase):
             chdir(root_dir)
         structure = json.load(open('testdata/bad_repos.json'))
         self.assertRaises(ValueError, tagrepos.check_consistent, structure, 'this-does-not-work/261')
+
+    def helper_define_by_tag(self):
+        pipeline = 'want'
+        repo = 'this/I/want.git'
+        tag = 'MyTag'
+        old = [
+            {
+                "description": "URL: ssh://git@git/{}, Branch: master".format(repo),
+                "pipelines": [
+                    {
+                        "counter": "15",
+                        "name": pipeline
+                    }
+                ],
+                "revision": "123",
+                "type": "Git"
+            },
+            {
+                "description": "URL: ssh://git@git/not/this/one.git, Branch: master",
+                "pipelines": [
+                    {
+                        "counter": "9",
+                        "name": "one"
+                    }
+                ],
+                "revision": "456",
+                "type": "Git"
+            }
+        ]
+
+        def assertions(structure):
+            self.assertEqual(structure[0].get('tag'), tag)
+            self.assertEqual(structure[0].get('revision'), None)
+            self.assertEqual(structure[1].get('tag'), None)
+            self.assertEqual(structure[1].get('revision'), "456")
+
+        TestData = namedtuple('TestData', 'repo pipeline old tag assertions')
+        return TestData(repo, pipeline, old, tag, assertions)
+
+    def test_define_by_tag_fail(self):
+        self.assertRaises(ValueError, tagrepos.use_tag_in_repolist, [], 'tag')
+
+    def test_define_by_tag_repo(self):
+        helper = self.helper_define_by_tag()
+        new_repolist, change_count = tagrepos.use_tag_in_repolist(helper.old, helper.tag, repo=helper.repo)
+        self.assertEqual(change_count, 1)
+        helper.assertions(new_repolist)
+
+    def test_define_by_tag_pipeline(self):
+        helper = self.helper_define_by_tag()
+        new_repolist, change_count = tagrepos.use_tag_in_repolist(helper.old, helper.tag, pipeline=helper.pipeline)
+        self.assertEqual(change_count, 1)
+        helper.assertions(new_repolist)
 
 
 if __name__ == '__main__':

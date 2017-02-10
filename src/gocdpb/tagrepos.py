@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function
+from copy import deepcopy
 from os import path, chdir, getcwd
 from shutil import rmtree
 import collections
@@ -91,7 +92,7 @@ class GitTagger(object):
         chdir(self.start_dir)
 
 
-def tag_repos(directory, name, structure, branch_list=None, push=False, clean=False, verbose=False):
+def branch_tag_repos(directory, name, structure, branch_list=None, push=False, clean=False, verbose=False, tag=True):
     if branch_list is None:
         branch_list = []
     for repo in structure:
@@ -103,11 +104,13 @@ def tag_repos(directory, name, structure, branch_list=None, push=False, clean=Fa
         for pipeline in repo['pipelines']:
             if pipeline['name'] in branch_list:
                 should_branch = True
+        if not (tag or should_branch):
+            continue
         desc = repo['description']
         url_part, branch_part = desc.split(',')
         url = url_part.split(':', 1)[1].strip()
         branch = branch_part.split(':', 1)[1].strip()
-        rev = repo['revision']
+        rev = repo.get('revision') or repo['tag']
         tagger = GitTagger(directory, verbose)
         tagger.clone(url, branch)
         if should_branch:
@@ -125,7 +128,7 @@ def check_consistent(structure, label):
     pipelines = collections.defaultdict(list)
     for repository in structure:
         description = repository['description']
-        revision = repository['revision']
+        revision = repository.get('revision') or repository['tag']
         revisions[description].append(revision)
         for pipeline in repository['pipelines']:
             name = pipeline['name']
@@ -140,6 +143,105 @@ def check_consistent(structure, label):
                 print('Revision {} used in build {}'.format(revision, pipelines[(description, revision)]))
     if bad:
         raise ValueError('Inconsistencies found in {}'.format(label))
+
+
+def use_tag_in_repolist(repo_list, tag, repo=None, pipeline=None):
+    repo_list_copy = deepcopy(repo_list)
+    change_count = 0
+    if repo:
+        checker = lambda repo, mapping: repo in mapping['description']
+        name = repo
+    elif pipeline:
+        checker = lambda pipeline, mapping: any(pipeline == pl['name'] for pl in mapping['pipelines'])
+        name = pipeline
+    else:
+        raise ValueError('repo or pipeline must be provided')
+    for entry in repo_list_copy:
+        if checker(name, entry):
+            del entry['revision']
+            entry['tag'] = tag
+            change_count += 1
+    return repo_list_copy, change_count
+
+
+def main_updaterepolist():
+    parser = argparse.ArgumentParser(
+        description="Update a json file created with gocdrepos to replace the "
+                    "revision with a provided tag for a certain repository.")
+
+    parser.add_argument(
+        'jsonfile',
+        help='Json file as produced by gocdrepos.',
+        nargs='1',
+        type=argparse.FileType('r'))
+    parser.add_argument(
+        '-t', '--tag-name',
+        required=True,
+        help="Name of branch to create."
+    )
+    parser.add_argument(
+        '-r', '--repository',
+        help="Substring of repository path (actually 'Description')."
+    )
+
+    pargs = parser.parse_args()
+    structure = json.load(pargs.jsonfile)
+    json_path = pargs.jsonfile.name
+    check_consistent(structure, json_path)
+    new_structure = use_tag_in_repolist(structure, pargs.tag_name, pargs.repository)
+    check_consistent(structure, json_path)
+    with open(json_path, 'w') as jsonfile:
+        json.dump(new_structure, jsonfile)
+
+
+def main_branchrepos():
+    parser = argparse.ArgumentParser(
+        description="Branch a set of Git repositories as provided by json data.")
+
+    parser.add_argument(
+        'jsonfile',
+        help='Json file as produced by gocdrepos. Read from stdin if no  filename given.',
+        nargs='?',
+        type=argparse.FileType('r'),
+        default=sys.stdin)
+    parser.add_argument(
+        '-d', '--directory',
+        default='/tmp',
+        help="Parent directory of repository clones clones. Default to /tmp."
+    )
+    parser.add_argument(
+        '-t', '--tag-name',
+        required=True,
+        help="Name of branch to create."
+    )
+    parser.add_argument(
+        '-b', '--branch-list',
+        help="Comma-separated list of pipeline names. Create branches for these."
+    )
+    parser.add_argument(
+        '-p', '--push',
+        action='store_true',
+        help="Push changes to remote repo."
+    )
+    parser.add_argument(
+        '-c', '--clean',
+        action='store_true',
+        help="Remove cloned repo."
+    )
+    parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        help="Verbose Git output."
+    )
+
+    pargs = parser.parse_args()
+    branch_list = [] if not pargs.branch_list else pargs.branch_list.split(',')
+    structure = json.load(pargs.jsonfile)
+
+    check_consistent(structure, pargs.jsonfile.name)
+    branch_tag_repos(
+        pargs.directory, pargs.tag_name, structure, branch_list, pargs.push, pargs.clean, pargs.verbose, tag=False
+    )
 
 
 def main():
@@ -186,7 +288,7 @@ def main():
     structure = json.load(pargs.jsonfile)
 
     check_consistent(structure, pargs.jsonfile.name)
-    tag_repos(pargs.directory, pargs.tag_name, structure, branch_list, pargs.push, pargs.clean, pargs.verbose)
+    branch_tag_repos(pargs.directory, pargs.tag_name, structure, branch_list, pargs.push, pargs.clean, pargs.verbose)
 
 
 if __name__ == '__main__':
