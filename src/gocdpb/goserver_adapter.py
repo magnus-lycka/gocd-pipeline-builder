@@ -116,6 +116,16 @@ class Goserver(object):
         if response.status_code != 200:
             print(response.text)
             raise RuntimeError(str(response.status_code))
+    
+    def delete_pipeline_config(self, pipeline_name):
+        path = "/go/api/admin/pipelines/" + pipeline_name
+        headers = {
+            'Accept': 'application/vnd.go.cd.v3+json',
+        }
+        response = self.request('delete', path, headers=headers)
+        if response.status_code != 200:
+            print(response.text)
+            raise RuntimeError(str(response.status_code))
 
     def unpause(self, pipeline_name):
         headers = {
