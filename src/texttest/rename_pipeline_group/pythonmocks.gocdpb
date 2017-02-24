@@ -1,0 +1,222 @@
+<-PYT:import requests
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response(object)', 'response_get')
+<-PYT:response_get.status_code
+->RET:200
+<-PYT:response_get.headers
+->RET:Instance('CaseInsensitiveDict(_abcoll.MutableMapping)', 'caseinsensitivedict1')
+<-PYT:caseinsensitivedict1.__getitem__('x-cruise-config-md5')
+->RET:'9c679d6bcf9cecdff184d5d6f848a7ee'
+<-PYT:response_get.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="88">
+  <server artifactsdir="artifacts" agentAutoRegisterKey="7ae7e6d5-b5bf-4f7b-a45f-20daa532990c" commandRepositoryLocation="default" serverId="0bac3126-6821-4071-86d9-1261d7f5556e">
+    <security>
+      <ldap uri="ldap://ads.zetup.org:3268" managerDn="ADS\\PageroOnlineADJoin" encryptedManagerPassword="CoR+bT9L5utBV7vwqELQAA==" searchFilter="(&amp;(sAMAccountName={0})(memberOf=CN=Unix-remote,OU=Groups,OU=Zetup,DC=ads,DC=zetup,DC=org))">
+        <bases>
+          <base value="ou=Users,ou=Pagero,ou=Customers,dc=ads,dc=zetup,dc=org" />
+        </bases>
+      </ldap>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+        <user>ex0247</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="after">
+    <pipeline name="p1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <ant />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <agents>
+    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+  </agents>
+</cruise>
+
+'''
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '9c679d6bcf9cecdff184d5d6f848a7ee',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="88" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <server agentAutoRegisterKey="7ae7e6d5-b5bf-4f7b-a45f-20daa532990c" artifactsdir="artifacts" commandRepositoryLocation="default" serverId="0bac3126-6821-4071-86d9-1261d7f5556e">
+    <security>
+      <ldap encryptedManagerPassword="CoR+bT9L5utBV7vwqELQAA==" managerDn="ADS\\PageroOnlineADJoin" searchFilter="(&amp;(sAMAccountName={0})(memberOf=CN=Unix-remote,OU=Groups,OU=Zetup,DC=ads,DC=zetup,DC=org))" uri="ldap://ads.zetup.org:3268">
+        <bases>
+          <base value="ou=Users,ou=Pagero,ou=Customers,dc=ads,dc=zetup,dc=org" />
+        </bases>
+      </ldap>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+        <user>ex0247</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="before">
+    <pipeline name="p1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <ant />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <agents>
+    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+  </agents>
+</cruise>
+'''})
+->RET:Instance('Response', 'response_post')
+<-PYT:response_post.status_code
+->RET:200
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response', 'response_get1')
+<-PYT:response_get1.status_code
+->RET:200
+<-PYT:response_get1.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict2')
+<-PYT:caseinsensitivedict2.__getitem__('x-cruise-config-md5')
+->RET:'759a30a0088a5c8735ddae3921d311b9'
+<-PYT:response_get1.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="88">
+  <server artifactsdir="artifacts" agentAutoRegisterKey="7ae7e6d5-b5bf-4f7b-a45f-20daa532990c" commandRepositoryLocation="default" serverId="0bac3126-6821-4071-86d9-1261d7f5556e">
+    <security>
+      <ldap uri="ldap://ads.zetup.org:3268" managerDn="ADS\\PageroOnlineADJoin" encryptedManagerPassword="CoR+bT9L5utBV7vwqELQAA==" searchFilter="(&amp;(sAMAccountName={0})(memberOf=CN=Unix-remote,OU=Groups,OU=Zetup,DC=ads,DC=zetup,DC=org))">
+        <bases>
+          <base value="ou=Users,ou=Pagero,ou=Customers,dc=ads,dc=zetup,dc=org" />
+        </bases>
+      </ldap>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+        <user>ex0247</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="before">
+    <pipeline name="p1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <ant />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <agents>
+    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+  </agents>
+</cruise>
+
+'''
+<-PYT:requests.request('POST', 'http://localhost:8153/go/admin/restful/configuration/file/POST/xml', auth=('gouser', 'verysecret'), data={'md5': '759a30a0088a5c8735ddae3921d311b9',
+ 'xmlFile': '''<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="88" xsi:noNamespaceSchemaLocation="cruise-config.xsd">
+  <server agentAutoRegisterKey="7ae7e6d5-b5bf-4f7b-a45f-20daa532990c" artifactsdir="artifacts" commandRepositoryLocation="default" serverId="0bac3126-6821-4071-86d9-1261d7f5556e">
+    <security>
+      <ldap encryptedManagerPassword="CoR+bT9L5utBV7vwqELQAA==" managerDn="ADS\\PageroOnlineADJoin" searchFilter="(&amp;(sAMAccountName={0})(memberOf=CN=Unix-remote,OU=Groups,OU=Zetup,DC=ads,DC=zetup,DC=org))" uri="ldap://ads.zetup.org:3268">
+        <bases>
+          <base value="ou=Users,ou=Pagero,ou=Customers,dc=ads,dc=zetup,dc=org" />
+        </bases>
+      </ldap>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+        <user>ex0247</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="after">
+    <pipeline name="p1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <ant />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <agents>
+    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+  </agents>
+</cruise>
+'''})
+->RET:Instance('Response', 'response_post1')
+<-PYT:response_post1.status_code
+->RET:200
+<-PYT:requests.request('GET', 'http://localhost:8153/go/admin/restful/configuration/file/GET/xml', auth=('gouser', 'verysecret'))
+->RET:Instance('Response', 'response_get2')
+<-PYT:response_get2.status_code
+->RET:200
+<-PYT:response_get2.headers
+->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict3')
+<-PYT:caseinsensitivedict3.__getitem__('x-cruise-config-md5')
+->RET:'9c679d6bcf9cecdff184d5d6f848a7ee'
+<-PYT:response_get2.text
+->RET:u'''<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="88">
+  <server artifactsdir="artifacts" agentAutoRegisterKey="7ae7e6d5-b5bf-4f7b-a45f-20daa532990c" commandRepositoryLocation="default" serverId="0bac3126-6821-4071-86d9-1261d7f5556e">
+    <security>
+      <ldap uri="ldap://ads.zetup.org:3268" managerDn="ADS\\PageroOnlineADJoin" encryptedManagerPassword="CoR+bT9L5utBV7vwqELQAA==" searchFilter="(&amp;(sAMAccountName={0})(memberOf=CN=Unix-remote,OU=Groups,OU=Zetup,DC=ads,DC=zetup,DC=org))">
+        <bases>
+          <base value="ou=Users,ou=Pagero,ou=Customers,dc=ads,dc=zetup,dc=org" />
+        </bases>
+      </ldap>
+      <passwordFile path="/etc/go/htpasswd" />
+      <admins>
+        <user>gouser</user>
+        <user>ex0247</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="after">
+    <pipeline name="p1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <ant />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <agents>
+    <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
+  </agents>
+</cruise>
+
+'''
