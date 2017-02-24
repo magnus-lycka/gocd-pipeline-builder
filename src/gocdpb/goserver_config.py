@@ -89,3 +89,8 @@ class CruiseTree(ElementTree.ElementTree):
             if element.tag == 'agents':
                 break
         return ix
+
+    def rename_pipeline_group(self, old_name, new_name):
+        for element in self.findall('pipelines'):
+            if element.attrib['group'] == old_name:
+                element.attrib['group'] = new_name

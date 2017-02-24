@@ -1,7 +1,8 @@
-usage: gocdpb.py [-h] [-j JSON_SETTINGS | -y YAML_SETTINGS] [-p PLUGIN]
-                 [-D DEFINE] [--dump-test-config DUMP_TEST_CONFIG] [-d DUMP]
-                 [-v] [-c CONFIG] [-C CONFIG_PARAM] [-P PASSWORD_PROMPT]
-                 [--set-test-config SET_TEST_CONFIG]
+usage: gocdpb.py [-h]
+                 [-j JSON_SETTINGS | -y YAML_SETTINGS | --rename-pipeline-group RENAME_PIPELINE_GROUP]
+                 [-p PLUGIN] [-D DEFINE] [--dump-test-config DUMP_TEST_CONFIG]
+                 [-d DUMP] [-v] [-c CONFIG] [-C CONFIG_PARAM]
+                 [-P PASSWORD_PROMPT] [--set-test-config SET_TEST_CONFIG]
 
 Add pipeline to Go CD server.
 
@@ -11,6 +12,9 @@ optional arguments:
                         Read json file / url with settings for GoCD pipeline.
   -y YAML_SETTINGS, --yaml-settings YAML_SETTINGS
                         Read yaml files with parameters for GoCD pipeline.
+  --rename-pipeline-group RENAME_PIPELINE_GROUP
+                        :old-group-name:new-group-name (put separator as first
+                        char)
   -p PLUGIN, --plugin PLUGIN
                         Plugin module for custom functions.
   -D DEFINE, --define DEFINE

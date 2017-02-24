@@ -116,7 +116,7 @@ class Goserver(object):
         if response.status_code != 200:
             print(response.text)
             raise RuntimeError(str(response.status_code))
-    
+
     def delete_pipeline_config(self, pipeline_name):
         path = "/go/api/admin/pipelines/" + pipeline_name
         headers = {
@@ -223,3 +223,7 @@ class Goserver(object):
                 "originalContent:\n%s\n" % json_data["originalContent"])
             raise RuntimeError(response.status_code)
 
+    def rename_pipeline_group(self, old_name, new_name):
+        self.fetch_config()
+        self.tree.rename_pipeline_group(old_name, new_name)
+        self.upload_config()
