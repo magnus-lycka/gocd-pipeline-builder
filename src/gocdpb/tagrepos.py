@@ -251,14 +251,8 @@ def main_branchrepos():
 
     pargs = parser.parse_args()
     branch_set = set();
-
-    if pargs.branch_list:
-        for branch in pargs.branch_list.split(','):
-            branch_set.add(branch)
-
-    for branch in parse_branch_list(pargs.branch_list_from_file):
-        branch_set.add(branch)
-
+    branch_set.update(pargs.branch_list.split(','))
+    branch_set.update(parse_branch_list(pargs.branch_list_from_file))
     structure = json.load(pargs.jsonfile)
 
     check_consistent(structure, pargs.jsonfile.name)
@@ -313,14 +307,8 @@ def main():
 
     pargs = parser.parse_args()
     branch_set = set();
-
-    if pargs.branch_list:
-        for branch in pargs.branch_list.split(','):
-            branch_set.add(branch)
-
-    for branch in parse_branch_list(pargs.branch_list_from_file):
-        branch_set.add(branch)
-
+    branch_set.update(pargs.branch_list.split(','))
+    branch_set.update(parse_branch_list(pargs.branch_list_from_file))
     structure = json.load(pargs.jsonfile)
 
     check_consistent(structure, pargs.jsonfile.name)
