@@ -7,6 +7,7 @@ import unittest
 from gocdpb import tagrepos
 import json
 from os import getcwd, path, chdir
+import argparse
 
 from subprocess import CalledProcessError as Cpe
 
@@ -200,7 +201,7 @@ class TagReposTests(TestsBase):
         tagrepos.branch_tag_repos(directory,
                                   tag,
                                   testdata,
-                                  branch_list=['test2', 'test3', 'not_used'],
+                                  branch_set=set(['test2', 'test3', 'not_used']),
                                   push=True,
                                   clean=True)
 
@@ -272,7 +273,7 @@ class TagReposTests(TestsBase):
         tagrepos.branch_tag_repos(directory,
                                   tag,
                                   testdata,
-                                  branch_list=['test2', 'test3', 'not_used'],
+                                  branch_set=set(['test2', 'test3', 'not_used']),
                                   push=True,
                                   clean=True,
                                   tag=False)
@@ -385,6 +386,48 @@ class TagReposTests(TestsBase):
         self.assertEqual(change_count, 1)
         helper.assertions(new_repolist)
 
+class BranchParamTests(TestsBase):
+    def test_branch_list_empty(self):
+        pargs = argparse.Namespace
+        pargs.branch_list = None
+        pargs.branch_list_from_file = None
+
+        x = tagrepos.branch_set_from_args(pargs)
+        self.assertEqual(x, set([]))
+
+    def test_branch_list_cmd(self):
+        pargs = argparse.Namespace
+        pargs.branch_list = "abc, def"
+        pargs.branch_list_from_file = None
+
+        x = tagrepos.branch_set_from_args(pargs)
+        self.assertEqual(x, set(['abc', 'def']))
+
+    def test_branch_list_file(self):
+        # Find files from unittest.discover
+        if __name__ != '__main__':
+            root_dir = path.dirname(path.realpath(__file__))
+            chdir(root_dir)
+
+        pargs = argparse.Namespace
+        pargs.branch_list = None
+        pargs.branch_list_from_file = open("testdata/pipeline.txt")
+
+        x = tagrepos.branch_set_from_args(pargs)
+        self.assertEqual(x, set(['abc', 'def']))
+
+    def test_branch_list_cmd_and_file_with_duplicates(self):
+        # Find files from unittest.discover
+        if __name__ != '__main__':
+            root_dir = path.dirname(path.realpath(__file__))
+            chdir(root_dir)
+
+        pargs = argparse.Namespace
+        pargs.branch_list = "abc, ghi"
+        pargs.branch_list_from_file = open("testdata/pipeline.txt")
+
+        x = tagrepos.branch_set_from_args(pargs)
+        self.assertEqual(x, set(['abc', 'def', 'ghi']))
 
 if __name__ == '__main__':
     unittest.main()
