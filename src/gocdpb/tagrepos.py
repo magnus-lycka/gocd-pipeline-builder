@@ -92,9 +92,9 @@ class GitTagger(object):
         chdir(self.start_dir)
 
 
-def branch_tag_repos(directory, name, structure, branch_list=None, push=False, clean=False, verbose=False, tag=True):
-    if branch_list is None:
-        branch_list = []
+def branch_tag_repos(directory, name, structure, branch_set=None, push=False, clean=False, verbose=False, tag=True):
+    if branch_set is None:
+        branch_set = set()
     for repo in structure:
         if repo['type'] != 'Git':
             print("Don't know how to handle material type " + repo['type'])
@@ -102,7 +102,7 @@ def branch_tag_repos(directory, name, structure, branch_list=None, push=False, c
             continue
         should_branch = False
         for pipeline in repo['pipelines']:
-            if pipeline['name'] in branch_list:
+            if pipeline['name'] in branch_set:
                 should_branch = True
         if not (tag or should_branch):
             continue
@@ -195,6 +195,23 @@ def main_updaterepolist():
         json.dump(new_structure, jsonfile)
 
 
+def parse_branch_list(fh):
+    for line in fh.readlines():
+        line = line.strip()
+        if line:
+            yield line;
+
+def branch_set_from_args(pargs):
+    branch_set = set();
+
+    if pargs.branch_list:
+        branch_set.update([x.strip() for x in pargs.branch_list.split(',')])
+
+    if pargs.branch_list_from_file:
+        branch_set.update(parse_branch_list(pargs.branch_list_from_file))
+
+    return branch_set
+
 def main_branchrepos():
     parser = argparse.ArgumentParser(
         description="Branch a set of Git repositories as provided by json data.")
@@ -220,6 +237,11 @@ def main_branchrepos():
         help="Comma-separated list of pipeline names. Create branches for these."
     )
     parser.add_argument(
+        '-B', '--branch-list-from-file',
+        type=argparse.FileType('r'),
+        help="Pipeline names read in from file. Create branches for these."
+    )
+    parser.add_argument(
         '-p', '--push',
         action='store_true',
         help="Push changes to remote repo."
@@ -236,12 +258,12 @@ def main_branchrepos():
     )
 
     pargs = parser.parse_args()
-    branch_list = [] if not pargs.branch_list else pargs.branch_list.split(',')
+    branch_set = branch_set_from_args(pargs)
     structure = json.load(pargs.jsonfile)
 
     check_consistent(structure, pargs.jsonfile.name)
     branch_tag_repos(
-        pargs.directory, pargs.tag_name, structure, branch_list, pargs.push, pargs.clean, pargs.verbose, tag=False
+        pargs.directory, pargs.tag_name, structure, branch_set, pargs.push, pargs.clean, pargs.verbose, tag=False
     )
 
 
@@ -269,6 +291,11 @@ def main():
         help="Comma-separated list of pipeline names. Create branches for these."
     )
     parser.add_argument(
+        '-B', '--branch-list-from-file',
+        type=argparse.FileType('r'),
+        help="Pipeline names read in from file. Create branches for these."
+    )
+    parser.add_argument(
         '-p', '--push',
         action='store_true',
         help="Push changes to remote repo."
@@ -285,11 +312,11 @@ def main():
     )
 
     pargs = parser.parse_args()
-    branch_list = [] if not pargs.branch_list else pargs.branch_list.split(',')
+    branch_set = branch_set_from_args(pargs)
     structure = json.load(pargs.jsonfile)
 
     check_consistent(structure, pargs.jsonfile.name)
-    branch_tag_repos(pargs.directory, pargs.tag_name, structure, branch_list, pargs.push, pargs.clean, pargs.verbose)
+    branch_tag_repos(pargs.directory, pargs.tag_name, structure, branch_set, pargs.push, pargs.clean, pargs.verbose)
 
 
 if __name__ == '__main__':
