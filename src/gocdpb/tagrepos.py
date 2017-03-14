@@ -239,7 +239,7 @@ def main_branchrepos():
     parser.add_argument(
         '-B', '--branch-list-from-file',
         type=argparse.FileType('r'),
-        help="Comma-separated list of pipeline names read in from file. Create branches for these."
+        help="Pipeline names read in from file. Create branches for these."
     )
     parser.add_argument(
         '-p', '--push',
@@ -293,7 +293,7 @@ def main():
     parser.add_argument(
         '-B', '--branch-list-from-file',
         type=argparse.FileType('r'),
-        help="Comma-separated list of pipeline names read in from file. Create branches for these."
+        help="Pipeline names read in from file. Create branches for these."
     )
     parser.add_argument(
         '-p', '--push',
