@@ -8,10 +8,6 @@ to your git server.
 [![Build Status](https://travis-ci.org/magnus-lycka/gocd-pipeline-builder.svg?branch=master)](https://travis-ci.org/magnus-lycka/gocd-pipeline-builder)
 
 
-This is still in beta state. Things might change.
-Use at your own risk.
-
-
 Supported Go CD versions
 ------------------------
 
