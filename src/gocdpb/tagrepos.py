@@ -196,13 +196,21 @@ def main_updaterepolist():
 
 
 def parse_branch_list(fh):
-    if fh is not None:
-        for line in fh.readlines():
-            for part in line.split(','):
-                branch = part.strip()
+    for line in fh.readlines():
+        line = line.strip()
+        if line:
+            yield line;
 
-                if branch:
-                    yield branch
+def branch_set_from_args(pargs):
+    branch_set = set();
+
+    if pargs.branch_list:
+        branch_set.update([x.strip() for x in pargs.branch_list.split(',')])
+
+    if pargs.branch_list_from_file:
+        branch_set.update(parse_branch_list(pargs.branch_list_from_file))
+
+    return branch_set
 
 def main_branchrepos():
     parser = argparse.ArgumentParser(
@@ -250,9 +258,7 @@ def main_branchrepos():
     )
 
     pargs = parser.parse_args()
-    branch_set = set();
-    branch_set.update(pargs.branch_list.split(','))
-    branch_set.update(parse_branch_list(pargs.branch_list_from_file))
+    branch_set = branch_set_from_args(pargs)
     structure = json.load(pargs.jsonfile)
 
     check_consistent(structure, pargs.jsonfile.name)
@@ -306,9 +312,7 @@ def main():
     )
 
     pargs = parser.parse_args()
-    branch_set = set();
-    branch_set.update(pargs.branch_list.split(','))
-    branch_set.update(parse_branch_list(pargs.branch_list_from_file))
+    branch_set = branch_set_from_args(pargs)
     structure = json.load(pargs.jsonfile)
 
     check_consistent(structure, pargs.jsonfile.name)
