@@ -94,3 +94,11 @@ class CruiseTree(ElementTree.ElementTree):
         for element in self.findall('pipelines'):
             if element.attrib['group'] == old_name:
                 element.attrib['group'] = new_name
+                break
+
+    def drop_pipeline_group(self, name):
+        for element in self.findall('pipelines'):
+            if element.attrib['group'] == name:
+                root = self.getroot()
+                root.remove(element)
+                break
