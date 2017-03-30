@@ -7,6 +7,9 @@ to your git server.
 
 [![Build Status](https://travis-ci.org/magnus-lycka/gocd-pipeline-builder.svg?branch=master)](https://travis-ci.org/magnus-lycka/gocd-pipeline-builder)
 [![Quality Gate](https://sonarqube.com/api/badges/gate?key=gocdpb)](https://sonarqube.com/dashboard/index/gocdpb)
+[![Quality Gate](https://sonarqube.com/api/badges/measure?key=gocdpb&metric=ncloc)](https://sonarqube.com/dashboard/index/gocdpb)
+[![Quality Gate](https://sonarqube.com/api/badges/measure?key=gocdpb&metric=sqale_debt_ratio)](https://sonarqube.com/dashboard/index/gocdpb)
+[![Quality Gate](https://sonarqube.com/api/badges/measure?key=gocdpb&metric=code_smells)](https://sonarqube.com/dashboard/index/gocdpb)
 
 
 Supported Go CD versions
