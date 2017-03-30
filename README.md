@@ -6,7 +6,7 @@ pipeline automagically when you push a new git repository
 to your git server.
 
 [![Build Status](https://travis-ci.org/magnus-lycka/gocd-pipeline-builder.svg?branch=master)](https://travis-ci.org/magnus-lycka/gocd-pipeline-builder)
-
+[![SonarQube Tech Debt](https://img.shields.io/sonar/http/sonarqube.com/magnus-lycka-github:gocdpb/tech_debt.svg)]()
 
 Supported Go CD versions
 ------------------------
