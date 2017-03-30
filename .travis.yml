@@ -18,3 +18,9 @@ script:
   - texttest -a gocdpb -b -c /home/travis/build/magnus-lycka/gocd-pipeline-builder -d /home/travis/build/magnus-lycka/gocd-pipeline-builder/src/texttest -l
   - find ~/.texttest/tmp -name 'std*.gocdpb' | xargs more | cat
   - find ~/.texttest/tmp -name 'pythonmocks.gocdpb' | xargs more | cat
+
+addons:
+  sonarqube:
+    organization: "magnus-lycka-github"
+script:
+  - sonar-scanner
