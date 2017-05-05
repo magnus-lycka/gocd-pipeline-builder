@@ -12,16 +12,25 @@ to your git server.
 [![Quality Gate](https://sonarqube.com/api/badges/measure?key=gocdpb&metric=code_smells)](https://sonarqube.com/dashboard/index/gocdpb)
 
 
-Supported Go CD versions
-------------------------
+Supported GoCD versions
+-----------------------
 
-Use release 16.2.1 or newer of the GoCD server.
+The GoCD REST API is continuously developing, and the
+*GoCD Pipeline Builder* uses a lot of the newer APIs,
+so you have to use a fairly current GoCD version to
+use this software. 
 
-The gocd-pipeline-builder relies on features which appeared
-in GoCD 15.3, see https://api.go.cd/current/#pipeline-config
+If this software doesn't work because your GoCD server
+is older than the one we test it with, please upgrade
+your GoCD server. If this software doesn't work with
+the latest released GoCD from Thoughtworks, please file
+an issue.
 
-Due to a bug in 15.3, you need version 16.2.1 or
-later if your GoCD configuration uses pipeline templates.
+Unfortunately, the GoCD server isn't very explicit 
+in its error messages. If an API changes to use e.g.
+`application/vnd.go.cd.v4+json` and we call it with 
+`application/vnd.go.cd.v3+json`, we'll simply get an 
+HTTP status 404 as response.
 
 
 Overview
@@ -41,15 +50,6 @@ a .yaml file.
 
 As of today, there is no builtin githook support, but
 it's no rocket science to call the tool on post-receive.
-
-
-Known Issues
-------------
-
- * Adding pipeline to environment is done by updating the XML
-   config, since there is not REST API for this yet.
-   This means that the user needs full admin rights in GoCD
-   if environments are in use. (Consider resources...)
 
 
 gocdpb Command Line Interface
