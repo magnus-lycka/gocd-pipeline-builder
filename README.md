@@ -1,9 +1,8 @@
 GoCD Pipeline Builder
 =====================
 
-The gocd-pipeline-builder should be able to build a GoCD
-pipeline automagically when you push a new git repository
-to your git server.
+The gocd-pipeline-builder lets you create a GoCD pipeline
+from a git repository.
 
 [![Build Status](https://travis-ci.org/magnus-lycka/gocd-pipeline-builder.svg?branch=master)](https://travis-ci.org/magnus-lycka/gocd-pipeline-builder)
 [![Quality Gate](https://sonarqube.com/api/badges/gate?key=gocdpb)](https://sonarqube.com/dashboard/index/gocdpb)
