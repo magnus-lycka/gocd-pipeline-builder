@@ -361,6 +361,12 @@ Currently, this tool only supports git.
       -c, --clean           Remove cloned repo.
 
 
+TODO
+----
+
+- Make git hooks to run gocdpb automatically.
+
+
 How to run the self-tests
 -------------------------
 
