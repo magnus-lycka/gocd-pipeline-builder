@@ -19,4 +19,7 @@ command_line_mistakes
 
 # Checks on source code material
 repo_checks
+
 rename_pipeline_group
+
+move_all_pipelines_in_group

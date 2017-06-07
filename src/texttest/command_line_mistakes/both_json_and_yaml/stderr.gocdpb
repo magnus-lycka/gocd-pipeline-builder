@@ -1,5 +1,5 @@
 usage: gocdpb.py [-h]
-                 [-j JSON_SETTINGS | -y YAML_SETTINGS | --rename-pipeline-group RENAME_PIPELINE_GROUP]
+                 [-j JSON_SETTINGS | -y YAML_SETTINGS | --rename-pipeline-group RENAME_PIPELINE_GROUP | --move-all-pipelines-in-group MOVE_ALL_PIPELINES_IN_GROUP]
                  [-p PLUGIN] [-D DEFINE] [--dump-test-config DUMP_TEST_CONFIG]
                  [-d DUMP] [-v] [-c CONFIG] [-C CONFIG_PARAM]
                  [-P PASSWORD_PROMPT] [--set-test-config SET_TEST_CONFIG]

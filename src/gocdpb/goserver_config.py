@@ -96,6 +96,16 @@ class CruiseTree(ElementTree.ElementTree):
                 element.attrib['group'] = new_name
                 break
 
+    def move_all_pipelines_in_group(self, source_group, target_group):
+        for i, old_group in enumerate(self.getroot()):
+            if old_group.tag == 'pipelines' and old_group.attrib['group'] == source_group:
+                new_group = copy.deepcopy(old_group)
+                new_group.attrib['group'] = target_group
+                self.getroot().insert(i, new_group)
+                for pipeline in old_group.findall('pipeline'):
+                    old_group.remove(pipeline)
+                break
+
     def drop_pipeline_group(self, name):
         for element in self.findall('pipelines'):
             if element.attrib['group'] == name:

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="88">
+  <server />
+  <pipelines group="prefix" />
+  <pipelines group="before">
+    <pipeline name="p1">
+      <materials>
+        <git url="https://github.com/magnus-lycka/gocd-pipeline-builder.git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <ant />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <pipelines group="postfix" />
+  <agents>
+    <agent hostname="go-agent01" ipaddress="1.1.1.1" uuid="xxx">
+      <resources>
+        <resource>db</resource>
+      </resources>
+    </agent>
+  </agents>
+</cruise>

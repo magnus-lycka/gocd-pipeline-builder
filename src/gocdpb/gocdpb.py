@@ -34,6 +34,12 @@ def rename_pipeline_group(go, pipeline_group_names):
     go.rename_pipeline_group(old_name, new_name)
 
 
+def move_all_pipelines_in_group(go, pipeline_group_names):
+    separator, names = pipeline_group_names[0], pipeline_group_names[1:]
+    old_name, new_name = names.split(separator)
+    go.rename_pipeline_group(old_name, new_name)
+
+
 def repos(args=sys.argv):
     argparser = argparse.ArgumentParser(
         description="Recursively fetch all source code revisions used in a pipeline build."
@@ -72,7 +78,10 @@ def main(args=sys.argv):
         "--rename-pipeline-group",
         help=":old-group-name:new-group-name (put separator as first char)"
     )
-
+    main_action_group.add_argument(
+        "--move-all-pipelines-in-group",
+        help=":source-group-name:target-group-name (put separator as first char)"
+    )
     argparser.add_argument(
         "-p", "--plugin",
         action="append",
@@ -112,6 +121,9 @@ def main(args=sys.argv):
 
     if pargs.rename_pipeline_group:
         rename_pipeline_group(go, pargs.rename_pipeline_group)
+
+    if pargs.move_all_pipelines_in_group:
+        move_all_pipelines_in_group(go, pargs.move_all_pipelines_in_group)
 
     if pargs.dump is not None:
         go.fetch_config()

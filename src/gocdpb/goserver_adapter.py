@@ -237,3 +237,20 @@ class Goserver(object):
             self.tree.drop_pipeline_group(target_name)
         self.tree.rename_pipeline_group(source_name, target_name)
         self.upload_config()
+
+    def move_all_pipelines_in_group(self, source_name, target_name):
+        target_group = None
+        for group in self.get_pipeline_groups():
+            if group['name'] == target_name:
+                target_group = group
+                break
+        if target_group and target_group["pipelines"]:
+            names = ", ".join(p['name'] for p in target_group['pipelines'])
+            raise ValueError('Pipeline group "{}" exists and contains pipelines: {}'.format(target_name, names))
+        self.fetch_config()
+        if target_group:
+            self.tree.drop_pipeline_group(target_name)
+        self.tree.move_all_pipelines_in_group(source_name, target_name)
+        self.upload_config()
+
+
