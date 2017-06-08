@@ -28,18 +28,6 @@ def get_json_settings(path):
         return open(path).read()
 
 
-def rename_pipeline_group(go, pipeline_group_names):
-    separator, names = pipeline_group_names[0], pipeline_group_names[1:]
-    old_name, new_name = names.split(separator)
-    go.rename_pipeline_group(old_name, new_name)
-
-
-def move_all_pipelines_in_group(go, pipeline_group_names):
-    separator, names = pipeline_group_names[0], pipeline_group_names[1:]
-    old_name, new_name = names.split(separator)
-    go.rename_pipeline_group(old_name, new_name)
-
-
 def repos(args=sys.argv):
     argparser = argparse.ArgumentParser(
         description="Recursively fetch all source code revisions used in a pipeline build."
@@ -120,10 +108,12 @@ def main(args=sys.argv):
         settings.server_operations(go)
 
     if pargs.rename_pipeline_group:
-        rename_pipeline_group(go, pargs.rename_pipeline_group)
+        old_name, new_name = split_on_head(pargs.rename_pipeline_group)
+        go.rename_pipeline_group(old_name, new_name)
 
     if pargs.move_all_pipelines_in_group:
-        move_all_pipelines_in_group(go, pargs.move_all_pipelines_in_group)
+        old_name, new_name = split_on_head(pargs.move_all_pipelines_in_group)
+        go.move_all_pipelines_in_group(old_name, new_name)
 
     if pargs.dump is not None:
         go.fetch_config()
@@ -134,6 +124,11 @@ def main(args=sys.argv):
         go.fetch_config()
         envelope = '<?xml version="1.0" encoding="utf-8"?>\n%s'
         pargs.dump_test_config.write(envelope % go.cruise_xml_subset)
+
+
+def split_on_head(string_with_sep_first):
+    separator, names = string_with_sep_first[0], string_with_sep_first[1:]
+    return names.split(separator)
 
 
 def init_run(argparser, args):

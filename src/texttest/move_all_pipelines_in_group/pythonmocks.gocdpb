@@ -160,6 +160,8 @@
       </stage>
     </pipeline>
   </pipelines>
+  <pipelines group="before">
+    </pipelines>
   <pipelines group="postfix" />
   <agents>
     <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
@@ -176,7 +178,7 @@
 <-PYT:response_get3.headers
 ->RET:Instance('CaseInsensitiveDict', 'caseinsensitivedict3')
 <-PYT:caseinsensitivedict3.__getitem__('x-cruise-config-md5')
-->RET:'ec70b45abf0afe5f551a93a838a765dd'
+->RET:'a47625d63f29f50830022024c98e762c'
 <-PYT:response_get3.text
 ->RET:u'''<?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="89">
@@ -207,6 +209,7 @@
       </stage>
     </pipeline>
   </pipelines>
+  <pipelines group="before" />
   <pipelines group="postfix" />
   <agents>
     <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />

@@ -17,5 +17,6 @@
       </stage>
     </pipeline>
   </pipelines>
+  <pipelines group="before" />
   <pipelines group="postfix" />
 </cruise>
