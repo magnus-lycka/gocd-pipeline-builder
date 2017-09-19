@@ -13,7 +13,7 @@ class Goserver(object):
     """
     Manages HTTP communication with the Go server.
     """
-    config_xml_rest_path = "/go/admin/restful/configuration/file/{}/xml"
+    config_xml_rest_path = "/admin/restful/configuration/file/{}/xml"
 
     def __init__(self, config, verbose, config_overrides):
         self.__config = {}
@@ -50,12 +50,16 @@ class Goserver(object):
 
     def request(self, action, path, **kwargs):
         action = action.upper()
-        url = self.__config['url'] + path
+        base_url = self.__config['url']
+        if not base_url.endswith('/go'):
+            print('Adding /go to %s' % base_url)
+            base_url += '/go'
+        url = base_url + path
         if self.__auth:
             kwargs['auth'] = self.__auth
         response = requests.request(action, url, **kwargs)
         if response.status_code != 200:
-            sys.stderr.write("Failed to {} {}\n".format(action, path))
+            sys.stderr.write("Failed to {} {}\n".format(action, url))
             sys.stderr.write("status-code: {}\n".format(response.status_code))
             sys.stderr.write(u"text: {}\n".format(response.text))
         return response
@@ -81,7 +85,7 @@ class Goserver(object):
 
         :param pipeline: Json object as describe in API above.
         """
-        path = "/go/api/admin/pipelines"
+        path = "/api/admin/pipelines"
         data = json.dumps(pipeline)
         headers = {
             'Accept': 'application/vnd.go.cd.v3+json',
@@ -92,7 +96,7 @@ class Goserver(object):
             raise RuntimeError(str(response.status_code))
 
     def get_pipeline_config(self, pipeline_name):
-        path = "/go/api/admin/pipelines/" + pipeline_name
+        path = "/api/admin/pipelines/" + pipeline_name
         headers = {
             'Accept': 'application/vnd.go.cd.v3+json'
         }
@@ -105,7 +109,7 @@ class Goserver(object):
         return etag, json_data
 
     def edit_pipeline_config(self, pipeline_name, etag, pipeline):
-        path = "/go/api/admin/pipelines/" + pipeline_name
+        path = "/api/admin/pipelines/" + pipeline_name
         data = json.dumps(pipeline)
         headers = {
             'Accept': 'application/vnd.go.cd.v3+json',
@@ -118,7 +122,7 @@ class Goserver(object):
             raise RuntimeError(str(response.status_code))
 
     def delete_pipeline_config(self, pipeline_name):
-        path = "/go/api/admin/pipelines/" + pipeline_name
+        path = "/api/admin/pipelines/" + pipeline_name
         headers = {
             'Accept': 'application/vnd.go.cd.v3+json',
         }
@@ -131,11 +135,11 @@ class Goserver(object):
         headers = {
             'Confirm': 'true'
         }
-        path = "/go/api/pipelines/" + pipeline_name + "/unpause"
+        path = "/api/pipelines/" + pipeline_name + "/unpause"
         self.request('post', path, headers=headers)
 
     def get_pipeline_status(self, pipeline_name):
-        path = "/go/api/pipelines/" + pipeline_name + "/status"
+        path = "/api/pipelines/" + pipeline_name + "/status"
         headers = {
             'Accept': 'application/json'
         }
@@ -147,7 +151,7 @@ class Goserver(object):
         return json_data
 
     def get_pipeline_groups(self):
-        path = "/go/api/config/pipeline_groups"
+        path = "/api/config/pipeline_groups"
         headers = {
             'Accept': 'application/json'
         }
@@ -159,7 +163,7 @@ class Goserver(object):
         return json_data
 
     def get_pipeline_instance(self, pipeline, instance):
-        path = "/go/api/pipelines/" + pipeline + "/instance/" + instance
+        path = "/api/pipelines/" + pipeline + "/instance/" + instance
         headers = {
             'Accept': 'application/json'
         }
@@ -177,7 +181,7 @@ class Goserver(object):
             pipelines_remove=None,
             agents_add=None,
             agents_remove=None):
-        path = "/go/api/admin/environments/" + env_name
+        path = "/api/admin/environments/" + env_name
         pipelines = {}
         if pipelines_add:
             pipelines["add"] = pipelines_add
@@ -207,10 +211,14 @@ class Goserver(object):
         This method pushes a new cruise-config.xml to the go server.
         It's used when there is no REST API for the changes we want to do.
         """
+        headers = {
+            'Confirm': 'true'
+        }
         data = {'xmlFile': self.cruise_xml, 'md5': self._cruise_config_md5}
         action = 'POST'
         response = self.request(action,
                                 self.config_xml_rest_path.format(action),
+                                headers=headers,
                                 data=data)
         if response.status_code != 200:
             sys.stderr.write("status-code: %s\n" % response.status_code)

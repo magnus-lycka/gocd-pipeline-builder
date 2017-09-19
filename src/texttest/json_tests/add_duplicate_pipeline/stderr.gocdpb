@@ -1,18 +1,18 @@
-Failed to POST /go/api/admin/pipelines
+Failed to POST http://localhost:8153/go/api/admin/pipelines
 status-code: 422
 text: {
   "message": "Failed to add pipeline. The pipeline 'new_pipeline' already exists."
 }
 
 Traceback (most recent call last):
-  File "/home/magnusl/work/gocd-pipeline-builder/src/gocdpb/gocdpb.py", line 156, in <module>
+  File "/home/magnusl/work/gocd-pipeline-builder/src/gocdpb/gocdpb.py", line 177, in <module>
     main()
-  File "/home/magnusl/work/gocd-pipeline-builder/src/gocdpb/gocdpb.py", line 100, in main
+  File "/home/magnusl/work/gocd-pipeline-builder/src/gocdpb/gocdpb.py", line 108, in main
     settings.server_operations(go)
-  File "/home/magnusl/work/gocd-pipeline-builder/src/main/gocd_settings.py", line 93, in server_operations
+  File "/home/magnusl/work/gocd-pipeline-builder/src/gocdpb/gocd_settings.py", line 95, in server_operations
     self.go.create_a_pipeline(operation["create-a-pipeline"])
-  File "/home/magnusl/work/gocd-pipeline-builder/src/main/gocd_settings.py", line 30, in create_a_pipeline_wrapper
+  File "/home/magnusl/work/gocd-pipeline-builder/src/gocdpb/gocd_settings.py", line 30, in create_a_pipeline_wrapper
     self.go.create_a_pipeline(pipeline)
-  File "/home/magnusl/work/gocd-pipeline-builder/src/main/goserver_adapter.py", line 112, in create_a_pipeline
+  File "/home/magnusl/work/gocd-pipeline-builder/src/gocdpb/goserver_adapter.py", line 96, in create_a_pipeline
     raise RuntimeError(str(response.status_code))
 RuntimeError: 422

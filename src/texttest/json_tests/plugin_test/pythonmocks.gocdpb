@@ -49,7 +49,7 @@
     <agent hostname="HOST" ipaddress="N.N.N.N" uuid="UUID" />
   </agents>
 </cruise>
-'''})
+'''}, headers={'Confirm': 'true'})
 ->RET:Instance('Response', 'response_post')
 <-PYT:response_post.status_code
 ->RET:200

@@ -76,7 +76,7 @@
     <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
   </agents>
 </cruise>
-'''})
+'''}, headers={'Confirm': 'true'})
 ->RET:Instance('Response', 'response_post')
 <-PYT:response_post.status_code
 ->RET:200
@@ -167,7 +167,7 @@
     <agent hostname="magnus-HP-ZBook" ipaddress="10.13.24.177" uuid="7ff94240-ae14-4784-9b1f-e1ef21586d3e" />
   </agents>
 </cruise>
-'''})
+'''}, headers={'Confirm': 'true'})
 ->RET:Instance('Response', 'response_post1')
 <-PYT:response_post1.status_code
 ->RET:200
