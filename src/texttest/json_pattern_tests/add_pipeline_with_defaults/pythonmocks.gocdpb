@@ -54,11 +54,11 @@
 ->RET:Instance('Response', 'response_post')
 <-PYT:response_post.status_code
 ->RET:200
-<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "first", "pipeline": {"name": "add_pipeline_with_defaults", "materials": [{"type": "git", "attributes": {"url": "git@github.com:magnus-lycka/gocd-pipeline-builder.git", "destination": "add_pipeline_with_defaults", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}], "stages": [{"name": "defaultStage", "jobs": [{"name": "defaultJob", "tasks": [{"type": "exec", "attributes": {"command": "ls"}}]}]}]}}', headers={'Accept': 'application/vnd.go.cd.v3+json', 'Content-Type': 'application/json'})
+<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "first", "pipeline": {"name": "add_pipeline_with_defaults", "materials": [{"type": "git", "attributes": {"url": "git@github.com:magnus-lycka/gocd-pipeline-builder.git", "destination": "add_pipeline_with_defaults", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}], "stages": [{"name": "defaultStage", "jobs": [{"name": "defaultJob", "tasks": [{"type": "exec", "attributes": {"command": "ls"}}]}]}]}}', headers={'Accept': 'application/vnd.go.cd.v5+json', 'Content-Type': 'application/json'})
 ->RET:Instance('Response', 'response_post1')
 <-PYT:response_post1.status_code
 ->RET:200
-<-PYT:requests.request('PATCH', u'http://localhost:8153/go/api/admin/environments/green', auth=('gouser', 'verysecret'), data='{"pipelines": {"add": ["add_pipeline_with_defaults"]}}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
+<-PYT:requests.request('PATCH', u'http://localhost:8153/go/api/admin/environments/green', auth=('gouser', 'verysecret'), data='{"pipelines": {"add": ["add_pipeline_with_defaults"]}}', headers={'Accept': 'application/vnd.go.cd.v2+json', 'Content-Type': 'application/json'})
 ->RET:Instance('Response', 'response_patch')
 <-PYT:response_patch.status_code
 ->RET:200
