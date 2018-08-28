@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="108">
+  <server artifactsdir="artifacts" agentAutoRegisterKey="4bfca1ec-14ef-4da6-a403-c66bd6ad496a" webhookSecret="536d065e-6866-4d62-9b9b-1aabf6f837eb" commandRepositoryLocation="default" serverId="84cd493b-635c-4d5f-a544-f33f89a7e38f" tokenGenerationKey="302b0f3e-cb74-403e-b896-0cdf8afbfbae">
+    <security>
+      <authConfigs>
+        <authConfig id="texttest" pluginId="cd.go.authentication.passwordfile">
+          <property>
+            <key>PasswordFilePath</key>
+            <value>/godata/config/htpassword</value>
+          </property>
+        </authConfig>
+      </authConfigs>
+    </security>
+  </server>
+</cruise>

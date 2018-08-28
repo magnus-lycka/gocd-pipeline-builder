@@ -105,11 +105,11 @@
 ->RET:Instance('Response', 'response_post')
 <-PYT:response_post.status_code
 ->RET:200
-<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "first", "pipeline": {"label_template": "${COUNT}", "enable_pipeline_locking": true, "name": "p3", "template": "t1", "parameters": [{"name": "UPSTREAM_PIPELINE", "value": "p2"}], "materials": [{"type": "git", "attributes": {"url": "git@github.com:sample_repo/example.git", "destination": "dest", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}, {"type": "dependency", "attributes": {"pipeline": "#{UPSTREAM_PIPELINE}", "stage": "defaultStage", "auto_update": true}}]}}', headers={'Accept': 'application/vnd.go.cd.v3+json', 'Content-Type': 'application/json'})
+<-PYT:requests.request('POST', 'http://localhost:8153/go/api/admin/pipelines', auth=('gouser', 'verysecret'), data='{"group": "first", "pipeline": {"label_template": "${COUNT}", "enable_pipeline_locking": true, "name": "p3", "template": "t1", "parameters": [{"name": "UPSTREAM_PIPELINE", "value": "p2"}], "materials": [{"type": "git", "attributes": {"url": "git@github.com:sample_repo/example.git", "destination": "dest", "filter": null, "name": null, "auto_update": true, "branch": "master", "submodule_folder": null}}, {"type": "dependency", "attributes": {"pipeline": "#{UPSTREAM_PIPELINE}", "stage": "defaultStage", "auto_update": true}}]}}', headers={'Accept': 'application/vnd.go.cd.v5+json', 'Content-Type': 'application/json'})
 ->RET:Instance('Response', 'response_post1')
 <-PYT:response_post1.status_code
 ->RET:200
-<-PYT:requests.request('PATCH', u'http://localhost:8153/go/api/admin/environments/green', auth=('gouser', 'verysecret'), data='{"pipelines": {"add": ["p3"]}}', headers={'Accept': 'application/vnd.go.cd.v1+json', 'Content-Type': 'application/json'})
+<-PYT:requests.request('PATCH', u'http://localhost:8153/go/api/admin/environments/green', auth=('gouser', 'verysecret'), data='{"pipelines": {"add": ["p3"]}}', headers={'Accept': 'application/vnd.go.cd.v2+json', 'Content-Type': 'application/json'})
 ->RET:Instance('Response', 'response_patch')
 <-PYT:response_patch.status_code
 ->RET:200
