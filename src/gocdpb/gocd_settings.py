@@ -198,7 +198,7 @@ class YamlSettings(JsonSettings):
         :param settings_file: Yaml file
         :param extra_settings: settings from e.g. command line
         """
-        settings = yaml.load(settings_file)
+        settings = yaml.safe_load(settings_file)
         template_path = settings['path']
         parameters = settings['parameters']
         parameters.update(extra_settings)

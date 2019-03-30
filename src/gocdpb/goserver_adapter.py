@@ -18,7 +18,7 @@ class Goserver(object):
     def __init__(self, config, verbose, config_overrides):
         self.__config = {}
         if config is not None:
-            self.__config.update(yaml.load(config))
+            self.__config.update(yaml.safe_load(config))
         self.__config.update(config_overrides)
         self.verbose = verbose
         self._cruise_config_md5 = None
