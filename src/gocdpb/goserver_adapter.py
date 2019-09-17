@@ -88,7 +88,7 @@ class Goserver(object):
         path = "/api/admin/pipelines"
         data = json.dumps(pipeline)
         headers = {
-            'Accept': 'application/vnd.go.cd.v5+json',
+            'Accept': 'application/vnd.go.cd.v6+json',
             'Content-Type': 'application/json'
         }
         response = self.request('post', path, data=data, headers=headers)
