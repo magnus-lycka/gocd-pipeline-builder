@@ -98,7 +98,7 @@ class Goserver(object):
     def get_pipeline_config(self, pipeline_name):
         path = "/api/admin/pipelines/" + pipeline_name
         headers = {
-            'Accept': 'application/vnd.go.cd.v5+json'
+            'Accept': 'application/vnd.go.cd.v6+json'
         }
         response = self.request('get', path, headers=headers)
         if response.status_code != 200:
@@ -112,7 +112,7 @@ class Goserver(object):
         path = "/api/admin/pipelines/" + pipeline_name
         data = json.dumps(pipeline)
         headers = {
-            'Accept': 'application/vnd.go.cd.v5+json',
+            'Accept': 'application/vnd.go.cd.v6+json',
             'Content-Type': 'application/json',
             'If-Match': etag
         }
@@ -124,7 +124,7 @@ class Goserver(object):
     def delete_pipeline_config(self, pipeline_name):
         path = "/api/admin/pipelines/" + pipeline_name
         headers = {
-            'Accept': 'application/vnd.go.cd.v5+json',
+            'Accept': 'application/vnd.go.cd.v6+json',
         }
         response = self.request('delete', path, headers=headers)
         if response.status_code != 200:
