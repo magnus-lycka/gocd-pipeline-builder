@@ -88,7 +88,7 @@ class Goserver(object):
         path = "/api/admin/pipelines"
         data = json.dumps(pipeline)
         headers = {
-            'Accept': 'application/vnd.go.cd.v5+json',
+            'Accept': 'application/vnd.go.cd+json',
             'Content-Type': 'application/json'
         }
         response = self.request('post', path, data=data, headers=headers)
@@ -98,7 +98,7 @@ class Goserver(object):
     def get_pipeline_config(self, pipeline_name):
         path = "/api/admin/pipelines/" + pipeline_name
         headers = {
-            'Accept': 'application/vnd.go.cd.v5+json'
+            'Accept': 'application/vnd.go.cd+json'
         }
         response = self.request('get', path, headers=headers)
         if response.status_code != 200:
@@ -112,7 +112,7 @@ class Goserver(object):
         path = "/api/admin/pipelines/" + pipeline_name
         data = json.dumps(pipeline)
         headers = {
-            'Accept': 'application/vnd.go.cd.v5+json',
+            'Accept': 'application/vnd.go.cd+json',
             'Content-Type': 'application/json',
             'If-Match': etag
         }
@@ -124,7 +124,7 @@ class Goserver(object):
     def delete_pipeline_config(self, pipeline_name):
         path = "/api/admin/pipelines/" + pipeline_name
         headers = {
-            'Accept': 'application/vnd.go.cd.v5+json',
+            'Accept': 'application/vnd.go.cd+json',
         }
         response = self.request('delete', path, headers=headers)
         if response.status_code != 200:
@@ -133,7 +133,7 @@ class Goserver(object):
 
     def unpause(self, pipeline_name):
         headers = {
-            'Accept': 'application/vnd.go.cd.v1+json',
+            'Accept': 'application/vnd.go.cd+json',
             'X-GoCD-Confirm': 'true'
         }
         path = "/api/pipelines/" + pipeline_name + "/unpause"
@@ -200,7 +200,7 @@ class Goserver(object):
             data_structure["agents"] = agents
         data = json.dumps(data_structure)
         headers = {
-            'Accept': 'application/vnd.go.cd.v2+json',
+            'Accept': 'application/vnd.go.cd+json',
             'Content-Type': 'application/json'
         }
         response = self.request('patch', path, data=data, headers=headers)

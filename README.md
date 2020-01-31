@@ -11,27 +11,6 @@ from a git repository.
 [![Quality Gate](https://sonarqube.com/api/badges/measure?key=gocdpb&metric=code_smells)](https://sonarqube.com/dashboard/index/gocdpb)
 
 
-Supported GoCD versions
------------------------
-
-The GoCD REST API is continuously developing, and the
-*GoCD Pipeline Builder* uses a lot of the newer APIs,
-so you have to use a fairly current GoCD version to
-use this software. 
-
-If this software doesn't work because your GoCD server
-is older than the one we test it with, please upgrade
-your GoCD server. If this software doesn't work with
-the latest released GoCD from Thoughtworks, please file
-an issue.
-
-Unfortunately, the GoCD server isn't very explicit 
-in its error messages. If an API changes to use e.g.
-`application/vnd.go.cd.v4+json` and we call it with 
-`application/vnd.go.cd.v3+json`, we'll simply get an 
-HTTP status 404 as response.
-
-
 Overview
 --------
 
